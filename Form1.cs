@@ -1,3 +1,7 @@
+using System.Reflection;
+
+using System.Reflection;
+
 namespace CapIilume
 {
     public partial class Form1 : Form
@@ -45,10 +49,13 @@ namespace CapIilume
             // Load logo image for header
             try
             {
-                string logoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "icon.png");
-                if (File.Exists(logoPath))
+                var assembly = Assembly.GetExecutingAssembly();
+                using (var stream = assembly.GetManifestResourceStream("CapIilume.icon.png"))
                 {
-                    pictureBoxLogo.Image = Image.FromFile(logoPath);
+                    if (stream != null)
+                    {
+                        pictureBoxLogo.Image = Image.FromStream(stream);
+                    }
                 }
             }
             catch
@@ -57,7 +64,7 @@ namespace CapIilume
             }
 
             // Load settings into UI
-            checkBoxEnabled.Checked = _settings.IsEnabled;
+            toggleSwitchEnabled.Checked = _settings.IsEnabled;
             UpdateEnabledStatus();
 
             numericUpDownInterval.Value = _settings.IntervalMinutes;
@@ -157,21 +164,19 @@ namespace CapIilume
 
         private void UpdateEnabledStatus()
         {
-            if (checkBoxEnabled.Checked)
+            if (toggleSwitchEnabled.Checked)
             {
                 labelEnabledStatus.Text = "ON";
                 labelEnabledStatus.ForeColor = Color.FromArgb(0, 120, 212);
-                checkBoxEnabled.BackColor = Color.FromArgb(0, 120, 212);
             }
             else
             {
                 labelEnabledStatus.Text = "OFF";
                 labelEnabledStatus.ForeColor = Color.Gray;
-                checkBoxEnabled.BackColor = Color.LightGray;
             }
         }
 
-        private void CheckBoxEnabled_CheckedChanged(object? sender, EventArgs e)
+        private void ToggleSwitchEnabled_CheckedChanged(object? sender, EventArgs e)
         {
             UpdateEnabledStatus();
         }
@@ -187,7 +192,7 @@ namespace CapIilume
             }
 
             // Update settings
-            _settings.IsEnabled = checkBoxEnabled.Checked;
+            _settings.IsEnabled = toggleSwitchEnabled.Checked;
             _settings.IntervalMinutes = (int)numericUpDownInterval.Value;
             _settings.CaptureFullScreen = comboBoxCaptureMode.SelectedIndex == 0;
             _settings.SaveFolder = textBoxFolder.Text;
@@ -281,6 +286,18 @@ namespace CapIilume
         private void ExitToolStripMenuItem_Click(object? sender, EventArgs e)
         {
             Application.Exit();
+        }
+
+        private void AboutToolStripMenuItem_Click(object? sender, EventArgs e)
+        {
+            using var aboutForm = new AboutForm();
+            aboutForm.ShowDialog(this);
+        }
+
+        private void LinkLabelAbout_LinkClicked(object? sender, LinkLabelLinkClickedEventArgs e)
+        {
+            using var aboutForm = new AboutForm();
+            aboutForm.ShowDialog(this);
         }
 
         private void ShowForm()
