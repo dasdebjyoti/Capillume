@@ -4,20 +4,46 @@ namespace CapIilume
 {
     public partial class AboutForm : Form
     {
+        private Icon? _appIcon;
         public AboutForm()
         {
             InitializeComponent();
-            LoadIcon();
+            InitializeUI();
         }
 
-        private void LoadIcon()
+        private void InitializeUI()
         {
+            var assembly = Assembly.GetExecutingAssembly();
+            // Load icon for the system tray and form
             try
             {
-                var assembly = Assembly.GetExecutingAssembly();
+                using (var stream = assembly.GetManifestResourceStream("CapIilume.icon.ico"))
+                {
+                    if (null != stream)
+                    {
+                        _appIcon = new Icon(stream);
+                        this.Icon = _appIcon;
+                    }
+                    else
+                    {
+                        // Fallback to generated icon
+                        _appIcon = FallbackIcon.CreateAppIconAdvanced();
+                        this.Icon = _appIcon;
+                    }
+                }
+            }
+            catch
+            {
+                // Fallback to generated icon
+                _appIcon = FallbackIcon.CreateAppIconAdvanced();
+                this.Icon = _appIcon;
+            }
+
+            try
+            {
                 using (var stream = assembly.GetManifestResourceStream("CapIilume.icon.png"))
                 {
-                    if (stream != null)
+                    if (null != stream)
                     {
                         pictureBoxLogo.Image = Image.FromStream(stream);
                     }
@@ -27,6 +53,11 @@ namespace CapIilume
             {
                 // Logo is optional
             }
+
+            // Load settings into UI
+            this.Text = $"{Application.ProductName} v{assembly.GetName().Version}";
+            this.labelAppName.Text = $"{Application.ProductName}";
+            this.labelVersion.Text = $"Version {assembly.GetName().Version}";
         }
 
         private void ButtonClose_Click(object? sender, EventArgs e)

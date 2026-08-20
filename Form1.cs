@@ -1,7 +1,5 @@
 using System.Reflection;
 
-using System.Reflection;
-
 namespace CapIilume
 {
     public partial class Form1 : Form
@@ -20,28 +18,31 @@ namespace CapIilume
 
         private void InitializeUI()
         {
+            var assembly = Assembly.GetExecutingAssembly();
             // Load icon for the system tray and form
             try
             {
-                string iconPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "icon.ico");
-                if (File.Exists(iconPath))
+                using (var stream = assembly.GetManifestResourceStream("CapIilume.icon.ico"))
                 {
-                    _appIcon = new Icon(iconPath);
-                    notifyIcon.Icon = _appIcon;
-                    this.Icon = _appIcon;
-                }
-                else
-                {
-                    // Fallback to generated icon
-                    _appIcon = CreateAppIcon();
-                    notifyIcon.Icon = _appIcon;
-                    this.Icon = _appIcon;
+                    if (null != stream)
+                    {
+                        _appIcon = new Icon(stream);
+                        notifyIcon.Icon = _appIcon;
+                        this.Icon = _appIcon;
+                    }
+                    else
+                    {
+                        // Fallback to generated icon
+                        _appIcon = FallbackIcon.CreateAppIconAdvanced();
+                        notifyIcon.Icon = _appIcon;
+                        this.Icon = _appIcon;
+                    }
                 }
             }
             catch
             {
                 // Fallback to generated icon
-                _appIcon = CreateAppIcon();
+                _appIcon = FallbackIcon.CreateAppIconAdvanced();
                 notifyIcon.Icon = _appIcon;
                 this.Icon = _appIcon;
             }
@@ -49,10 +50,9 @@ namespace CapIilume
             // Load logo image for header
             try
             {
-                var assembly = Assembly.GetExecutingAssembly();
                 using (var stream = assembly.GetManifestResourceStream("CapIilume.icon.png"))
                 {
-                    if (stream != null)
+                    if (null != stream)
                     {
                         pictureBoxLogo.Image = Image.FromStream(stream);
                     }
@@ -64,6 +64,10 @@ namespace CapIilume
             }
 
             // Load settings into UI
+            this.Text = $"{Application.ProductName} v{assembly.GetName().Version}";
+            this.labelSubtitle.Text = $"Settings • v{assembly.GetName().Version}";
+            this.labelTitle.Text = $"{Application.ProductName}";
+
             toggleSwitchEnabled.Checked = _settings.IsEnabled;
             UpdateEnabledStatus();
 
@@ -78,9 +82,6 @@ namespace CapIilume
 
             // Update quality control visibility
             UpdateQualityControlsVisibility();
-
-            // Update status
-            UpdateStatus();
         }
 
         private Icon CreateAppIcon()
@@ -130,7 +131,6 @@ namespace CapIilume
             }
 
             string fileName = Path.GetFileName(filePath);
-            UpdateStatus($"Captured: {fileName}");
 
             // Show notification
             notifyIcon.ShowBalloonTip(2000, "Screenshot Captured", 
@@ -145,21 +145,7 @@ namespace CapIilume
                 return;
             }
 
-            UpdateStatus($"Error: {error}");
             notifyIcon.ShowBalloonTip(3000, "Error", error, ToolTipIcon.Error);
-        }
-
-        private void UpdateStatus(string? message = null)
-        {
-            if (message != null)
-            {
-                labelStatus.Text = message;
-            }
-            else
-            {
-                string status = _settings.IsEnabled ? "Capillume is running in the background." : "Capillume is idle.";
-                labelStatus.Text = status + " Right-click the tray icon to capture or quit.";
-            }
         }
 
         private void UpdateEnabledStatus()
@@ -213,8 +199,6 @@ namespace CapIilume
             {
                 _screenshotService?.Stop();
             }
-
-            UpdateStatus();
 
             MessageBox.Show("Settings saved successfully!", "Success", 
                 MessageBoxButtons.OK, MessageBoxIcon.Information);

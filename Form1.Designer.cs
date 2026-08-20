@@ -65,7 +65,8 @@
             labelQualityValue = new Label();
             buttonOpenFolder = new Button();
             buttonSave = new Button();
-            labelStatus = new Label();
+            panel1 = new Panel();
+            panel2 = new Panel();
             contextMenuStrip.SuspendLayout();
             panelHeader.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxLogo).BeginInit();
@@ -142,7 +143,7 @@
             panelHeader.Margin = new Padding(6);
             panelHeader.Name = "panelHeader";
             panelHeader.Size = new Size(1480, 160);
-            panelHeader.TabIndex = 0;
+            panelHeader.TabIndex = 1;
             // 
             // linkLabelAbout
             // 
@@ -152,7 +153,7 @@
             linkLabelAbout.Margin = new Padding(6, 0, 6, 0);
             linkLabelAbout.Name = "linkLabelAbout";
             linkLabelAbout.Size = new Size(79, 32);
-            linkLabelAbout.TabIndex = 3;
+            linkLabelAbout.TabIndex = 2;
             linkLabelAbout.TabStop = true;
             linkLabelAbout.Text = "About";
             linkLabelAbout.LinkClicked += LinkLabelAbout_LinkClicked;
@@ -160,10 +161,12 @@
             // pictureBoxLogo
             // 
             pictureBoxLogo.BackColor = Color.Transparent;
-            pictureBoxLogo.Location = new Point(50, 30);
+            pictureBoxLogo.Image = Properties.Resources.icon;
+            pictureBoxLogo.Location = new Point(45, 30);
             pictureBoxLogo.Margin = new Padding(6);
             pictureBoxLogo.Name = "pictureBoxLogo";
-            pictureBoxLogo.Size = new Size(100, 100);
+            pictureBoxLogo.Size = new Size(114, 114);
+            pictureBoxLogo.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBoxLogo.TabIndex = 2;
             pictureBoxLogo.TabStop = false;
             // 
@@ -199,8 +202,8 @@
             labelEnableScreenshots.Margin = new Padding(6, 0, 6, 0);
             labelEnableScreenshots.Name = "labelEnableScreenshots";
             labelEnableScreenshots.Size = new Size(244, 37);
-            labelEnableScreenshots.TabIndex = 1;
-            labelEnableScreenshots.Text = "Enable Screenshots";
+            labelEnableScreenshots.TabIndex = 2;
+            labelEnableScreenshots.Text = "&Enable Screenshots";
             // 
             // toggleSwitchEnabled
             // 
@@ -211,7 +214,7 @@
             toggleSwitchEnabled.OffColor = Color.FromArgb(200, 200, 200);
             toggleSwitchEnabled.OnColor = Color.FromArgb(0, 120, 212);
             toggleSwitchEnabled.Size = new Size(100, 50);
-            toggleSwitchEnabled.TabIndex = 2;
+            toggleSwitchEnabled.TabIndex = 4;
             toggleSwitchEnabled.ThumbColor = Color.White;
             toggleSwitchEnabled.CheckedChanged += ToggleSwitchEnabled_CheckedChanged;
             // 
@@ -236,8 +239,8 @@
             labelCaptureMode.Margin = new Padding(6, 0, 6, 0);
             labelCaptureMode.Name = "labelCaptureMode";
             labelCaptureMode.Size = new Size(188, 37);
-            labelCaptureMode.TabIndex = 4;
-            labelCaptureMode.Text = "Capture Mode";
+            labelCaptureMode.TabIndex = 6;
+            labelCaptureMode.Text = "&Capture Mode";
             // 
             // comboBoxCaptureMode
             // 
@@ -248,40 +251,40 @@
             comboBoxCaptureMode.Location = new Point(60, 370);
             comboBoxCaptureMode.Margin = new Padding(6);
             comboBoxCaptureMode.Name = "comboBoxCaptureMode";
-            comboBoxCaptureMode.Size = new Size(1356, 45);
-            comboBoxCaptureMode.TabIndex = 5;
+            comboBoxCaptureMode.Size = new Size(626, 45);
+            comboBoxCaptureMode.TabIndex = 7;
             // 
             // labelSaveFolder
             // 
             labelSaveFolder.AutoSize = true;
             labelSaveFolder.Font = new Font("Segoe UI", 10F);
-            labelSaveFolder.Location = new Point(60, 460);
+            labelSaveFolder.Location = new Point(60, 568);
             labelSaveFolder.Margin = new Padding(6, 0, 6, 0);
             labelSaveFolder.Name = "labelSaveFolder";
             labelSaveFolder.Size = new Size(154, 37);
-            labelSaveFolder.TabIndex = 6;
-            labelSaveFolder.Text = "Save Folder";
+            labelSaveFolder.TabIndex = 15;
+            labelSaveFolder.Text = "S&ave Folder";
             // 
             // textBoxFolder
             // 
             textBoxFolder.BackColor = Color.White;
             textBoxFolder.Font = new Font("Segoe UI", 10F);
-            textBoxFolder.Location = new Point(60, 510);
+            textBoxFolder.Location = new Point(60, 618);
             textBoxFolder.Margin = new Padding(6);
             textBoxFolder.Name = "textBoxFolder";
             textBoxFolder.ReadOnly = true;
             textBoxFolder.Size = new Size(1106, 43);
-            textBoxFolder.TabIndex = 7;
+            textBoxFolder.TabIndex = 16;
             // 
             // buttonBrowse
             // 
             buttonBrowse.Font = new Font("Segoe UI", 10F);
-            buttonBrowse.Location = new Point(1190, 508);
+            buttonBrowse.Location = new Point(1190, 618);
             buttonBrowse.Margin = new Padding(6);
             buttonBrowse.Name = "buttonBrowse";
-            buttonBrowse.Size = new Size(230, 56);
-            buttonBrowse.TabIndex = 8;
-            buttonBrowse.Text = "Browse...";
+            buttonBrowse.Size = new Size(230, 46);
+            buttonBrowse.TabIndex = 17;
+            buttonBrowse.Text = "&Browse...";
             buttonBrowse.UseVisualStyleBackColor = true;
             buttonBrowse.Click += ButtonBrowse_Click;
             // 
@@ -289,35 +292,35 @@
             // 
             labelInterval.AutoSize = true;
             labelInterval.Font = new Font("Segoe UI", 10F);
-            labelInterval.Location = new Point(60, 610);
+            labelInterval.Location = new Point(790, 320);
             labelInterval.Margin = new Padding(6, 0, 6, 0);
             labelInterval.Name = "labelInterval";
             labelInterval.Size = new Size(222, 37);
-            labelInterval.TabIndex = 9;
-            labelInterval.Text = "Interval (minutes)";
+            labelInterval.TabIndex = 8;
+            labelInterval.Text = "&Interval (minutes)";
             // 
             // numericUpDownInterval
             // 
             numericUpDownInterval.Font = new Font("Segoe UI", 10F);
-            numericUpDownInterval.Location = new Point(60, 660);
+            numericUpDownInterval.Location = new Point(790, 370);
             numericUpDownInterval.Margin = new Padding(6);
             numericUpDownInterval.Maximum = new decimal(new int[] { 1440, 0, 0, 0 });
             numericUpDownInterval.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numericUpDownInterval.Name = "numericUpDownInterval";
-            numericUpDownInterval.Size = new Size(1360, 43);
-            numericUpDownInterval.TabIndex = 10;
+            numericUpDownInterval.Size = new Size(626, 43);
+            numericUpDownInterval.TabIndex = 9;
             numericUpDownInterval.Value = new decimal(new int[] { 5, 0, 0, 0 });
             // 
             // labelFileFormat
             // 
             labelFileFormat.AutoSize = true;
             labelFileFormat.Font = new Font("Segoe UI", 10F);
-            labelFileFormat.Location = new Point(60, 750);
+            labelFileFormat.Location = new Point(60, 444);
             labelFileFormat.Margin = new Padding(6, 0, 6, 0);
             labelFileFormat.Name = "labelFileFormat";
-            labelFileFormat.Size = new Size(149, 37);
-            labelFileFormat.TabIndex = 11;
-            labelFileFormat.Text = "File Format";
+            labelFileFormat.Size = new Size(230, 37);
+            labelFileFormat.TabIndex = 10;
+            labelFileFormat.Text = "Image &File Format";
             // 
             // comboBoxFormat
             // 
@@ -325,33 +328,33 @@
             comboBoxFormat.Font = new Font("Segoe UI", 10F);
             comboBoxFormat.FormattingEnabled = true;
             comboBoxFormat.Items.AddRange(new object[] { "PNG", "JPG", "BMP", "WEBP" });
-            comboBoxFormat.Location = new Point(60, 800);
+            comboBoxFormat.Location = new Point(60, 494);
             comboBoxFormat.Margin = new Padding(6);
             comboBoxFormat.Name = "comboBoxFormat";
-            comboBoxFormat.Size = new Size(1356, 45);
-            comboBoxFormat.TabIndex = 12;
+            comboBoxFormat.Size = new Size(626, 45);
+            comboBoxFormat.TabIndex = 11;
             comboBoxFormat.SelectedIndexChanged += ComboBoxFormat_SelectedIndexChanged;
             // 
             // labelQuality
             // 
             labelQuality.AutoSize = true;
             labelQuality.Font = new Font("Segoe UI", 10F);
-            labelQuality.Location = new Point(60, 890);
+            labelQuality.Location = new Point(790, 444);
             labelQuality.Margin = new Padding(6, 0, 6, 0);
             labelQuality.Name = "labelQuality";
-            labelQuality.Size = new Size(102, 37);
-            labelQuality.TabIndex = 13;
-            labelQuality.Text = "Quality";
+            labelQuality.Size = new Size(183, 37);
+            labelQuality.TabIndex = 12;
+            labelQuality.Text = "Image &Quality";
             // 
             // trackBarQuality
             // 
-            trackBarQuality.Location = new Point(60, 940);
+            trackBarQuality.Location = new Point(790, 494);
             trackBarQuality.Margin = new Padding(6);
             trackBarQuality.Maximum = 100;
             trackBarQuality.Minimum = 1;
             trackBarQuality.Name = "trackBarQuality";
-            trackBarQuality.Size = new Size(1280, 90);
-            trackBarQuality.TabIndex = 14;
+            trackBarQuality.Size = new Size(538, 90);
+            trackBarQuality.TabIndex = 13;
             trackBarQuality.TickFrequency = 10;
             trackBarQuality.Value = 70;
             trackBarQuality.Scroll += TrackBarQuality_Scroll;
@@ -359,11 +362,11 @@
             // labelQualityValue
             // 
             labelQualityValue.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            labelQualityValue.Location = new Point(1340, 954);
+            labelQualityValue.Location = new Point(1340, 494);
             labelQualityValue.Margin = new Padding(6, 0, 6, 0);
             labelQualityValue.Name = "labelQualityValue";
             labelQualityValue.Size = new Size(80, 38);
-            labelQualityValue.TabIndex = 15;
+            labelQualityValue.TabIndex = 14;
             labelQualityValue.Text = "70%";
             labelQualityValue.TextAlign = ContentAlignment.MiddleLeft;
             // 
@@ -372,12 +375,12 @@
             buttonOpenFolder.BackColor = Color.White;
             buttonOpenFolder.FlatStyle = FlatStyle.Flat;
             buttonOpenFolder.Font = new Font("Segoe UI", 10F);
-            buttonOpenFolder.Location = new Point(934, 1080);
+            buttonOpenFolder.Location = new Point(936, 730);
             buttonOpenFolder.Margin = new Padding(6);
             buttonOpenFolder.Name = "buttonOpenFolder";
             buttonOpenFolder.Size = new Size(230, 70);
-            buttonOpenFolder.TabIndex = 16;
-            buttonOpenFolder.Text = "Open Folder";
+            buttonOpenFolder.TabIndex = 19;
+            buttonOpenFolder.Text = "&Open Folder";
             buttonOpenFolder.UseVisualStyleBackColor = true;
             buttonOpenFolder.Click += ButtonOpenFolder_Click;
             // 
@@ -388,37 +391,39 @@
             buttonSave.FlatStyle = FlatStyle.Flat;
             buttonSave.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             buttonSave.ForeColor = Color.White;
-            buttonSave.Location = new Point(1190, 1080);
+            buttonSave.Location = new Point(1192, 730);
             buttonSave.Margin = new Padding(6);
             buttonSave.Name = "buttonSave";
             buttonSave.Size = new Size(230, 70);
-            buttonSave.TabIndex = 17;
-            buttonSave.Text = "Save";
+            buttonSave.TabIndex = 0;
+            buttonSave.Text = "&Save";
             buttonSave.UseVisualStyleBackColor = false;
             buttonSave.Click += ButtonSave_Click;
             // 
-            // labelStatus
+            // panel1
             // 
-            labelStatus.BackColor = Color.FromArgb(240, 240, 240);
-            labelStatus.Dock = DockStyle.Bottom;
-            labelStatus.Font = new Font("Segoe UI", 8.25F);
-            labelStatus.ForeColor = Color.Gray;
-            labelStatus.Location = new Point(0, 1200);
-            labelStatus.Margin = new Padding(6, 0, 6, 0);
-            labelStatus.Name = "labelStatus";
-            labelStatus.Padding = new Padding(20, 16, 20, 16);
-            labelStatus.Size = new Size(1480, 80);
-            labelStatus.TabIndex = 18;
-            labelStatus.Text = "Capillume is running in the background. Right-click the tray icon to capture or quit.";
-            labelStatus.TextAlign = ContentAlignment.MiddleCenter;
+            panel1.BorderStyle = BorderStyle.FixedSingle;
+            panel1.Location = new Point(60, 283);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(1356, 1);
+            panel1.TabIndex = 5;
+            // 
+            // panel2
+            // 
+            panel2.BorderStyle = BorderStyle.FixedSingle;
+            panel2.Location = new Point(62, 703);
+            panel2.Name = "panel2";
+            panel2.Size = new Size(1356, 1);
+            panel2.TabIndex = 18;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(192F, 192F);
             AutoScaleMode = AutoScaleMode.Dpi;
             BackColor = Color.White;
-            ClientSize = new Size(1480, 1280);
-            Controls.Add(labelStatus);
+            ClientSize = new Size(1480, 828);
+            Controls.Add(panel2);
+            Controls.Add(panel1);
             Controls.Add(buttonSave);
             Controls.Add(buttonOpenFolder);
             Controls.Add(labelQualityValue);
@@ -495,6 +500,7 @@
 
         private Button buttonOpenFolder;
         private Button buttonSave;
-        private Label labelStatus;
+        private Panel panel1;
+        private Panel panel2;
     }
 }
