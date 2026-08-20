@@ -1,4 +1,4 @@
-namespace CapIilume
+namespace Capilume
 {
     internal static class Program
     {
@@ -11,13 +11,13 @@ namespace CapIilume
         static void Main(string[] args)
         {
             // Ensure only one instance is running
-            const string mutexName = "CapIilume_SingleInstance_Mutex";
+            const string mutexName = "Capilume_SingleInstance_Mutex";
             _mutex = new Mutex(true, mutexName, out bool createdNew);
 
             if (!createdNew)
             {
                 // Another instance is already running
-                MessageBox.Show("CapIilume is already running. Check the system tray.", 
+                MessageBox.Show("Capilume is already running. Check the system tray.", 
                     "Already Running", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }

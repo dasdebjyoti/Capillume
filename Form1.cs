@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace CapIilume
+namespace Capilume
 {
     public partial class Form1 : Form
     {
@@ -22,7 +22,7 @@ namespace CapIilume
             // Load icon for the system tray and form
             try
             {
-                using (var stream = assembly.GetManifestResourceStream("CapIilume.icon.ico"))
+                using (var stream = assembly.GetManifestResourceStream("Capilume.icon.ico"))
                 {
                     if (null != stream)
                     {
@@ -50,7 +50,7 @@ namespace CapIilume
             // Load logo image for header
             try
             {
-                using (var stream = assembly.GetManifestResourceStream("CapIilume.icon.png"))
+                using (var stream = assembly.GetManifestResourceStream("Capilume.icon.png"))
                 {
                     if (null != stream)
                     {

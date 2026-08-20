@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace CapIilume
+namespace Capilume
 {
     public class AppSettings
     {
@@ -17,7 +17,7 @@ namespace CapIilume
     {
         private static readonly string SettingsPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "CapIilume",
+            "Capilume",
             "settings.json"
         );
 
@@ -76,7 +76,7 @@ namespace CapIilume
             {
                 SaveFolder = Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.MyPictures),
-                    "CapIilume Screenshots"
+                    "Capilume Screenshots"
                 )
             };
         }
@@ -87,7 +87,7 @@ namespace CapIilume
             {
                 settings.SaveFolder = Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.MyPictures),
-                    "CapIilume Screenshots"
+                    "Capilume Screenshots"
                 );
             }
 
@@ -112,7 +112,7 @@ namespace CapIilume
         {
             try
             {
-                string appName = "CapIilume";
+                string appName = "Capilume";
                 string appPath = Application.ExecutablePath;
 
                 using var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(

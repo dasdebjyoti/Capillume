@@ -1,4 +1,4 @@
-﻿namespace CapIilume
+﻿namespace Capilume
 {
     partial class Form1
     {

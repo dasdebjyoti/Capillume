@@ -7,8 +7,8 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
     <ApplicationIcon>icon.ico</ApplicationIcon>
-    <Copyright>CapIilume</Copyright>
-    <PackageProjectUrl>https://github.com/dasdebjyoti/CapIilume</PackageProjectUrl>
+    <Copyright>Capilume</Copyright>
+    <PackageProjectUrl>https://github.com/dasdebjyoti/Capilume</PackageProjectUrl>
     <Description>Lightweigt screenshot automation tool.</Description>
     <RepositoryType>git</RepositoryType>
     <PackageTags>screenhot; screen shot</PackageTags>

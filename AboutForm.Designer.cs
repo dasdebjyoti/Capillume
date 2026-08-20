@@ -1,4 +1,4 @@
-namespace CapIilume
+namespace Capilume
 {
     partial class AboutForm
     {
@@ -97,7 +97,7 @@ namespace CapIilume
             linkLabelGitHub.Size = new Size(531, 37);
             linkLabelGitHub.TabIndex = 3;
             linkLabelGitHub.TabStop = true;
-            linkLabelGitHub.Text = "GitHub: github.com/dasdebjyoti/CapIilume";
+            linkLabelGitHub.Text = "GitHub: github.com/dasdebjyoti/Capilume";
             linkLabelGitHub.LinkClicked += LinkLabelGitHub_LinkClicked;
             // 
             // buttonClose
