@@ -64,7 +64,7 @@ namespace CapIilume
             }
 
             // Load settings into UI
-            this.Text = $"{Application.ProductName} v{assembly.GetName().Version}";
+            this.Text = $"{Application.ProductName}"; // v{assembly.GetName().Version}";
             this.labelSubtitle.Text = $"Settings • v{assembly.GetName().Version}";
             this.labelTitle.Text = $"{Application.ProductName}";
 

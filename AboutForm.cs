@@ -55,7 +55,7 @@ namespace CapIilume
             }
 
             // Load settings into UI
-            this.Text = $"{Application.ProductName} v{assembly.GetName().Version}";
+            this.Text = $"About {Application.ProductName}"; // v{assembly.GetName().Version}";
             this.labelAppName.Text = $"{Application.ProductName}";
             this.labelVersion.Text = $"Version {assembly.GetName().Version}";
         }
@@ -71,7 +71,7 @@ namespace CapIilume
             {
                 System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
                 {
-                    FileName = "https://github.com/dasdebjyoti/CapIilume",
+                    FileName = "https://github.com/dasdebjyoti/Capilume",
                     UseShellExecute = true
                 });
             }
