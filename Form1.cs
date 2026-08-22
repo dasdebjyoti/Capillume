@@ -406,7 +406,7 @@ namespace Capillume
             _settings.IntervalMinutes = (int)numericUpDownInterval.Value;
             _settings.CaptureFullScreen = comboBoxCaptureMode.SelectedIndex == 0;
             _settings.SaveFolder = textBoxFolder.Text;
-            _settings.ImageFormat = comboBoxFormat.SelectedItem?.ToString() ?? "PNG";
+            _settings.ImageFormat = comboBoxFormat.SelectedItem?.ToString() ?? "JPG";
             _settings.ImageQuality = trackBarQuality.Value;
 
             SettingsManager.SaveSettings(_settings);

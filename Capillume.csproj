@@ -9,7 +9,7 @@
     <ApplicationIcon>icon.ico</ApplicationIcon>
     <Copyright>Capilume</Copyright>
     <PackageProjectUrl>https://github.com/dasdebjyoti/Capilume</PackageProjectUrl>
-    <Description>Lightweigt screenshot automation tool.</Description>
+    <Description>Lightweigt screenshot automation tool for Windows.</Description>
     <RepositoryType>git</RepositoryType>
     <PackageTags>screenhot; screen shot</PackageTags>
   </PropertyGroup>

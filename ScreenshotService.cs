@@ -69,19 +69,12 @@ namespace Capillume
         public void UpdateSettings(AppSettings settings)
         {
             _settings = settings;
-
-            if (_timer != null)
-            {
-                _timer.Interval = _settings.IntervalMinutes * 60 * 1000;
-            }
+            if (_timer != null) _timer.Interval = _settings.IntervalMinutes * 60 * 1000;
         }
 
         private void OnTimerTick(object? sender, EventArgs e)
         {
-            if (_settings.IsEnabled)
-            {
-                CaptureScreenshot();
-            }
+            if (_settings.IsEnabled) CaptureScreenshot();
         }
 
         public void CaptureScreenshot()
@@ -111,8 +104,7 @@ namespace Capillume
                         return;
                     }
 
-                    string fileName = GenerateFileName();
-                    string filePath = Path.Combine(_settings.SaveFolder, fileName);
+                    string filePath = Path.Combine(_settings.SaveFolder, GenerateFileName());
 
                     SaveScreenshot(screenshot, filePath);
 
@@ -203,8 +195,8 @@ namespace Capillume
             }
             else
             {
-                // Default to PNG
-                ConvertAndSavePng(bitmap, filePath);
+                // Default to JPG if the format is unrecognized
+                ConvertAndSaveJpg(bitmap, filePath);
             }
         }
 

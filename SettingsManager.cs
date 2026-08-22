@@ -10,8 +10,8 @@ namespace Capillume
         public int IntervalMinutes { get; set; } = 10;
         public bool CaptureFullScreen { get; set; } = true;
         public string SaveFolder { get; set; } = string.Empty;
-        public string ImageFormat { get; set; } = "PNG";
-        public int ImageQuality { get; set; } = 90;
+        public string ImageFormat { get; set; } = "JPG";
+        public int ImageQuality { get; set; } = 70;
         public bool AutoStartWithWindows { get; set; } = false;
     }
 
@@ -103,10 +103,10 @@ namespace Capillume
                 settings.ImageQuality = 70;
             }
 
-            var validFormats = new[] { "PNG", "JPG", "BMP", "WEBP" };
+            var validFormats = new[] { "JPG", "PNG", "BMP", "WEBP" };
             if (!validFormats.Contains(settings.ImageFormat.ToUpper()))
             {
-                settings.ImageFormat = "PNG";
+                settings.ImageFormat = "JPG";
             }
         }
 

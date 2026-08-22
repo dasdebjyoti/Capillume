@@ -361,7 +361,7 @@
             comboBoxFormat.DropDownStyle = ComboBoxStyle.DropDownList;
             comboBoxFormat.Font = new Font("Segoe UI", 10F);
             comboBoxFormat.FormattingEnabled = true;
-            comboBoxFormat.Items.AddRange(new object[] { "PNG", "JPG", "BMP", "WEBP" });
+            comboBoxFormat.Items.AddRange(new object[] { "JPG", "PNG", "BMP", "WEBP" });
             comboBoxFormat.Location = new Point(60, 494);
             comboBoxFormat.Margin = new Padding(6);
             comboBoxFormat.Name = "comboBoxFormat";
