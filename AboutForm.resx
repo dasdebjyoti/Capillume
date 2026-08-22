@@ -118,12 +118,6 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="labelDescription.Text" xml:space="preserve">
-    <value>Capillume is a lightweight screenshot automation tool designed to capture your screen at regular intervals. Effortlessly preserve your workflow, monitor activities, or document your progress with minimal resource usage.
-
-Features:
-• Automated screenshot capture at customizable intervals
-• Full screen or active window capture modes
-• Multiple image formats (PNG, JPG, BMP, WEBP)
-• System tray integration for seamless background operation</value>
+    <value>Capillume is a lightweight screenshot automation tool designed to capture your screen at regular intervals. Effortlessly preserve your workflow, monitor activities, or document your progress with minimal resource usage.</value>
   </data>
 </root>

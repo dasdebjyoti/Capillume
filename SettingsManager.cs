@@ -1,10 +1,11 @@
 using System.Text.Json;
 
-namespace Capilume
+namespace Capillume
 {
     public class AppSettings
     {
         public bool IsEnabled { get; set; } = false;
+        public bool ShowNotifications { get; set; } = false;
         public int IntervalMinutes { get; set; } = 10;
         public bool CaptureFullScreen { get; set; } = true;
         public string SaveFolder { get; set; } = string.Empty;
@@ -17,7 +18,7 @@ namespace Capilume
     {
         private static readonly string SettingsPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "Capilume",
+            "Capillume",
             "settings.json"
         );
 
@@ -76,7 +77,7 @@ namespace Capilume
             {
                 SaveFolder = Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.MyPictures),
-                    "Capilume Screenshots"
+                    "Capillume Screenshots"
                 )
             };
         }
@@ -87,7 +88,7 @@ namespace Capilume
             {
                 settings.SaveFolder = Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.MyPictures),
-                    "Capilume Screenshots"
+                    "Capillume Screenshots"
                 );
             }
 
@@ -98,13 +99,13 @@ namespace Capilume
 
             if (settings.ImageQuality < 1 || settings.ImageQuality > 100)
             {
-                settings.ImageQuality = 90;
+                settings.ImageQuality = 70;
             }
 
             var validFormats = new[] { "PNG", "JPG", "BMP", "WEBP" };
             if (!validFormats.Contains(settings.ImageFormat.ToUpper()))
             {
-                settings.ImageFormat = "PNG";
+                settings.ImageFormat = "JPG";
             }
         }
 
@@ -112,7 +113,7 @@ namespace Capilume
         {
             try
             {
-                string appName = "Capilume";
+                string appName = "Capillume";
                 string appPath = Application.ExecutablePath;
 
                 using var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(

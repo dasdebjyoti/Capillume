@@ -1,4 +1,4 @@
-﻿namespace Capilume
+﻿namespace Capillume
 {
     partial class Form1
     {
@@ -50,6 +50,7 @@
             labelSubtitle = new Label();
             labelEnableScreenshots = new Label();
             toggleSwitchEnabled = new ToggleSwitch();
+            toggleSwitchNotify = new ToggleSwitch();
             labelEnabledStatus = new Label();
             labelCaptureMode = new Label();
             comboBoxCaptureMode = new ComboBox();
@@ -67,6 +68,7 @@
             buttonSave = new Button();
             panel1 = new Panel();
             panel2 = new Panel();
+            labelShowNotifications = new Label();
             contextMenuStrip.SuspendLayout();
             panelHeader.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxLogo).BeginInit();
@@ -190,9 +192,9 @@
             labelSubtitle.Location = new Point(180, 112);
             labelSubtitle.Margin = new Padding(6, 0, 6, 0);
             labelSubtitle.Name = "labelSubtitle";
-            labelSubtitle.Size = new Size(185, 32);
+            labelSubtitle.Size = new Size(203, 32);
             labelSubtitle.TabIndex = 1;
-            labelSubtitle.Text = "Settings • v1.2.0";
+            labelSubtitle.Text = "Settings • v1.0.0.0";
             // 
             // labelEnableScreenshots
             // 
@@ -208,7 +210,7 @@
             // toggleSwitchEnabled
             // 
             toggleSwitchEnabled.Checked = false;
-            toggleSwitchEnabled.Location = new Point(1320, 206);
+            toggleSwitchEnabled.Location = new Point(586, 206);
             toggleSwitchEnabled.Margin = new Padding(6);
             toggleSwitchEnabled.Name = "toggleSwitchEnabled";
             toggleSwitchEnabled.OffColor = Color.FromArgb(200, 200, 200);
@@ -218,12 +220,25 @@
             toggleSwitchEnabled.ThumbColor = Color.White;
             toggleSwitchEnabled.CheckedChanged += ToggleSwitchEnabled_CheckedChanged;
             // 
+            // toggleSwitchNotify
+            // 
+            toggleSwitchNotify.Checked = false;
+            toggleSwitchNotify.Location = new Point(1316, 206);
+            toggleSwitchNotify.Margin = new Padding(6);
+            toggleSwitchNotify.Name = "toggleSwitchNotify";
+            toggleSwitchNotify.OffColor = Color.FromArgb(200, 200, 200);
+            toggleSwitchNotify.OnColor = Color.FromArgb(0, 120, 212);
+            toggleSwitchNotify.Size = new Size(100, 50);
+            toggleSwitchNotify.TabIndex = 4;
+            toggleSwitchNotify.ThumbColor = Color.White;
+            toggleSwitchNotify.CheckedChanged += ToggleSwitchNotify_CheckedChanged;
+            // 
             // labelEnabledStatus
             // 
             labelEnabledStatus.AutoSize = true;
             labelEnabledStatus.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             labelEnabledStatus.ForeColor = Color.Gray;
-            labelEnabledStatus.Location = new Point(1240, 216);
+            labelEnabledStatus.Location = new Point(506, 216);
             labelEnabledStatus.Margin = new Padding(6, 0, 6, 0);
             labelEnabledStatus.Name = "labelEnabledStatus";
             labelEnabledStatus.Size = new Size(56, 32);
@@ -273,13 +288,13 @@
             textBoxFolder.Margin = new Padding(6);
             textBoxFolder.Name = "textBoxFolder";
             textBoxFolder.ReadOnly = true;
-            textBoxFolder.Size = new Size(1106, 43);
+            textBoxFolder.Size = new Size(844, 43);
             textBoxFolder.TabIndex = 16;
             // 
             // buttonBrowse
             // 
             buttonBrowse.Font = new Font("Segoe UI", 10F);
-            buttonBrowse.Location = new Point(1190, 618);
+            buttonBrowse.Location = new Point(936, 618);
             buttonBrowse.Margin = new Padding(6);
             buttonBrowse.Name = "buttonBrowse";
             buttonBrowse.Size = new Size(230, 46);
@@ -372,13 +387,11 @@
             // 
             // buttonOpenFolder
             // 
-            buttonOpenFolder.BackColor = Color.White;
-            buttonOpenFolder.FlatStyle = FlatStyle.Flat;
             buttonOpenFolder.Font = new Font("Segoe UI", 10F);
-            buttonOpenFolder.Location = new Point(936, 730);
+            buttonOpenFolder.Location = new Point(1192, 618);
             buttonOpenFolder.Margin = new Padding(6);
             buttonOpenFolder.Name = "buttonOpenFolder";
-            buttonOpenFolder.Size = new Size(230, 70);
+            buttonOpenFolder.Size = new Size(230, 46);
             buttonOpenFolder.TabIndex = 19;
             buttonOpenFolder.Text = "&Open Folder";
             buttonOpenFolder.UseVisualStyleBackColor = true;
@@ -416,6 +429,16 @@
             panel2.Size = new Size(1356, 1);
             panel2.TabIndex = 18;
             // 
+            // labelShowNotifications
+            // 
+            labelShowNotifications.AutoSize = true;
+            labelShowNotifications.Font = new Font("Segoe UI", 10F);
+            labelShowNotifications.Location = new Point(790, 210);
+            labelShowNotifications.Name = "labelShowNotifications";
+            labelShowNotifications.Size = new Size(240, 37);
+            labelShowNotifications.TabIndex = 20;
+            labelShowNotifications.Text = "Show &Notifications";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(192F, 192F);
@@ -441,6 +464,8 @@
             Controls.Add(labelEnabledStatus);
             Controls.Add(toggleSwitchEnabled);
             Controls.Add(labelEnableScreenshots);
+            Controls.Add(toggleSwitchNotify);
+            Controls.Add(labelShowNotifications);
             Controls.Add(panelHeader);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             Margin = new Padding(6);
@@ -480,6 +505,9 @@
         private Label labelEnableScreenshots;
         private ToggleSwitch toggleSwitchEnabled;
         private Label labelEnabledStatus;
+
+        private Label labelShowNotifications;
+        private ToggleSwitch toggleSwitchNotify;
 
         private Label labelCaptureMode;
         private ComboBox comboBoxCaptureMode;

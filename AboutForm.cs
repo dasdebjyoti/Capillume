@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace Capilume
+namespace Capillume
 {
     public partial class AboutForm : Form
     {
@@ -17,7 +17,7 @@ namespace Capilume
             // Load icon for the system tray and form
             try
             {
-                using (var stream = assembly.GetManifestResourceStream("Capilume.icon.ico"))
+                using (var stream = assembly.GetManifestResourceStream("Capillume.icon.ico"))
                 {
                     if (null != stream)
                     {
@@ -41,7 +41,7 @@ namespace Capilume
 
             try
             {
-                using (var stream = assembly.GetManifestResourceStream("Capilume.icon.png"))
+                using (var stream = assembly.GetManifestResourceStream("Capillume.icon.png"))
                 {
                     if (null != stream)
                     {
@@ -71,7 +71,7 @@ namespace Capilume
             {
                 System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
                 {
-                    FileName = "https://github.com/dasdebjyoti/Capilume",
+                    FileName = "https://github.com/dasdebjyoti/Capillume",
                     UseShellExecute = true
                 });
             }

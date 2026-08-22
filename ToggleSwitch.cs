@@ -1,6 +1,6 @@
 using System.Drawing.Drawing2D;
 
-namespace Capilume
+namespace Capillume
 {
     public class ToggleSwitch : Control
     {

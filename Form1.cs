@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace Capilume
+namespace Capillume
 {
     public partial class Form1 : Form
     {
@@ -22,7 +22,7 @@ namespace Capilume
             // Load icon for the system tray and form
             try
             {
-                using (var stream = assembly.GetManifestResourceStream("Capilume.icon.ico"))
+                using (var stream = assembly.GetManifestResourceStream("Capillume.icon.ico"))
                 {
                     if (null != stream)
                     {
@@ -50,7 +50,7 @@ namespace Capilume
             // Load logo image for header
             try
             {
-                using (var stream = assembly.GetManifestResourceStream("Capilume.icon.png"))
+                using (var stream = assembly.GetManifestResourceStream("Capillume.icon.png"))
                 {
                     if (null != stream)
                     {
@@ -69,6 +69,7 @@ namespace Capilume
             this.labelTitle.Text = $"{Application.ProductName}";
 
             toggleSwitchEnabled.Checked = _settings.IsEnabled;
+            toggleSwitchNotify.Checked = _settings.ShowNotifications;
             UpdateEnabledStatus();
 
             numericUpDownInterval.Value = _settings.IntervalMinutes;
@@ -133,8 +134,12 @@ namespace Capilume
             string fileName = Path.GetFileName(filePath);
 
             // Show notification
-            notifyIcon.ShowBalloonTip(2000, "Screenshot Captured", 
-                $"Saved to: {fileName}", ToolTipIcon.Info);
+            if (_settings.ShowNotifications)
+            {
+                notifyIcon.ShowBalloonTip(2000, "Screenshot Captured",
+                    $"{fileName}", ToolTipIcon.Info);
+                // $"Saved to: {fileName}", ToolTipIcon.Info);
+            }
         }
 
         private void OnErrorOccurred(object? sender, string error)
@@ -167,6 +172,11 @@ namespace Capilume
             UpdateEnabledStatus();
         }
 
+        private void ToggleSwitchNotify_CheckedChanged(object? sender, EventArgs e)
+        {
+            UpdateEnabledStatus();
+        }
+
         private void ButtonSave_Click(object? sender, EventArgs e)
         {
             // Validate folder
@@ -179,6 +189,7 @@ namespace Capilume
 
             // Update settings
             _settings.IsEnabled = toggleSwitchEnabled.Checked;
+            _settings.ShowNotifications = toggleSwitchNotify.Checked;
             _settings.IntervalMinutes = (int)numericUpDownInterval.Value;
             _settings.CaptureFullScreen = comboBoxCaptureMode.SelectedIndex == 0;
             _settings.SaveFolder = textBoxFolder.Text;

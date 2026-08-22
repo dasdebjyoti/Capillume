@@ -1,4 +1,4 @@
-namespace Capilume
+namespace Capillume
 {
     partial class AboutForm
     {
@@ -48,7 +48,7 @@ namespace Capilume
             labelAppName.Location = new Point(240, 70);
             labelAppName.Margin = new Padding(6, 0, 6, 0);
             labelAppName.Name = "labelAppName";
-            labelAppName.Size = new Size(338, 86);
+            labelAppName.Size = new Size(320, 86);
             labelAppName.TabIndex = 1;
             labelAppName.Text = "Capillume";
             // 
@@ -60,9 +60,9 @@ namespace Capilume
             labelVersion.Location = new Point(250, 150);
             labelVersion.Margin = new Padding(6, 0, 6, 0);
             labelVersion.Name = "labelVersion";
-            labelVersion.Size = new Size(186, 41);
+            labelVersion.Size = new Size(209, 41);
             labelVersion.TabIndex = 2;
-            labelVersion.Text = "Version 1.2.0";
+            labelVersion.Text = "Version 1.0.0.0";
             // 
             // labelDescription
             // 
@@ -85,7 +85,7 @@ namespace Capilume
             labelCopyright.Name = "labelCopyright";
             labelCopyright.Size = new Size(417, 32);
             labelCopyright.TabIndex = 2;
-            labelCopyright.Text = "© 2024 Capillume. All rights reserved.";
+            labelCopyright.Text = "© 2026 Capillume. All rights reserved.";
             // 
             // linkLabelGitHub
             // 
@@ -94,10 +94,10 @@ namespace Capilume
             linkLabelGitHub.Location = new Point(60, 620);
             linkLabelGitHub.Margin = new Padding(6, 0, 6, 0);
             linkLabelGitHub.Name = "linkLabelGitHub";
-            linkLabelGitHub.Size = new Size(531, 37);
+            linkLabelGitHub.Size = new Size(524, 37);
             linkLabelGitHub.TabIndex = 3;
             linkLabelGitHub.TabStop = true;
-            linkLabelGitHub.Text = "GitHub: github.com/dasdebjyoti/Capilume";
+            linkLabelGitHub.Text = "GitHub: github.com/dasdebjyoti/Capillume";
             linkLabelGitHub.LinkClicked += LinkLabelGitHub_LinkClicked;
             // 
             // buttonClose

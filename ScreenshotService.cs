@@ -7,7 +7,7 @@ using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Formats.Bmp;
 using SixLabors.ImageSharp.Formats.Webp;
 
-namespace Capilume
+namespace Capillume
 {
     public class ScreenshotService : IDisposable
     {
@@ -247,7 +247,7 @@ namespace Capilume
 
         private string GenerateFileName()
         {
-            string timestamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
+            string timestamp = DateTime.Now.ToString("yyyy-MM-dd HHmmss");
             string extension = _settings.ImageFormat.ToLower();
 
             if (extension == "jpg")
@@ -255,8 +255,9 @@ namespace Capilume
                 extension = "jpg";
             }
 
-            string captureType = _settings.CaptureFullScreen ? "fullscreen" : "window";
-            return $"screenshot_{captureType}_{timestamp}.{extension}";
+            // string captureType = _settings.CaptureFullScreen ? "fullscreen" : "window";
+            // return $"screenshot_{captureType}_{timestamp}.{extension}";
+            return $"Screenshot {timestamp}.{extension}";
         }
 
         public void Dispose()
