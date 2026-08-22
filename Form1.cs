@@ -9,6 +9,8 @@ namespace Capillume
         private Icon? _appIcon;
         private bool _isStartedWithWindows;
 
+        private bool _isUpdatingUi;
+
         public Form1(bool isStartedWithWindows = false)
         {
             InitializeComponent();
@@ -16,6 +18,45 @@ namespace Capillume
             _settings = SettingsManager.LoadSettings();
             InitializeUI();
             InitializeScreenshotService();
+        }
+
+        private void Form1_FormClosing(object? sender, FormClosingEventArgs e)
+        {
+            if (HasUnsavedChanges())
+            {
+                DialogResult result = MessageBox.Show(
+                    "There are unsaved settings changes. Do you want to save them?",
+                    "Unsaved Changes",
+                    MessageBoxButtons.YesNoCancel,
+                    MessageBoxIcon.Question);
+
+                if (result == DialogResult.Yes)
+                {
+                    if (!SaveSettings(showSuccessMessage: false))
+                    {
+                        e.Cancel = true;
+                        return;
+                    }
+                }
+                else if (result == DialogResult.No)
+                {
+                    RestoreSettingsToUi();
+                }
+                else
+                {
+                    e.Cancel = true;
+                    return;
+                }
+            }
+            
+            if (e.CloseReason == CloseReason.UserClosing)
+            {
+                e.Cancel = true;
+                Hide();
+                notifyIcon.ShowBalloonTip(2000, "Capillume",
+                    "Application minimized to system tray. Right-click the icon to access options.",
+                    ToolTipIcon.Info);
+            }
         }
 
         private void InitializeUI()
@@ -86,32 +127,9 @@ namespace Capillume
 
             // Update quality control visibility
             UpdateQualityControlsVisibility();
-        }
 
-        private Icon CreateAppIcon()
-        {
-            // Create a simple icon (camera-like representation)
-            var bitmap = new Bitmap(32, 32);
-            using (var g = Graphics.FromImage(bitmap))
-            {
-                g.Clear(Color.Transparent);
-                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-
-                // Draw a simple camera shape
-                using (var brush = new SolidBrush(Color.FromArgb(0, 120, 215)))
-                {
-                    g.FillRectangle(brush, 6, 10, 20, 14);
-                    g.FillEllipse(brush, 12, 12, 8, 8);
-                }
-
-                using (var pen = new Pen(Color.White, 2))
-                {
-                    g.DrawEllipse(pen, 13, 13, 6, 6);
-                }
-            }
-
-            IntPtr hIcon = bitmap.GetHicon();
-            return Icon.FromHandle(hIcon);
+            UpdateSaveButtonState();
+            labelStatus.Text = "Ready";
         }
 
         private void InitializeScreenshotService()
@@ -173,56 +191,51 @@ namespace Capillume
         private void ToggleSwitchEnabled_CheckedChanged(object? sender, EventArgs e)
         {
             UpdateEnabledStatus();
+            UpdateSaveButtonState();
         }
 
         private void ToggleSwitchNotify_CheckedChanged(object? sender, EventArgs e)
         {
             // UpdateEnabledStatus();
+            UpdateSaveButtonState();
         }
 
         private void ToggleSwitchStartWithWindows_CheckedChanged(object? sender, EventArgs e)
         {
             // UpdateEnabledStatus();
+            UpdateSaveButtonState();
+        }
+
+        private void ComboBoxFormat_SelectedIndexChanged(object? sender, EventArgs e)
+        {
+            UpdateQualityControlsVisibility();
+            UpdateSaveButtonState();
+        }
+
+        private void ComboBoxCaptureMode_SelectedIndexChanged(object? sender, EventArgs e)
+        {
+            UpdateSaveButtonState();
+        }
+
+        private void NumericUpDownInterval_ValueChanged(object? sender, EventArgs e)
+        {
+            UpdateSaveButtonState();
+        }
+
+        private void TrackBarQuality_Scroll(object? sender, EventArgs e)
+        {
+            labelQualityValue.Text = $"{trackBarQuality.Value}%";
+            // UpdateSaveButtonState(); // Do this inside TrackBarQuality_ValueChanged
+        }
+
+        private void TrackBarQuality_ValueChanged(object? sender, EventArgs e)
+        {
+            UpdateSaveButtonState();
         }
 
         private void ButtonSave_Click(object? sender, EventArgs e)
         {
-            // Validate folder
-            if (string.IsNullOrWhiteSpace(textBoxFolder.Text))
-            {
-                MessageBox.Show("Please select a save folder.", "Validation Error", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            // Update settings
-            _settings.IsEnabled = toggleSwitchEnabled.Checked;
-            _settings.ShowNotifications = toggleSwitchNotify.Checked;
-            _settings.StartWithWindows = toggleSwitchStartWithWindows.Checked;
-            _settings.IntervalMinutes = (int)numericUpDownInterval.Value;
-            _settings.CaptureFullScreen = comboBoxCaptureMode.SelectedIndex == 0;
-            _settings.SaveFolder = textBoxFolder.Text;
-            _settings.ImageFormat = comboBoxFormat.SelectedItem?.ToString() ?? "PNG";
-            _settings.ImageQuality = trackBarQuality.Value;
-
-            // Save settings
-            SettingsManager.SaveSettings(_settings);
-            SettingsManager.SetAutoStart(_settings.StartWithWindows);
-
-            // Update service
-            _screenshotService?.UpdateSettings(_settings);
-
-            if (_settings.IsEnabled)
-            {
-                _screenshotService?.Start();
-            }
-            else
-            {
-                _screenshotService?.Stop();
-            }
-
-            MessageBox.Show("Settings saved successfully!", "Success", 
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            SaveSettings();
         }
 
         private void ButtonBrowse_Click(object? sender, EventArgs e)
@@ -237,6 +250,7 @@ namespace Capillume
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 textBoxFolder.Text = dialog.SelectedPath;
+                UpdateSaveButtonState();
             }
         }
 
@@ -248,14 +262,9 @@ namespace Capillume
             }
             else
             {
-                MessageBox.Show("The folder does not exist yet. It will be created when the first screenshot is taken.", 
+                MessageBox.Show("The folder does not exist yet. It will be created when the first screenshot is taken.",
                     "Folder Not Found", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-        }
-
-        private void ComboBoxFormat_SelectedIndexChanged(object? sender, EventArgs e)
-        {
-            UpdateQualityControlsVisibility();
         }
 
         private void UpdateQualityControlsVisibility()
@@ -266,11 +275,6 @@ namespace Capillume
             labelQuality.Enabled = showQuality;
             trackBarQuality.Enabled = showQuality;
             labelQualityValue.Enabled = showQuality;
-        }
-
-        private void TrackBarQuality_Scroll(object? sender, EventArgs e)
-        {
-            labelQualityValue.Text = trackBarQuality.Value.ToString() + "%";
         }
 
         private void NotifyIcon_DoubleClick(object? sender, EventArgs e)
@@ -317,16 +321,126 @@ namespace Capillume
             Activate();
         }
 
-        private void Form1_FormClosing(object? sender, FormClosingEventArgs e)
+        private bool HasUnsavedChanges()
         {
-            if (e.CloseReason == CloseReason.UserClosing)
+            return toggleSwitchEnabled.Checked != _settings.IsEnabled
+                || toggleSwitchNotify.Checked != _settings.ShowNotifications
+                || toggleSwitchStartWithWindows.Checked != _settings.StartWithWindows
+                || numericUpDownInterval.Value != _settings.IntervalMinutes
+                || comboBoxCaptureMode.SelectedIndex != (_settings.CaptureFullScreen ? 0 : 1)
+                || !string.Equals(textBoxFolder.Text, _settings.SaveFolder, StringComparison.OrdinalIgnoreCase)
+                || !string.Equals(comboBoxFormat.SelectedItem?.ToString(), _settings.ImageFormat, StringComparison.OrdinalIgnoreCase)
+                || trackBarQuality.Value != _settings.ImageQuality;
+        }
+
+        private void UpdateSaveButtonState()
+        {
+            if (_isUpdatingUi)
             {
-                e.Cancel = true;
-                Hide();
-                notifyIcon.ShowBalloonTip(2000, "Capillume", 
-                    "Application minimized to system tray. Right-click the icon to access options.", 
-                    ToolTipIcon.Info);
+                return;
             }
+
+            bool hasChanges = HasUnsavedChanges();
+
+            buttonSave.Enabled = hasChanges;
+            buttonUndo.Enabled = hasChanges;
+
+            if (hasChanges)
+            {
+                labelStatus.Text = "Unsaved changes";
+            }
+            else
+            {
+                labelStatus.Text = "Ready";
+            }
+        }
+
+        private void UiSettingChanged(object? sender, EventArgs e)
+        {
+            UpdateSaveButtonState();
+        }
+
+        private void RestoreSettingsToUi()
+        {
+            _isUpdatingUi = true;
+
+            try
+            {
+                toggleSwitchEnabled.Checked = _settings.IsEnabled;
+                toggleSwitchNotify.Checked = _settings.ShowNotifications;
+                toggleSwitchStartWithWindows.Checked = _settings.StartWithWindows;
+                numericUpDownInterval.Value = _settings.IntervalMinutes;
+                comboBoxCaptureMode.SelectedIndex = _settings.CaptureFullScreen ? 0 : 1;
+                textBoxFolder.Text = _settings.SaveFolder;
+                comboBoxFormat.SelectedItem = _settings.ImageFormat;
+                trackBarQuality.Value = _settings.ImageQuality;
+
+                labelQualityValue.Text = $"{_settings.ImageQuality}%";
+                UpdateEnabledStatus();
+                UpdateQualityControlsVisibility();
+            }
+            finally
+            {
+                _isUpdatingUi = false;
+            }
+
+            UpdateSaveButtonState();
+        }
+
+        private bool SaveSettings(bool showSuccessMessage = true)
+        {
+            if (string.IsNullOrWhiteSpace(textBoxFolder.Text))
+            {
+                MessageBox.Show(
+                    "Please select a save folder.",
+                    "Validation Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                return false;
+            }
+
+            _settings.IsEnabled = toggleSwitchEnabled.Checked;
+            _settings.ShowNotifications = toggleSwitchNotify.Checked;
+            _settings.StartWithWindows = toggleSwitchStartWithWindows.Checked;
+            _settings.IntervalMinutes = (int)numericUpDownInterval.Value;
+            _settings.CaptureFullScreen = comboBoxCaptureMode.SelectedIndex == 0;
+            _settings.SaveFolder = textBoxFolder.Text;
+            _settings.ImageFormat = comboBoxFormat.SelectedItem?.ToString() ?? "PNG";
+            _settings.ImageQuality = trackBarQuality.Value;
+
+            SettingsManager.SaveSettings(_settings);
+            SettingsManager.SetAutoStart(_settings.StartWithWindows);
+
+            _screenshotService?.UpdateSettings(_settings);
+
+            if (_settings.IsEnabled)
+            {
+                _screenshotService?.Start();
+            }
+            else
+            {
+                _screenshotService?.Stop();
+            }
+
+            UpdateSaveButtonState();
+
+            if (showSuccessMessage)
+            {
+                labelStatus.Text = "Settings saved successfully";
+                /*MessageBox.Show(
+                    "Settings saved successfully!",
+                    "Success",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);*/
+            }
+
+            return true;
+        }
+
+        private void ButtonUndo_Click(object sender, EventArgs e)
+        {
+            RestoreSettingsToUi();
         }
     }
 }

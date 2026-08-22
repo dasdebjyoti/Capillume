@@ -71,6 +71,8 @@
             panel2 = new Panel();
             labelShowNotifications = new Label();
             labelStartWithWindows = new Label();
+            buttonUndo = new Button();
+            labelStatus = new Label();
             contextMenuStrip.SuspendLayout();
             panelHeader.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxLogo).BeginInit();
@@ -225,7 +227,7 @@
             // toggleSwitchNotify
             // 
             toggleSwitchNotify.Checked = false;
-            toggleSwitchNotify.Location = new Point(879, 211);
+            toggleSwitchNotify.Location = new Point(873, 211);
             toggleSwitchNotify.Margin = new Padding(6);
             toggleSwitchNotify.Name = "toggleSwitchNotify";
             toggleSwitchNotify.OffColor = Color.FromArgb(200, 200, 200);
@@ -283,6 +285,7 @@
             comboBoxCaptureMode.Name = "comboBoxCaptureMode";
             comboBoxCaptureMode.Size = new Size(626, 45);
             comboBoxCaptureMode.TabIndex = 7;
+            comboBoxCaptureMode.SelectedIndexChanged += ComboBoxCaptureMode_SelectedIndexChanged;
             // 
             // labelSaveFolder
             // 
@@ -340,6 +343,7 @@
             numericUpDownInterval.Size = new Size(626, 43);
             numericUpDownInterval.TabIndex = 9;
             numericUpDownInterval.Value = new decimal(new int[] { 5, 0, 0, 0 });
+            numericUpDownInterval.ValueChanged += NumericUpDownInterval_ValueChanged;
             // 
             // labelFileFormat
             // 
@@ -388,6 +392,7 @@
             trackBarQuality.TickFrequency = 10;
             trackBarQuality.Value = 70;
             trackBarQuality.Scroll += TrackBarQuality_Scroll;
+            trackBarQuality.ValueChanged += TrackBarQuality_ValueChanged;
             // 
             // labelQualityValue
             // 
@@ -448,7 +453,7 @@
             // 
             labelShowNotifications.AutoSize = true;
             labelShowNotifications.Font = new Font("Segoe UI", 10F);
-            labelShowNotifications.Location = new Point(619, 215);
+            labelShowNotifications.Location = new Point(613, 215);
             labelShowNotifications.Name = "labelShowNotifications";
             labelShowNotifications.Size = new Size(240, 37);
             labelShowNotifications.TabIndex = 20;
@@ -461,7 +466,28 @@
             labelStartWithWindows.Name = "labelStartWithWindows";
             labelStartWithWindows.Size = new Size(223, 32);
             labelStartWithWindows.TabIndex = 21;
-            labelStartWithWindows.Text = "Start With Windows";
+            labelStartWithWindows.Text = "Start With &Windows";
+            // 
+            // buttonUndo
+            // 
+            buttonUndo.Font = new Font("Segoe UI", 10F);
+            buttonUndo.Location = new Point(936, 730);
+            buttonUndo.Name = "buttonUndo";
+            buttonUndo.Size = new Size(230, 70);
+            buttonUndo.TabIndex = 22;
+            buttonUndo.Text = "&Revert Changes";
+            buttonUndo.UseVisualStyleBackColor = true;
+            buttonUndo.Click += ButtonUndo_Click;
+            // 
+            // labelStatus
+            // 
+            labelStatus.AutoSize = true;
+            labelStatus.Font = new Font("Segoe UI", 10F);
+            labelStatus.Location = new Point(45, 747);
+            labelStatus.Name = "labelStatus";
+            labelStatus.Size = new Size(107, 37);
+            labelStatus.TabIndex = 23;
+            labelStatus.Text = "Ready...";
             // 
             // Form1
             // 
@@ -469,6 +495,8 @@
             AutoScaleMode = AutoScaleMode.Dpi;
             BackColor = Color.White;
             ClientSize = new Size(1480, 828);
+            Controls.Add(labelStatus);
+            Controls.Add(buttonUndo);
             Controls.Add(labelStartWithWindows);
             Controls.Add(panel2);
             Controls.Add(panel1);
@@ -559,5 +587,7 @@
         private Panel panel1;
         private Panel panel2;
         private Label labelStartWithWindows;
+        private Button buttonUndo;
+        private Label labelStatus;
     }
 }
