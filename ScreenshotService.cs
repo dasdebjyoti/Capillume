@@ -1,11 +1,7 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Jpeg;
-using SixLabors.ImageSharp.Formats.Png;
-using SixLabors.ImageSharp.Formats.Bmp;
-using SixLabors.ImageSharp.Formats.Webp;
+using SkiaSharp;
 
 namespace Capillume
 {
@@ -214,35 +210,41 @@ namespace Capillume
 
         private void ConvertAndSavePng(Bitmap bitmap, string filePath)
         {
-            using var ms = new MemoryStream();
-            bitmap.Save(ms, ImageFormat.Png);
-            ms.Position = 0;
-
-            using var image = SixLabors.ImageSharp.Image.Load(ms);
-            var encoder = new PngEncoder();
-            image.Save(filePath, encoder);
+            EncodeAndSave(bitmap, filePath, SKEncodedImageFormat.Png, 100);
         }
 
         private void ConvertAndSaveJpg(Bitmap bitmap, string filePath)
         {
-            using var ms = new MemoryStream();
-            bitmap.Save(ms, ImageFormat.Png);
-            ms.Position = 0;
-
-            using var image = SixLabors.ImageSharp.Image.Load(ms);
-            var encoder = new JpegEncoder { Quality = _settings.ImageQuality };
-            image.Save(filePath, encoder);
+            EncodeAndSave(bitmap, filePath, SKEncodedImageFormat.Jpeg, _settings.ImageQuality);
         }
 
         private void ConvertAndSaveWebp(Bitmap bitmap, string filePath)
+        {
+            EncodeAndSave(bitmap, filePath, SKEncodedImageFormat.Webp, _settings.ImageQuality);
+        }
+
+        private static void EncodeAndSave(
+            Bitmap bitmap,
+            string filePath,
+            SKEncodedImageFormat format,
+            int quality)
         {
             using var ms = new MemoryStream();
             bitmap.Save(ms, ImageFormat.Png);
             ms.Position = 0;
 
-            using var image = SixLabors.ImageSharp.Image.Load(ms);
-            var encoder = new WebpEncoder { Quality = _settings.ImageQuality };
-            image.Save(filePath, encoder);
+            using var skBitmap = SKBitmap.Decode(ms)
+                ?? throw new InvalidOperationException("SkiaSharp could not decode the captured bitmap.");
+            using var image = SKImage.FromBitmap(skBitmap);
+            using var encodedData = image.Encode(format, quality);
+
+            if (encodedData == null)
+            {
+                throw new InvalidOperationException($"SkiaSharp could not encode the image as {format}.");
+            }
+
+            using var output = File.Create(filePath);
+            encodedData.SaveTo(output);
         }
 
         private string GenerateFileName()
