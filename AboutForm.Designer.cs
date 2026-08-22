@@ -32,10 +32,11 @@ namespace Capillume
             // 
             // pictureBoxLogo
             // 
-            pictureBoxLogo.Location = new Point(60, 50);
+            pictureBoxLogo.Image = Properties.Resources.icon;
+            pictureBoxLogo.Location = new Point(44, 50);
             pictureBoxLogo.Margin = new Padding(6);
             pictureBoxLogo.Name = "pictureBoxLogo";
-            pictureBoxLogo.Size = new Size(140, 140);
+            pictureBoxLogo.Size = new Size(160, 160);
             pictureBoxLogo.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBoxLogo.TabIndex = 0;
             pictureBoxLogo.TabStop = false;
@@ -44,11 +45,11 @@ namespace Capillume
             // 
             labelAppName.AutoSize = true;
             labelAppName.Font = new Font("Segoe UI", 24F, FontStyle.Bold);
-            labelAppName.ForeColor = Color.White;
-            labelAppName.Location = new Point(240, 70);
+            labelAppName.ForeColor = Color.Black;
+            labelAppName.Location = new Point(226, 70);
             labelAppName.Margin = new Padding(6, 0, 6, 0);
             labelAppName.Name = "labelAppName";
-            labelAppName.Size = new Size(320, 86);
+            labelAppName.Size = new Size(338, 86);
             labelAppName.TabIndex = 1;
             labelAppName.Text = "Capillume";
             // 
@@ -56,8 +57,8 @@ namespace Capillume
             // 
             labelVersion.AutoSize = true;
             labelVersion.Font = new Font("Segoe UI", 11F);
-            labelVersion.ForeColor = Color.White;
-            labelVersion.Location = new Point(250, 150);
+            labelVersion.ForeColor = Color.Black;
+            labelVersion.Location = new Point(236, 150);
             labelVersion.Margin = new Padding(6, 0, 6, 0);
             labelVersion.Name = "labelVersion";
             labelVersion.Size = new Size(209, 41);
@@ -94,7 +95,7 @@ namespace Capillume
             linkLabelGitHub.Location = new Point(60, 620);
             linkLabelGitHub.Margin = new Padding(6, 0, 6, 0);
             linkLabelGitHub.Name = "linkLabelGitHub";
-            linkLabelGitHub.Size = new Size(524, 37);
+            linkLabelGitHub.Size = new Size(531, 37);
             linkLabelGitHub.TabIndex = 3;
             linkLabelGitHub.TabStop = true;
             linkLabelGitHub.Text = "GitHub: github.com/dasdebjyoti/Capillume";
@@ -118,7 +119,7 @@ namespace Capillume
             // 
             // panelHeader
             // 
-            panelHeader.BackColor = Color.FromArgb(0, 120, 212);
+            panelHeader.BackColor = Color.LightGray;
             panelHeader.Controls.Add(pictureBoxLogo);
             panelHeader.Controls.Add(labelAppName);
             panelHeader.Controls.Add(labelVersion);
