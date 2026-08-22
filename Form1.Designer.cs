@@ -51,6 +51,7 @@
             labelEnableScreenshots = new Label();
             toggleSwitchEnabled = new ToggleSwitch();
             toggleSwitchNotify = new ToggleSwitch();
+            toggleSwitchStartWithWindows = new ToggleSwitch();
             labelEnabledStatus = new Label();
             labelCaptureMode = new Label();
             comboBoxCaptureMode = new ComboBox();
@@ -69,6 +70,7 @@
             panel1 = new Panel();
             panel2 = new Panel();
             labelShowNotifications = new Label();
+            labelStartWithWindows = new Label();
             contextMenuStrip.SuspendLayout();
             panelHeader.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxLogo).BeginInit();
@@ -200,7 +202,7 @@
             // 
             labelEnableScreenshots.AutoSize = true;
             labelEnableScreenshots.Font = new Font("Segoe UI", 10F);
-            labelEnableScreenshots.Location = new Point(60, 210);
+            labelEnableScreenshots.Location = new Point(60, 215);
             labelEnableScreenshots.Margin = new Padding(6, 0, 6, 0);
             labelEnableScreenshots.Name = "labelEnableScreenshots";
             labelEnableScreenshots.Size = new Size(244, 37);
@@ -210,12 +212,12 @@
             // toggleSwitchEnabled
             // 
             toggleSwitchEnabled.Checked = false;
-            toggleSwitchEnabled.Location = new Point(586, 206);
+            toggleSwitchEnabled.Location = new Point(400, 215);
             toggleSwitchEnabled.Margin = new Padding(6);
             toggleSwitchEnabled.Name = "toggleSwitchEnabled";
             toggleSwitchEnabled.OffColor = Color.FromArgb(200, 200, 200);
             toggleSwitchEnabled.OnColor = Color.FromArgb(0, 120, 212);
-            toggleSwitchEnabled.Size = new Size(100, 50);
+            toggleSwitchEnabled.Size = new Size(100, 45);
             toggleSwitchEnabled.TabIndex = 4;
             toggleSwitchEnabled.ThumbColor = Color.White;
             toggleSwitchEnabled.CheckedChanged += ToggleSwitchEnabled_CheckedChanged;
@@ -223,22 +225,35 @@
             // toggleSwitchNotify
             // 
             toggleSwitchNotify.Checked = false;
-            toggleSwitchNotify.Location = new Point(1316, 206);
+            toggleSwitchNotify.Location = new Point(879, 211);
             toggleSwitchNotify.Margin = new Padding(6);
             toggleSwitchNotify.Name = "toggleSwitchNotify";
             toggleSwitchNotify.OffColor = Color.FromArgb(200, 200, 200);
             toggleSwitchNotify.OnColor = Color.FromArgb(0, 120, 212);
-            toggleSwitchNotify.Size = new Size(100, 50);
+            toggleSwitchNotify.Size = new Size(100, 45);
             toggleSwitchNotify.TabIndex = 4;
             toggleSwitchNotify.ThumbColor = Color.White;
             toggleSwitchNotify.CheckedChanged += ToggleSwitchNotify_CheckedChanged;
+            // 
+            // toggleSwitchStartWithWindows
+            // 
+            toggleSwitchStartWithWindows.Checked = false;
+            toggleSwitchStartWithWindows.Location = new Point(1322, 211);
+            toggleSwitchStartWithWindows.Margin = new Padding(6);
+            toggleSwitchStartWithWindows.Name = "toggleSwitchStartWithWindows";
+            toggleSwitchStartWithWindows.OffColor = Color.FromArgb(200, 200, 200);
+            toggleSwitchStartWithWindows.OnColor = Color.FromArgb(0, 120, 212);
+            toggleSwitchStartWithWindows.Size = new Size(100, 45);
+            toggleSwitchStartWithWindows.TabIndex = 4;
+            toggleSwitchStartWithWindows.ThumbColor = Color.White;
+            toggleSwitchStartWithWindows.CheckedChanged += ToggleSwitchStartWithWindows_CheckedChanged;
             // 
             // labelEnabledStatus
             // 
             labelEnabledStatus.AutoSize = true;
             labelEnabledStatus.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             labelEnabledStatus.ForeColor = Color.Gray;
-            labelEnabledStatus.Location = new Point(506, 216);
+            labelEnabledStatus.Location = new Point(325, 221);
             labelEnabledStatus.Margin = new Padding(6, 0, 6, 0);
             labelEnabledStatus.Name = "labelEnabledStatus";
             labelEnabledStatus.Size = new Size(56, 32);
@@ -433,11 +448,20 @@
             // 
             labelShowNotifications.AutoSize = true;
             labelShowNotifications.Font = new Font("Segoe UI", 10F);
-            labelShowNotifications.Location = new Point(790, 210);
+            labelShowNotifications.Location = new Point(619, 215);
             labelShowNotifications.Name = "labelShowNotifications";
             labelShowNotifications.Size = new Size(240, 37);
             labelShowNotifications.TabIndex = 20;
             labelShowNotifications.Text = "Show &Notifications";
+            // 
+            // labelStartWithWindows
+            // 
+            labelStartWithWindows.AutoSize = true;
+            labelStartWithWindows.Location = new Point(1080, 217);
+            labelStartWithWindows.Name = "labelStartWithWindows";
+            labelStartWithWindows.Size = new Size(223, 32);
+            labelStartWithWindows.TabIndex = 21;
+            labelStartWithWindows.Text = "Start With Windows";
             // 
             // Form1
             // 
@@ -445,6 +469,7 @@
             AutoScaleMode = AutoScaleMode.Dpi;
             BackColor = Color.White;
             ClientSize = new Size(1480, 828);
+            Controls.Add(labelStartWithWindows);
             Controls.Add(panel2);
             Controls.Add(panel1);
             Controls.Add(buttonSave);
@@ -466,6 +491,7 @@
             Controls.Add(labelEnableScreenshots);
             Controls.Add(toggleSwitchNotify);
             Controls.Add(labelShowNotifications);
+            Controls.Add(toggleSwitchStartWithWindows);
             Controls.Add(panelHeader);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             Margin = new Padding(6);
@@ -509,6 +535,8 @@
         private Label labelShowNotifications;
         private ToggleSwitch toggleSwitchNotify;
 
+        private ToggleSwitch toggleSwitchStartWithWindows;
+
         private Label labelCaptureMode;
         private ComboBox comboBoxCaptureMode;
 
@@ -530,5 +558,6 @@
         private Button buttonSave;
         private Panel panel1;
         private Panel panel2;
+        private Label labelStartWithWindows;
     }
 }

@@ -27,7 +27,7 @@ namespace Capillume
             // Determine if launched via auto-start or user action
             bool isAutoStart = args.Length > 0 && args[0] == "--autostart";
 
-            var mainForm = new Form1();
+            var mainForm = new Form1(isAutoStart);
 
             if (isAutoStart)
             {

@@ -6,6 +6,7 @@ namespace Capillume
     {
         public bool IsEnabled { get; set; } = false;
         public bool ShowNotifications { get; set; } = false;
+        public bool StartWithWindows { get; set; } = false;
         public int IntervalMinutes { get; set; } = 10;
         public bool CaptureFullScreen { get; set; } = true;
         public string SaveFolder { get; set; } = string.Empty;
@@ -105,7 +106,7 @@ namespace Capillume
             var validFormats = new[] { "PNG", "JPG", "BMP", "WEBP" };
             if (!validFormats.Contains(settings.ImageFormat.ToUpper()))
             {
-                settings.ImageFormat = "JPG";
+                settings.ImageFormat = "PNG";
             }
         }
 

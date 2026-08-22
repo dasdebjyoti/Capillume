@@ -7,10 +7,12 @@ namespace Capillume
         private ScreenshotService? _screenshotService;
         private AppSettings _settings;
         private Icon? _appIcon;
+        private bool _isStartedWithWindows;
 
-        public Form1()
+        public Form1(bool isStartedWithWindows = false)
         {
             InitializeComponent();
+            _isStartedWithWindows = isStartedWithWindows;
             _settings = SettingsManager.LoadSettings();
             InitializeUI();
             InitializeScreenshotService();
@@ -69,9 +71,10 @@ namespace Capillume
             this.labelTitle.Text = $"{Application.ProductName}";
 
             toggleSwitchEnabled.Checked = _settings.IsEnabled;
-            toggleSwitchNotify.Checked = _settings.ShowNotifications;
             UpdateEnabledStatus();
 
+            toggleSwitchNotify.Checked = _settings.ShowNotifications;
+            toggleSwitchStartWithWindows.Checked = _settings.StartWithWindows;
             numericUpDownInterval.Value = _settings.IntervalMinutes;
 
             comboBoxCaptureMode.SelectedIndex = _settings.CaptureFullScreen ? 0 : 1;
@@ -174,7 +177,12 @@ namespace Capillume
 
         private void ToggleSwitchNotify_CheckedChanged(object? sender, EventArgs e)
         {
-            UpdateEnabledStatus();
+            // UpdateEnabledStatus();
+        }
+
+        private void ToggleSwitchStartWithWindows_CheckedChanged(object? sender, EventArgs e)
+        {
+            // UpdateEnabledStatus();
         }
 
         private void ButtonSave_Click(object? sender, EventArgs e)
@@ -190,6 +198,7 @@ namespace Capillume
             // Update settings
             _settings.IsEnabled = toggleSwitchEnabled.Checked;
             _settings.ShowNotifications = toggleSwitchNotify.Checked;
+            _settings.StartWithWindows = toggleSwitchStartWithWindows.Checked;
             _settings.IntervalMinutes = (int)numericUpDownInterval.Value;
             _settings.CaptureFullScreen = comboBoxCaptureMode.SelectedIndex == 0;
             _settings.SaveFolder = textBoxFolder.Text;
@@ -198,6 +207,7 @@ namespace Capillume
 
             // Save settings
             SettingsManager.SaveSettings(_settings);
+            SettingsManager.SetAutoStart(_settings.StartWithWindows);
 
             // Update service
             _screenshotService?.UpdateSettings(_settings);
@@ -295,10 +305,14 @@ namespace Capillume
             aboutForm.ShowDialog(this);
         }
 
+        // Show the form and bring it to the front
         private void ShowForm()
         {
+            _isStartedWithWindows = false;
+
             Show();
             WindowState = FormWindowState.Normal;
+            ShowInTaskbar = true;
             BringToFront();
             Activate();
         }
