@@ -129,7 +129,7 @@ namespace Capillume
             UpdateQualityControlsVisibility();
 
             UpdateSaveButtonState();
-            labelStatus.Text = "Ready";
+            labelStatus.Text = "Ready.";
         }
 
         private void InitializeScreenshotService()
@@ -347,11 +347,11 @@ namespace Capillume
 
             if (hasChanges)
             {
-                labelStatus.Text = "Unsaved changes";
+                labelStatus.Text = "Unsaved changes.";
             }
             else
             {
-                labelStatus.Text = "Ready";
+                labelStatus.Text = "Ready.";
             }
         }
 
@@ -427,7 +427,7 @@ namespace Capillume
 
             if (showSuccessMessage)
             {
-                labelStatus.Text = "Settings saved successfully";
+                labelStatus.Text = "Settings saved successfully.";
                 /*MessageBox.Show(
                     "Settings saved successfully!",
                     "Success",

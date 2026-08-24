@@ -1,3 +1,6 @@
 <Solution>
   <Project Path="Capillume.csproj" />
+  <Project Path="CapillumeInstaller/CapillumeInstaller.vdproj" Type="Installer">
+    <Build />
+  </Project>
 </Solution>

@@ -14,6 +14,15 @@
     <PackageTags>screenshot; screen-shot; screen-capture; productivity</PackageTags>
     <PackageIcon>icon.png</PackageIcon>
     <Title>Capillume Screenshot Automation</Title>
+
+    <!-- Uncomment to force SkiaSharp to be bundled inside the published application exe -->
+    <!-- Added DjD.20260823 -->
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+
+    <!-- Optional: remove PDB during publish -->
+    <!-- Added DjD.20260823 -->
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
 
   <ItemGroup>

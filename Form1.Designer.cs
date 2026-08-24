@@ -155,7 +155,7 @@
             // 
             linkLabelAbout.AutoSize = true;
             linkLabelAbout.Font = new Font("Segoe UI", 9F);
-            linkLabelAbout.Location = new Point(1300, 60);
+            linkLabelAbout.Location = new Point(1343, 112);
             linkLabelAbout.Margin = new Padding(6, 0, 6, 0);
             linkLabelAbout.Name = "linkLabelAbout";
             linkLabelAbout.Size = new Size(79, 32);
@@ -233,7 +233,7 @@
             toggleSwitchNotify.OffColor = Color.FromArgb(200, 200, 200);
             toggleSwitchNotify.OnColor = Color.FromArgb(0, 120, 212);
             toggleSwitchNotify.Size = new Size(100, 45);
-            toggleSwitchNotify.TabIndex = 4;
+            toggleSwitchNotify.TabIndex = 6;
             toggleSwitchNotify.ThumbColor = Color.White;
             toggleSwitchNotify.CheckedChanged += ToggleSwitchNotify_CheckedChanged;
             // 
@@ -246,7 +246,7 @@
             toggleSwitchStartWithWindows.OffColor = Color.FromArgb(200, 200, 200);
             toggleSwitchStartWithWindows.OnColor = Color.FromArgb(0, 120, 212);
             toggleSwitchStartWithWindows.Size = new Size(100, 45);
-            toggleSwitchStartWithWindows.TabIndex = 4;
+            toggleSwitchStartWithWindows.TabIndex = 8;
             toggleSwitchStartWithWindows.ThumbColor = Color.White;
             toggleSwitchStartWithWindows.CheckedChanged += ToggleSwitchStartWithWindows_CheckedChanged;
             // 
@@ -271,7 +271,7 @@
             labelCaptureMode.Margin = new Padding(6, 0, 6, 0);
             labelCaptureMode.Name = "labelCaptureMode";
             labelCaptureMode.Size = new Size(188, 37);
-            labelCaptureMode.TabIndex = 6;
+            labelCaptureMode.TabIndex = 10;
             labelCaptureMode.Text = "&Capture Mode";
             // 
             // comboBoxCaptureMode
@@ -284,7 +284,7 @@
             comboBoxCaptureMode.Margin = new Padding(6);
             comboBoxCaptureMode.Name = "comboBoxCaptureMode";
             comboBoxCaptureMode.Size = new Size(626, 45);
-            comboBoxCaptureMode.TabIndex = 7;
+            comboBoxCaptureMode.TabIndex = 11;
             comboBoxCaptureMode.SelectedIndexChanged += ComboBoxCaptureMode_SelectedIndexChanged;
             // 
             // labelSaveFolder
@@ -295,7 +295,7 @@
             labelSaveFolder.Margin = new Padding(6, 0, 6, 0);
             labelSaveFolder.Name = "labelSaveFolder";
             labelSaveFolder.Size = new Size(154, 37);
-            labelSaveFolder.TabIndex = 15;
+            labelSaveFolder.TabIndex = 19;
             labelSaveFolder.Text = "S&ave Folder";
             // 
             // textBoxFolder
@@ -307,7 +307,7 @@
             textBoxFolder.Name = "textBoxFolder";
             textBoxFolder.ReadOnly = true;
             textBoxFolder.Size = new Size(844, 43);
-            textBoxFolder.TabIndex = 16;
+            textBoxFolder.TabIndex = 20;
             // 
             // buttonBrowse
             // 
@@ -316,7 +316,7 @@
             buttonBrowse.Margin = new Padding(6);
             buttonBrowse.Name = "buttonBrowse";
             buttonBrowse.Size = new Size(230, 46);
-            buttonBrowse.TabIndex = 17;
+            buttonBrowse.TabIndex = 21;
             buttonBrowse.Text = "&Browse...";
             buttonBrowse.UseVisualStyleBackColor = true;
             buttonBrowse.Click += ButtonBrowse_Click;
@@ -329,7 +329,7 @@
             labelInterval.Margin = new Padding(6, 0, 6, 0);
             labelInterval.Name = "labelInterval";
             labelInterval.Size = new Size(222, 37);
-            labelInterval.TabIndex = 8;
+            labelInterval.TabIndex = 12;
             labelInterval.Text = "&Interval (minutes)";
             // 
             // numericUpDownInterval
@@ -341,7 +341,7 @@
             numericUpDownInterval.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numericUpDownInterval.Name = "numericUpDownInterval";
             numericUpDownInterval.Size = new Size(626, 43);
-            numericUpDownInterval.TabIndex = 9;
+            numericUpDownInterval.TabIndex = 13;
             numericUpDownInterval.Value = new decimal(new int[] { 5, 0, 0, 0 });
             numericUpDownInterval.ValueChanged += NumericUpDownInterval_ValueChanged;
             // 
@@ -353,7 +353,7 @@
             labelFileFormat.Margin = new Padding(6, 0, 6, 0);
             labelFileFormat.Name = "labelFileFormat";
             labelFileFormat.Size = new Size(230, 37);
-            labelFileFormat.TabIndex = 10;
+            labelFileFormat.TabIndex = 14;
             labelFileFormat.Text = "Image &File Format";
             // 
             // comboBoxFormat
@@ -366,7 +366,7 @@
             comboBoxFormat.Margin = new Padding(6);
             comboBoxFormat.Name = "comboBoxFormat";
             comboBoxFormat.Size = new Size(626, 45);
-            comboBoxFormat.TabIndex = 11;
+            comboBoxFormat.TabIndex = 15;
             comboBoxFormat.SelectedIndexChanged += ComboBoxFormat_SelectedIndexChanged;
             // 
             // labelQuality
@@ -377,7 +377,7 @@
             labelQuality.Margin = new Padding(6, 0, 6, 0);
             labelQuality.Name = "labelQuality";
             labelQuality.Size = new Size(183, 37);
-            labelQuality.TabIndex = 12;
+            labelQuality.TabIndex = 16;
             labelQuality.Text = "Image &Quality";
             // 
             // trackBarQuality
@@ -388,7 +388,7 @@
             trackBarQuality.Minimum = 1;
             trackBarQuality.Name = "trackBarQuality";
             trackBarQuality.Size = new Size(538, 90);
-            trackBarQuality.TabIndex = 13;
+            trackBarQuality.TabIndex = 17;
             trackBarQuality.TickFrequency = 10;
             trackBarQuality.Value = 70;
             trackBarQuality.Scroll += TrackBarQuality_Scroll;
@@ -401,7 +401,7 @@
             labelQualityValue.Margin = new Padding(6, 0, 6, 0);
             labelQualityValue.Name = "labelQualityValue";
             labelQualityValue.Size = new Size(80, 38);
-            labelQualityValue.TabIndex = 14;
+            labelQualityValue.TabIndex = 18;
             labelQualityValue.Text = "70%";
             labelQualityValue.TextAlign = ContentAlignment.MiddleLeft;
             // 
@@ -412,7 +412,7 @@
             buttonOpenFolder.Margin = new Padding(6);
             buttonOpenFolder.Name = "buttonOpenFolder";
             buttonOpenFolder.Size = new Size(230, 46);
-            buttonOpenFolder.TabIndex = 19;
+            buttonOpenFolder.TabIndex = 22;
             buttonOpenFolder.Text = "&Open Folder";
             buttonOpenFolder.UseVisualStyleBackColor = true;
             buttonOpenFolder.Click += ButtonOpenFolder_Click;
@@ -439,7 +439,7 @@
             panel1.Location = new Point(60, 283);
             panel1.Name = "panel1";
             panel1.Size = new Size(1356, 1);
-            panel1.TabIndex = 5;
+            panel1.TabIndex = 9;
             // 
             // panel2
             // 
@@ -447,7 +447,7 @@
             panel2.Location = new Point(62, 703);
             panel2.Name = "panel2";
             panel2.Size = new Size(1356, 1);
-            panel2.TabIndex = 18;
+            panel2.TabIndex = 23;
             // 
             // labelShowNotifications
             // 
@@ -456,7 +456,7 @@
             labelShowNotifications.Location = new Point(613, 215);
             labelShowNotifications.Name = "labelShowNotifications";
             labelShowNotifications.Size = new Size(240, 37);
-            labelShowNotifications.TabIndex = 20;
+            labelShowNotifications.TabIndex = 5;
             labelShowNotifications.Text = "Show &Notifications";
             // 
             // labelStartWithWindows
@@ -465,7 +465,7 @@
             labelStartWithWindows.Location = new Point(1080, 217);
             labelStartWithWindows.Name = "labelStartWithWindows";
             labelStartWithWindows.Size = new Size(223, 32);
-            labelStartWithWindows.TabIndex = 21;
+            labelStartWithWindows.TabIndex = 7;
             labelStartWithWindows.Text = "Start With &Windows";
             // 
             // buttonUndo
@@ -474,7 +474,7 @@
             buttonUndo.Location = new Point(936, 730);
             buttonUndo.Name = "buttonUndo";
             buttonUndo.Size = new Size(230, 70);
-            buttonUndo.TabIndex = 22;
+            buttonUndo.TabIndex = 25;
             buttonUndo.Text = "&Revert Changes";
             buttonUndo.UseVisualStyleBackColor = true;
             buttonUndo.Click += ButtonUndo_Click;
@@ -486,8 +486,8 @@
             labelStatus.Location = new Point(45, 747);
             labelStatus.Name = "labelStatus";
             labelStatus.Size = new Size(107, 37);
-            labelStatus.TabIndex = 23;
-            labelStatus.Text = "Ready...";
+            labelStatus.TabIndex = 24;
+            labelStatus.Text = "Ready.";
             // 
             // Form1
             // 
