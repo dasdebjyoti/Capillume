@@ -49,7 +49,7 @@ namespace Capillume
             _timer.Start();
 
             // Take first screenshot immediately if enabled
-            if (_settings.IsEnabled)
+            if (_settings.IsScreenshotEnabled)
             {
                 CaptureScreenshot();
             }
@@ -74,7 +74,7 @@ namespace Capillume
 
         private void OnTimerTick(object? sender, EventArgs e)
         {
-            if (_settings.IsEnabled) CaptureScreenshot();
+            if (_settings.IsScreenshotEnabled) CaptureScreenshot();
         }
 
         public void CaptureScreenshot()
@@ -103,6 +103,8 @@ namespace Capillume
                         ErrorOccurred?.Invoke(this, "Failed to capture screenshot.");
                         return;
                     }
+
+                    WatermarkRenderer.Apply(screenshot, _settings.Watermark);
 
                     string filePath = Path.Combine(_settings.SaveFolder, GenerateFileName());
 

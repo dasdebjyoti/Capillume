@@ -1,18 +1,55 @@
+using Microsoft.VisualBasic;
 using System.Text.Json;
 
 namespace Capillume
 {
+    public static class Constants
+    {
+        public const int ScreenshotImageQualityMin = 1;
+        public const int ScreenshotImageQualityMax = 100;
+        public const int ScreenshotImageQualityDefault = 70;
+        public const int WatermarkOpacityMin = 1;
+        public const int WatermarkOpacityMax = 100;
+        public const int WatermarkOpacityDefault = 50;
+        public const int WatermarkImageScaleMin = 1;
+        public const int WatermarkImageScaleMax = 100;
+        public const int WatermarkImageScaleDefault = 50;
+        public const string WatermarkPositionDefault = "Top Right";
+    }
+
     public class AppSettings
     {
-        public bool IsEnabled { get; set; } = false;
+        public bool IsScreenshotEnabled { get; set; } = false;
         public bool ShowNotifications { get; set; } = false;
         public bool StartWithWindows { get; set; } = false;
         public int IntervalMinutes { get; set; } = 10;
         public bool CaptureFullScreen { get; set; } = true;
         public string SaveFolder { get; set; } = string.Empty;
         public string ImageFormat { get; set; } = "JPG";
-        public int ImageQuality { get; set; } = 70;
+        public int ImageQuality { get; set; } = Constants.ScreenshotImageQualityDefault; // 70;
         public bool AutoStartWithWindows { get; set; } = false;
+        public WatermarkSettings Watermark { get; set; } = new();
+    }
+
+    // TODO
+    // Would you like me to also show you how to auto‑detect the user’s DPI scaling so the watermark
+    // font size adjusts proportionally to their Windows display settings? That would make your
+    // watermark look consistent across different monitors.
+
+    public class WatermarkSettings
+    {
+        public bool Enabled { get; set; }
+        public bool UseText { get; set; } = false;
+        public bool UseImage { get; set; } = false;
+        public string WatermarkText { get; set; } = "Capillume"; // string.Empty;
+        public string WatermarkTextFontFamily { get; set; } = SystemFonts.DefaultFont.FontFamily.Name; //"Segoe UI";
+        public float WatermarkTextFontSize { get; set; } = 24; // SystemFonts.DefaultFont.Size;
+        public FontStyle WatermarkTextFontStyle { get; set; } = FontStyle.Regular;
+        public string WatermarkImagePath { get; set; } = string.Empty;
+        public int WatermarkImageScale { get; set; } = Constants.WatermarkImageScaleDefault; // 50
+        public int WatermarkOpacity { get; set; } = Constants.WatermarkOpacityDefault; // 50
+        public string WatermarkPosition { get; set; } = Constants.WatermarkPositionDefault;
+        public int WatermarkRotation { get; set; } = 0; // 0, 90, 180, 270
     }
 
     public static class SettingsManager
@@ -98,15 +135,24 @@ namespace Capillume
                 settings.IntervalMinutes = 1;
             }
 
-            if (settings.ImageQuality < 1 || settings.ImageQuality > 100)
+            if (settings.ImageQuality < Constants.ScreenshotImageQualityMin || settings.ImageQuality > Constants.ScreenshotImageQualityMax)
             {
-                settings.ImageQuality = 70;
+                settings.ImageQuality = Constants.ScreenshotImageQualityDefault; // 70;
             }
 
             var validFormats = new[] { "JPG", "PNG", "BMP", "WEBP" };
             if (!validFormats.Contains(settings.ImageFormat.ToUpper()))
             {
                 settings.ImageFormat = "JPG";
+            }
+
+            settings.Watermark ??= new WatermarkSettings();
+            settings.Watermark.WatermarkOpacity = Math.Clamp(settings.Watermark.WatermarkOpacity, Constants.WatermarkOpacityMin, Constants.WatermarkOpacityMax);
+            settings.Watermark.WatermarkTextFontSize = Math.Clamp(settings.Watermark.WatermarkTextFontSize, 6, 200);
+            settings.Watermark.WatermarkImageScale = Math.Clamp(settings.Watermark.WatermarkImageScale, Constants.WatermarkImageScaleMin, Constants.WatermarkImageScaleMax);
+            if (settings.Watermark.WatermarkRotation is not (0 or 90 or 180 or 270))
+            {
+                settings.Watermark.WatermarkRotation = 0;
             }
         }
 

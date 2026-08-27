@@ -50,6 +50,14 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.7.2"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.7.2"
+                    }
+                }
             }
         }
         "Release"
@@ -200,15 +208,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Capillume"
-        "ProductCode" = "8:{5EF6F975-8B25-4BF0-99D9-D9ED8FB4BCC6}"
-        "PackageCode" = "8:{2E5E8F7F-CC05-44BE-8150-26AAC8DE42BA}"
+        "ProductCode" = "8:{4572C071-D746-401F-AABE-13C41E754B54}"
+        "PackageCode" = "8:{942DAE04-2834-4351-9C89-7C6E6DCD2C55}"
         "UpgradeCode" = "8:{1CDF4591-8AFD-456F-8694-6CCA9E477538}"
         "AspNetVersion" = "8:"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:FALSE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:1.0.0"
+        "ProductVersion" = "8:1.1.0"
         "Manufacturer" = "8:Capillume"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:https://github.com/dasdebjyoti/Capillume"

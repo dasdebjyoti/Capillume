@@ -6,6 +6,8 @@ namespace Capillume
     {
         private ScreenshotService? _screenshotService;
         private AppSettings _settings;
+
+        private bool WatermarkSettingsChanged = false;
         private Icon? _appIcon;
         private bool _isStartedWithWindows;
 
@@ -111,7 +113,7 @@ namespace Capillume
             this.labelSubtitle.Text = $"Settings • v{assembly.GetName().Version}";
             this.labelTitle.Text = $"{Application.ProductName}";
 
-            toggleSwitchEnabled.Checked = _settings.IsEnabled;
+            toggleSwitchEnabled.Checked = _settings.IsScreenshotEnabled;
             UpdateEnabledStatus();
 
             toggleSwitchNotify.Checked = _settings.ShowNotifications;
@@ -122,7 +124,7 @@ namespace Capillume
 
             textBoxFolder.Text = _settings.SaveFolder;
             comboBoxFormat.SelectedItem = _settings.ImageFormat;
-            trackBarQuality.Value = _settings.ImageQuality;
+            trackBarQuality.Value = Math.Clamp(_settings.ImageQuality, Constants.ScreenshotImageQualityMin, Constants.ScreenshotImageQualityMax);
             labelQualityValue.Text = _settings.ImageQuality.ToString() + "%";
 
             // Update quality control visibility
@@ -138,7 +140,7 @@ namespace Capillume
             _screenshotService.ScreenshotCaptured += OnScreenshotCaptured;
             _screenshotService.ErrorOccurred += OnErrorOccurred;
 
-            if (_settings.IsEnabled)
+            if (_settings.IsScreenshotEnabled)
             {
                 _screenshotService.Start();
             }
@@ -224,12 +226,12 @@ namespace Capillume
 
         private void TrackBarQuality_Scroll(object? sender, EventArgs e)
         {
-            labelQualityValue.Text = $"{trackBarQuality.Value}%";
-            // UpdateSaveButtonState(); // Do this inside TrackBarQuality_ValueChanged
+            //labelQualityValue.Text = $"{trackBarQuality.Value}%";
         }
 
         private void TrackBarQuality_ValueChanged(object? sender, EventArgs e)
         {
+            labelQualityValue.Text = $"{trackBarQuality.Value}%";
             UpdateSaveButtonState();
         }
 
@@ -238,6 +240,10 @@ namespace Capillume
             SaveSettings();
         }
 
+        private void ButtonUndo_Click(object sender, EventArgs e)
+        {
+            RestoreSettingsToUi();
+        }
         private void ButtonBrowse_Click(object? sender, EventArgs e)
         {
             using var dialog = new FolderBrowserDialog
@@ -265,6 +271,22 @@ namespace Capillume
                 MessageBox.Show("The folder does not exist yet. It will be created when the first screenshot is taken.",
                     "Folder Not Found", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
+        }
+
+        private void ButtonWatermark_Click(object? sender, EventArgs e)
+        {
+            using var watermarkForm = new FormWatermark(_settings.Watermark);
+            if (watermarkForm.ShowDialog(this) != DialogResult.OK)
+            {
+                return;
+            }
+
+            _settings.Watermark = watermarkForm._settings;
+            WatermarkSettingsChanged = true;
+            //SettingsManager.SaveSettings(_settings);
+            //_screenshotService?.UpdateSettings(_settings);
+            //labelStatus.Text = "Watermark settings saved.";
+            UpdateSaveButtonState();
         }
 
         private void UpdateQualityControlsVisibility()
@@ -323,16 +345,20 @@ namespace Capillume
 
         private bool HasUnsavedChanges()
         {
-            return toggleSwitchEnabled.Checked != _settings.IsEnabled
+            return toggleSwitchEnabled.Checked != _settings.IsScreenshotEnabled
                 || toggleSwitchNotify.Checked != _settings.ShowNotifications
                 || toggleSwitchStartWithWindows.Checked != _settings.StartWithWindows
                 || numericUpDownInterval.Value != _settings.IntervalMinutes
                 || comboBoxCaptureMode.SelectedIndex != (_settings.CaptureFullScreen ? 0 : 1)
                 || !string.Equals(textBoxFolder.Text, _settings.SaveFolder, StringComparison.OrdinalIgnoreCase)
                 || !string.Equals(comboBoxFormat.SelectedItem?.ToString(), _settings.ImageFormat, StringComparison.OrdinalIgnoreCase)
-                || trackBarQuality.Value != _settings.ImageQuality;
+                || trackBarQuality.Value != _settings.ImageQuality
+                || WatermarkSettingsChanged == true;
         }
 
+        /// <summary>
+        /// Update the state of Save and Undo buttons so that they are enabled only when there are unsaved changes.
+        /// </summary>
         private void UpdateSaveButtonState()
         {
             if (_isUpdatingUi)
@@ -347,7 +373,7 @@ namespace Capillume
 
             if (hasChanges)
             {
-                labelStatus.Text = "Unsaved changes.";
+                labelStatus.Text = "There are unsaved settings.";
             }
             else
             {
@@ -366,7 +392,7 @@ namespace Capillume
 
             try
             {
-                toggleSwitchEnabled.Checked = _settings.IsEnabled;
+                toggleSwitchEnabled.Checked = _settings.IsScreenshotEnabled;
                 toggleSwitchNotify.Checked = _settings.ShowNotifications;
                 toggleSwitchStartWithWindows.Checked = _settings.StartWithWindows;
                 numericUpDownInterval.Value = _settings.IntervalMinutes;
@@ -400,7 +426,7 @@ namespace Capillume
                 return false;
             }
 
-            _settings.IsEnabled = toggleSwitchEnabled.Checked;
+            _settings.IsScreenshotEnabled = toggleSwitchEnabled.Checked;
             _settings.ShowNotifications = toggleSwitchNotify.Checked;
             _settings.StartWithWindows = toggleSwitchStartWithWindows.Checked;
             _settings.IntervalMinutes = (int)numericUpDownInterval.Value;
@@ -411,10 +437,11 @@ namespace Capillume
 
             SettingsManager.SaveSettings(_settings);
             SettingsManager.SetAutoStart(_settings.StartWithWindows);
+            WatermarkSettingsChanged = false;
 
             _screenshotService?.UpdateSettings(_settings);
 
-            if (_settings.IsEnabled)
+            if (_settings.IsScreenshotEnabled)
             {
                 _screenshotService?.Start();
             }
@@ -436,11 +463,6 @@ namespace Capillume
             }
 
             return true;
-        }
-
-        private void ButtonUndo_Click(object sender, EventArgs e)
-        {
-            RestoreSettingsToUi();
         }
     }
 }

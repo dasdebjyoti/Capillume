@@ -63,7 +63,7 @@ namespace Capillume
             labelVersion.Name = "labelVersion";
             labelVersion.Size = new Size(209, 41);
             labelVersion.TabIndex = 2;
-            labelVersion.Text = "Version 1.0.0.0";
+            labelVersion.Text = "Version 1.1.0.0";
             // 
             // labelDescription
             // 

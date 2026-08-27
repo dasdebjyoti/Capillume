@@ -73,6 +73,7 @@
             labelStartWithWindows = new Label();
             buttonUndo = new Button();
             labelStatus = new Label();
+            buttonWatermark = new Button();
             contextMenuStrip.SuspendLayout();
             panelHeader.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxLogo).BeginInit();
@@ -198,7 +199,7 @@
             labelSubtitle.Name = "labelSubtitle";
             labelSubtitle.Size = new Size(203, 32);
             labelSubtitle.TabIndex = 1;
-            labelSubtitle.Text = "Settings • v1.0.0.0";
+            labelSubtitle.Text = "Settings • v1.1.0.0";
             // 
             // labelEnableScreenshots
             // 
@@ -306,13 +307,13 @@
             textBoxFolder.Margin = new Padding(6);
             textBoxFolder.Name = "textBoxFolder";
             textBoxFolder.ReadOnly = true;
-            textBoxFolder.Size = new Size(844, 43);
+            textBoxFolder.Size = new Size(347, 43);
             textBoxFolder.TabIndex = 20;
             // 
             // buttonBrowse
             // 
             buttonBrowse.Font = new Font("Segoe UI", 10F);
-            buttonBrowse.Location = new Point(936, 618);
+            buttonBrowse.Location = new Point(419, 615);
             buttonBrowse.Margin = new Padding(6);
             buttonBrowse.Name = "buttonBrowse";
             buttonBrowse.Size = new Size(230, 46);
@@ -396,11 +397,12 @@
             // 
             // labelQualityValue
             // 
+            labelQualityValue.AutoSize = true;
             labelQualityValue.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            labelQualityValue.Location = new Point(1340, 494);
+            labelQualityValue.Location = new Point(1344, 494);
             labelQualityValue.Margin = new Padding(6, 0, 6, 0);
             labelQualityValue.Name = "labelQualityValue";
-            labelQualityValue.Size = new Size(80, 38);
+            labelQualityValue.Size = new Size(72, 37);
             labelQualityValue.TabIndex = 18;
             labelQualityValue.Text = "70%";
             labelQualityValue.TextAlign = ContentAlignment.MiddleLeft;
@@ -408,7 +410,7 @@
             // buttonOpenFolder
             // 
             buttonOpenFolder.Font = new Font("Segoe UI", 10F);
-            buttonOpenFolder.Location = new Point(1192, 618);
+            buttonOpenFolder.Location = new Point(661, 615);
             buttonOpenFolder.Margin = new Padding(6);
             buttonOpenFolder.Name = "buttonOpenFolder";
             buttonOpenFolder.Size = new Size(230, 46);
@@ -485,9 +487,20 @@
             labelStatus.Font = new Font("Segoe UI", 10F);
             labelStatus.Location = new Point(45, 747);
             labelStatus.Name = "labelStatus";
-            labelStatus.Size = new Size(107, 37);
+            labelStatus.Size = new Size(95, 37);
             labelStatus.TabIndex = 24;
             labelStatus.Text = "Ready.";
+            // 
+            // buttonWatermark
+            // 
+            buttonWatermark.Font = new Font("Segoe UI", 10F);
+            buttonWatermark.Location = new Point(1192, 615);
+            buttonWatermark.Name = "buttonWatermark";
+            buttonWatermark.Size = new Size(230, 46);
+            buttonWatermark.TabIndex = 26;
+            buttonWatermark.Text = "Watermark";
+            buttonWatermark.UseVisualStyleBackColor = true;
+            buttonWatermark.Click += ButtonWatermark_Click;
             // 
             // Form1
             // 
@@ -495,6 +508,7 @@
             AutoScaleMode = AutoScaleMode.Dpi;
             BackColor = Color.White;
             ClientSize = new Size(1480, 828);
+            Controls.Add(buttonWatermark);
             Controls.Add(labelStatus);
             Controls.Add(buttonUndo);
             Controls.Add(labelStartWithWindows);
@@ -589,5 +603,6 @@
         private Label labelStartWithWindows;
         private Button buttonUndo;
         private Label labelStatus;
+        private Button buttonWatermark;
     }
 }
