@@ -1,4 +1,4 @@
-﻿"DeployProject"
+"DeployProject"
 {
 "VSVersion" = "3:800"
 "ProjectType" = "8:{978C614F-708E-4E1A-B201-565925725DBA}"
@@ -209,7 +209,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Capillume"
         "ProductCode" = "8:{AC82AF6F-EC87-43C1-A7AE-C41D8573C5F4}"
-        "PackageCode" = "8:{E341FEC9-2978-40CF-8BBB-6D2CFB8960AC}"
+        "PackageCode" = "8:{A13090B4-7355-4825-B8D5-BEDC68060022}"
         "UpgradeCode" = "8:{1CDF4591-8AFD-456F-8694-6CCA9E477538}"
         "AspNetVersion" = "8:"
         "RestartWWWService" = "11:FALSE"
@@ -232,7 +232,7 @@
         "UseSystemSearchPath" = "11:TRUE"
         "TargetPlatform" = "3:1"
         "PreBuildEvent" = "8:"
-        "PostBuildEvent" = "8:rename \"$(BuiltOuputPath)\\CapillumeInstaller.msi\" \"$(BuiltOuputPath)\\CapillumeInstaller1_$(ProductVersion).msi\""
+        "PostBuildEvent" = "8:powershell -NoProfile -ExecutionPolicy Bypass -File \"$(ProjectDir)RenameInstaller.ps1\" -InstallerPath \"$(BuiltOuputPath)\""
         "RunPostBuildEvent" = "3:0"
         }
         "Registry"
