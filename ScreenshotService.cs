@@ -5,6 +5,18 @@ using SkiaSharp;
 
 namespace Capillume
 {
+    public class ScreenshotCapturedEventArgs : EventArgs
+    {
+        public string FilePath { get; }
+        public long ElapsedMilliseconds { get; }
+
+        public ScreenshotCapturedEventArgs(string filePath, long elapsedMs)
+        {
+            FilePath = filePath;
+            ElapsedMilliseconds = elapsedMs;
+        }
+    }
+
     public class ScreenshotService : IDisposable
     {
         private System.Windows.Forms.Timer? _timer;
@@ -26,7 +38,8 @@ namespace Capillume
             public int Bottom;
         }
 
-        public event EventHandler<string>? ScreenshotCaptured;
+        //public event EventHandler<string>? ScreenshotCaptured;
+        public event EventHandler<ScreenshotCapturedEventArgs>? ScreenshotCaptured;
         public event EventHandler<string>? ErrorOccurred;
 
         public ScreenshotService(AppSettings settings)
@@ -81,6 +94,8 @@ namespace Capillume
         {
             try
             {
+                var sw = System.Diagnostics.Stopwatch.StartNew();
+
                 if (!Directory.Exists(_settings.SaveFolder))
                 {
                     Directory.CreateDirectory(_settings.SaveFolder);
@@ -109,8 +124,9 @@ namespace Capillume
                     string filePath = Path.Combine(_settings.SaveFolder, GenerateFileName());
 
                     SaveScreenshot(screenshot, filePath);
-
-                    ScreenshotCaptured?.Invoke(this, filePath);
+                    sw.Stop();
+                    long elapsedMs = sw.ElapsedMilliseconds;
+                    ScreenshotCaptured?.Invoke(this, new ScreenshotCapturedEventArgs(filePath, sw.ElapsedMilliseconds));
                 }
                 finally
                 {

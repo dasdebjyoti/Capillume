@@ -3,6 +3,8 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0-windows</TargetFramework>
+    <!-- Added RuntimeIdentifiers for auto-publish. 2026-08-29. DjD -->
+    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -14,9 +16,9 @@
     <PackageTags>screenshot; screen-shot; screen-capture; productivity</PackageTags>
     <PackageIcon>icon.png</PackageIcon>
     <Title>Capillume Screenshot Automation</Title>
-    <AssemblyVersion>1.1.0.0</AssemblyVersion>
-    <FileVersion>1.1.0.0</FileVersion>
-    <Version>1.1.0</Version>
+    <AssemblyVersion>1.3.0.0</AssemblyVersion>
+    <FileVersion>1.3.0.0</FileVersion>
+    <Version>1.3.0</Version>
 
     <!-- Uncomment to force SkiaSharp to be bundled inside the published application exe -->
     <!-- Added DjD.20260823 -->
@@ -62,4 +64,18 @@
     </None>
   </ItemGroup>
 
+  <!-- Added for auto-publish. 2026-08-29. DjD -->
+  <Target Name="PublishForInstaller"
+          AfterTargets="Build"
+          Condition="'$(Configuration)' == 'Release' and '$(PublishForInstallerRunning)' != 'true'">
+
+    <MSBuild Projects="$(MSBuildProjectFullPath)"
+             Targets="Publish"
+             Properties="Configuration=$(Configuration);
+                         RuntimeIdentifier=win-x64;
+                         SelfContained=true;
+                         PublishSingleFile=true;
+                         PublishDir=$(MSBuildProjectDirectory)\bin\$(Configuration)\$(TargetFramework)\publish\win-x64\;
+                         PublishForInstallerRunning=true" />
+  </Target>
 </Project>

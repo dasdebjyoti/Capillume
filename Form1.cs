@@ -145,20 +145,22 @@ namespace Capillume
             }
         }
 
-        private void OnScreenshotCaptured(object? sender, string filePath)
+        private void OnScreenshotCaptured(object? sender, ScreenshotCapturedEventArgs e)
         {
             if (InvokeRequired)
             {
-                Invoke(() => OnScreenshotCaptured(sender, filePath));
+                Invoke(() => OnScreenshotCaptured(sender, e));
                 return;
             }
 
-            string fileName = Path.GetFileName(filePath);
+            string fileName = Path.GetFileName(e.FilePath);
+            long ms = e.ElapsedMilliseconds;
+            double seconds = ms / 1000.0;
 
             // Show notification
             if (_settings.ShowNotifications)
             {
-                notifyIcon.ShowBalloonTip(2000, "Screenshot Captured",
+                notifyIcon.ShowBalloonTip(2000, $"Screenshot saved ({seconds:F2} sec)",
                     $"{fileName}", ToolTipIcon.Info);
                 // $"Saved to: {fileName}", ToolTipIcon.Info);
             }
