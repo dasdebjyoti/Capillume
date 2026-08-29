@@ -72,7 +72,7 @@
             groupBoxUseText.Location = new Point(27, 31);
             groupBoxUseText.Name = "groupBoxUseText";
             groupBoxUseText.Size = new Size(680, 309);
-            groupBoxUseText.TabIndex = 30;
+            groupBoxUseText.TabIndex = 0;
             groupBoxUseText.TabStop = false;
             groupBoxUseText.Text = "             Use Text";
             // 
@@ -85,7 +85,7 @@
             toggleUseText.OffColor = Color.FromArgb(200, 200, 200);
             toggleUseText.OnColor = Color.FromArgb(0, 120, 212);
             toggleUseText.Size = new Size(75, 30);
-            toggleUseText.TabIndex = 28;
+            toggleUseText.TabIndex = 0;
             toggleUseText.ThumbColor = Color.White;
             toggleUseText.CheckedChanged += ToggleUseText_CheckedChanged;
             // 
@@ -95,7 +95,7 @@
             labelWatermarkText.Location = new Point(36, 83);
             labelWatermarkText.Name = "labelWatermarkText";
             labelWatermarkText.Size = new Size(63, 37);
-            labelWatermarkText.TabIndex = 32;
+            labelWatermarkText.TabIndex = 1;
             labelWatermarkText.Text = "Te&xt";
             // 
             // labelFontDescription
@@ -105,7 +105,7 @@
             labelFontDescription.Location = new Point(204, 161);
             labelFontDescription.Name = "labelFontDescription";
             labelFontDescription.Size = new Size(90, 37);
-            labelFontDescription.TabIndex = 31;
+            labelFontDescription.TabIndex = 4;
             labelFontDescription.Text = "label1";
             // 
             // buttonChooseFont
@@ -113,7 +113,7 @@
             buttonChooseFont.Location = new Point(36, 156);
             buttonChooseFont.Name = "buttonChooseFont";
             buttonChooseFont.Size = new Size(150, 46);
-            buttonChooseFont.TabIndex = 30;
+            buttonChooseFont.TabIndex = 3;
             buttonChooseFont.Text = "&Font";
             buttonChooseFont.UseVisualStyleBackColor = true;
             buttonChooseFont.Click += ButtonChooseFont_Click;
@@ -123,7 +123,7 @@
             textBoxWatermarkText.Location = new Point(149, 83);
             textBoxWatermarkText.Name = "textBoxWatermarkText";
             textBoxWatermarkText.Size = new Size(516, 43);
-            textBoxWatermarkText.TabIndex = 29;
+            textBoxWatermarkText.TabIndex = 2;
             // 
             // groupBoxUseImage
             // 
@@ -139,7 +139,7 @@
             groupBoxUseImage.Location = new Point(727, 31);
             groupBoxUseImage.Name = "groupBoxUseImage";
             groupBoxUseImage.Size = new Size(680, 309);
-            groupBoxUseImage.TabIndex = 31;
+            groupBoxUseImage.TabIndex = 1;
             groupBoxUseImage.TabStop = false;
             groupBoxUseImage.Text = "             Use Image";
             // 
@@ -160,7 +160,7 @@
             labelWatermarkImageScaleValue.Location = new Point(339, 156);
             labelWatermarkImageScaleValue.Name = "labelWatermarkImageScaleValue";
             labelWatermarkImageScaleValue.Size = new Size(72, 37);
-            labelWatermarkImageScaleValue.TabIndex = 37;
+            labelWatermarkImageScaleValue.TabIndex = 6;
             labelWatermarkImageScaleValue.Text = "50%";
             // 
             // labelWatermarkImageScale
@@ -169,7 +169,7 @@
             labelWatermarkImageScale.Location = new Point(37, 156);
             labelWatermarkImageScale.Name = "labelWatermarkImageScale";
             labelWatermarkImageScale.Size = new Size(78, 37);
-            labelWatermarkImageScale.TabIndex = 36;
+            labelWatermarkImageScale.TabIndex = 4;
             labelWatermarkImageScale.Text = "S&cale";
             // 
             // trackBarWatermarkImageScale
@@ -179,7 +179,7 @@
             trackBarWatermarkImageScale.Minimum = 1;
             trackBarWatermarkImageScale.Name = "trackBarWatermarkImageScale";
             trackBarWatermarkImageScale.Size = new Size(180, 90);
-            trackBarWatermarkImageScale.TabIndex = 35;
+            trackBarWatermarkImageScale.TabIndex = 5;
             trackBarWatermarkImageScale.TickFrequency = 10;
             trackBarWatermarkImageScale.Value = 50;
             trackBarWatermarkImageScale.Scroll += TrackBarWatermarkImageScale_Scroll;
@@ -191,7 +191,7 @@
             labelWatermarkImage.Location = new Point(37, 83);
             labelWatermarkImage.Name = "labelWatermarkImage";
             labelWatermarkImage.Size = new Size(91, 37);
-            labelWatermarkImage.TabIndex = 34;
+            labelWatermarkImage.TabIndex = 1;
             labelWatermarkImage.Text = "Image";
             // 
             // buttonBrowseWatermarkImage
@@ -199,7 +199,7 @@
             buttonBrowseWatermarkImage.Location = new Point(513, 81);
             buttonBrowseWatermarkImage.Name = "buttonBrowseWatermarkImage";
             buttonBrowseWatermarkImage.Size = new Size(150, 46);
-            buttonBrowseWatermarkImage.TabIndex = 33;
+            buttonBrowseWatermarkImage.TabIndex = 3;
             buttonBrowseWatermarkImage.Text = "&Browse";
             buttonBrowseWatermarkImage.UseVisualStyleBackColor = true;
             buttonBrowseWatermarkImage.Click += ButtonBrowseWatermarkImage_Click;
@@ -209,7 +209,7 @@
             textBoxWatermarkImagePath.Location = new Point(152, 83);
             textBoxWatermarkImagePath.Name = "textBoxWatermarkImagePath";
             textBoxWatermarkImagePath.Size = new Size(355, 43);
-            textBoxWatermarkImagePath.TabIndex = 32;
+            textBoxWatermarkImagePath.TabIndex = 2;
             textBoxWatermarkImagePath.TextChanged += TextBoxWatermarkImagePath_TextChanged;
             // 
             // toggleUseImage
@@ -221,7 +221,7 @@
             toggleUseImage.OffColor = Color.FromArgb(200, 200, 200);
             toggleUseImage.OnColor = Color.FromArgb(0, 120, 212);
             toggleUseImage.Size = new Size(75, 30);
-            toggleUseImage.TabIndex = 31;
+            toggleUseImage.TabIndex = 0;
             toggleUseImage.ThumbColor = Color.White;
             toggleUseImage.CheckedChanged += ToggleUseImage_CheckedChanged;
             // 
@@ -233,8 +233,8 @@
             labelOpacityValue.Margin = new Padding(6, 0, 6, 0);
             labelOpacityValue.Name = "labelOpacityValue";
             labelOpacityValue.Size = new Size(72, 37);
-            labelOpacityValue.TabIndex = 21;
-            labelOpacityValue.Text = "70%";
+            labelOpacityValue.TabIndex = 2;
+            labelOpacityValue.Text = "50%";
             labelOpacityValue.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // labelOpacity
@@ -245,7 +245,7 @@
             labelOpacity.Margin = new Padding(6, 0, 6, 0);
             labelOpacity.Name = "labelOpacity";
             labelOpacity.Size = new Size(108, 37);
-            labelOpacity.TabIndex = 19;
+            labelOpacity.TabIndex = 0;
             labelOpacity.Text = "Opacity";
             // 
             // trackBarOpacity
@@ -256,7 +256,7 @@
             trackBarOpacity.Minimum = 1;
             trackBarOpacity.Name = "trackBarOpacity";
             trackBarOpacity.Size = new Size(229, 90);
-            trackBarOpacity.TabIndex = 20;
+            trackBarOpacity.TabIndex = 1;
             trackBarOpacity.TickFrequency = 10;
             trackBarOpacity.Value = 50;
             trackBarOpacity.Scroll += TrackBarOpacity_Scroll;
@@ -269,7 +269,7 @@
             labelWatermarkPosition.Location = new Point(539, 61);
             labelWatermarkPosition.Name = "labelWatermarkPosition";
             labelWatermarkPosition.Size = new Size(112, 37);
-            labelWatermarkPosition.TabIndex = 23;
+            labelWatermarkPosition.TabIndex = 3;
             labelWatermarkPosition.Text = "Position";
             // 
             // comboBoxWatermarkPosition
@@ -281,7 +281,7 @@
             comboBoxWatermarkPosition.Location = new Point(672, 57);
             comboBoxWatermarkPosition.Name = "comboBoxWatermarkPosition";
             comboBoxWatermarkPosition.Size = new Size(242, 45);
-            comboBoxWatermarkPosition.TabIndex = 22;
+            comboBoxWatermarkPosition.TabIndex = 4;
             comboBoxWatermarkPosition.SelectedIndexChanged += ComboBoxWatermarkPosition_SelectedIndexChanged;
             // 
             // labelWatermarkRotation
@@ -291,7 +291,7 @@
             labelWatermarkRotation.Location = new Point(991, 61);
             labelWatermarkRotation.Name = "labelWatermarkRotation";
             labelWatermarkRotation.Size = new Size(118, 37);
-            labelWatermarkRotation.TabIndex = 25;
+            labelWatermarkRotation.TabIndex = 5;
             labelWatermarkRotation.Text = "Rotation";
             // 
             // comboBoxWatermarkRotation
@@ -303,7 +303,7 @@
             comboBoxWatermarkRotation.Location = new Point(1121, 57);
             comboBoxWatermarkRotation.Name = "comboBoxWatermarkRotation";
             comboBoxWatermarkRotation.Size = new Size(242, 45);
-            comboBoxWatermarkRotation.TabIndex = 24;
+            comboBoxWatermarkRotation.TabIndex = 6;
             comboBoxWatermarkRotation.SelectedIndexChanged += ComboBoxWatermarkRotation_SelectedIndexChanged;
             // 
             // buttonOk
@@ -317,7 +317,7 @@
             buttonOk.Margin = new Padding(6);
             buttonOk.Name = "buttonOk";
             buttonOk.Size = new Size(230, 70);
-            buttonOk.TabIndex = 27;
+            buttonOk.TabIndex = 4;
             buttonOk.Text = "OK";
             buttonOk.UseVisualStyleBackColor = false;
             buttonOk.Click += ButtonOk_Click;
@@ -328,7 +328,7 @@
             buttonCancel.Location = new Point(938, 535);
             buttonCancel.Name = "buttonCancel";
             buttonCancel.Size = new Size(230, 70);
-            buttonCancel.TabIndex = 28;
+            buttonCancel.TabIndex = 3;
             buttonCancel.Text = "Cancel";
             buttonCancel.UseVisualStyleBackColor = true;
             buttonCancel.Click += ButtonCancel_Click;
@@ -345,7 +345,7 @@
             groupBoxCommon.Location = new Point(27, 358);
             groupBoxCommon.Name = "groupBoxCommon";
             groupBoxCommon.Size = new Size(1380, 159);
-            groupBoxCommon.TabIndex = 32;
+            groupBoxCommon.TabIndex = 2;
             groupBoxCommon.TabStop = false;
             groupBoxCommon.Text = "Common Settings";
             // 

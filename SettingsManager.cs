@@ -15,6 +15,7 @@ namespace Capillume
         public const int WatermarkImageScaleMax = 100;
         public const int WatermarkImageScaleDefault = 50;
         public const string WatermarkPositionDefault = "Top Right";
+        public const string StatusReady = "Ready.";
     }
 
     public class AppSettings

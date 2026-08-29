@@ -498,7 +498,7 @@
             buttonWatermark.Name = "buttonWatermark";
             buttonWatermark.Size = new Size(230, 46);
             buttonWatermark.TabIndex = 26;
-            buttonWatermark.Text = "Watermark";
+            buttonWatermark.Text = "&Watermark";
             buttonWatermark.UseVisualStyleBackColor = true;
             buttonWatermark.Click += ButtonWatermark_Click;
             // 

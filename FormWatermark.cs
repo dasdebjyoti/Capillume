@@ -215,6 +215,13 @@ namespace Capillume
             buttonBrowseWatermarkImage.Enabled = toggleUseImage.Checked;
             trackBarWatermarkImageScale.Enabled = toggleUseImage.Checked;
             labelWatermarkImageScaleValue.Enabled = toggleUseImage.Checked;
+            labelOpacityValue.Enabled = toggleUseText.Checked || toggleUseImage.Checked;
+            labelOpacityValue.Enabled = toggleUseText.Checked || toggleUseImage.Checked;
+            trackBarOpacity.Enabled = toggleUseText.Checked || toggleUseImage.Checked;
+            labelWatermarkPosition.Enabled = toggleUseText.Checked || toggleUseImage.Checked;
+            comboBoxWatermarkPosition.Enabled = toggleUseText.Checked || toggleUseImage.Checked;
+            labelWatermarkRotation.Enabled = toggleUseText.Checked || toggleUseImage.Checked;
+            comboBoxWatermarkRotation.Enabled = toggleUseText.Checked || toggleUseImage.Checked;
         }
 
         /// <summary>

@@ -114,7 +114,6 @@ namespace Capillume
             this.labelTitle.Text = $"{Application.ProductName}";
 
             toggleSwitchEnabled.Checked = _settings.IsScreenshotEnabled;
-            UpdateEnabledStatus();
 
             toggleSwitchNotify.Checked = _settings.ShowNotifications;
             toggleSwitchStartWithWindows.Checked = _settings.StartWithWindows;
@@ -129,9 +128,9 @@ namespace Capillume
 
             // Update quality control visibility
             UpdateQualityControlsVisibility();
-
+            UpdateEnabledStatus();
             UpdateSaveButtonState();
-            labelStatus.Text = "Ready.";
+            labelStatus.Text = Constants.StatusReady;
         }
 
         private void InitializeScreenshotService()
@@ -188,6 +187,21 @@ namespace Capillume
                 labelEnabledStatus.Text = "OFF";
                 labelEnabledStatus.ForeColor = Color.Gray;
             }
+
+            toggleSwitchNotify.Enabled = toggleSwitchEnabled.Checked;
+            toggleSwitchStartWithWindows.Enabled = toggleSwitchEnabled.Checked;
+            labelCaptureMode.Enabled = toggleSwitchEnabled.Checked;
+            comboBoxCaptureMode.Enabled = toggleSwitchEnabled.Checked;
+            labelInterval.Enabled = toggleSwitchEnabled.Checked;
+            numericUpDownInterval.Enabled = toggleSwitchEnabled.Checked;
+            labelFileFormat.Enabled = toggleSwitchEnabled.Checked;
+            comboBoxFormat.Enabled = toggleSwitchEnabled.Checked;
+            labelQuality.Enabled = toggleSwitchEnabled.Checked;
+            trackBarQuality.Enabled = toggleSwitchEnabled.Checked;
+            labelSaveFolder.Enabled = toggleSwitchEnabled.Checked;
+            textBoxFolder.Enabled = toggleSwitchEnabled.Checked;
+            buttonBrowse.Enabled = toggleSwitchEnabled.Checked;
+            buttonWatermark.Enabled = toggleSwitchEnabled.Checked;
         }
 
         private void ToggleSwitchEnabled_CheckedChanged(object? sender, EventArgs e)
@@ -377,7 +391,7 @@ namespace Capillume
             }
             else
             {
-                labelStatus.Text = "Ready.";
+                labelStatus.Text = Constants.StatusReady;
             }
         }
 
