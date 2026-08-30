@@ -197,9 +197,9 @@
             labelSubtitle.Location = new Point(180, 112);
             labelSubtitle.Margin = new Padding(6, 0, 6, 0);
             labelSubtitle.Name = "labelSubtitle";
-            labelSubtitle.Size = new Size(203, 32);
+            labelSubtitle.Size = new Size(206, 32);
             labelSubtitle.TabIndex = 1;
-            labelSubtitle.Text = "Settings • v1.1.0.0";
+            labelSubtitle.Text = "Settings • v1.X.X.X";
             // 
             // labelEnableScreenshots
             // 

@@ -1,4 +1,5 @@
 using System.Reflection;
+using Microsoft.Win32;
 
 namespace Capillume
 {
@@ -10,6 +11,9 @@ namespace Capillume
         private bool WatermarkSettingsChanged = false;
         private Icon? _appIcon;
         private bool _isStartedWithWindows;
+        private bool _isSessionLocked;
+        private bool _isSuspended;
+        private bool _isExiting;
 
         private bool _isUpdatingUi;
 
@@ -20,11 +24,19 @@ namespace Capillume
             _settings = SettingsManager.LoadSettings();
             InitializeUI();
             InitializeScreenshotService();
+            SystemEvents.SessionSwitch += SystemEvents_SessionSwitch;
+            SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
+            SystemEvents.SessionEnding += SystemEvents_SessionEnding;
         }
 
         private void Form1_FormClosing(object? sender, FormClosingEventArgs e)
         {
-            if (HasUnsavedChanges())
+            if (_isExiting)
+            {
+                UnsubscribeSystemEvents();
+            }
+
+            if (!_isExiting && HasUnsavedChanges())
             {
                 DialogResult result = MessageBox.Show(
                     "There are unsaved settings changes. Do you want to save them?",
@@ -51,13 +63,88 @@ namespace Capillume
                 }
             }
             
-            if (e.CloseReason == CloseReason.UserClosing)
+            if (!_isExiting && e.CloseReason == CloseReason.UserClosing)
             {
                 e.Cancel = true;
                 Hide();
                 notifyIcon.ShowBalloonTip(2000, "Capillume",
                     "Application minimized to system tray. Right-click the icon to access options.",
                     ToolTipIcon.Info);
+            }
+
+            if (_isExiting)
+            {
+                _screenshotService?.Stop();
+            }
+        }
+
+        private void UnsubscribeSystemEvents()
+        {
+            SystemEvents.SessionSwitch -= SystemEvents_SessionSwitch;
+            SystemEvents.PowerModeChanged -= SystemEvents_PowerModeChanged;
+            SystemEvents.SessionEnding -= SystemEvents_SessionEnding;
+        }
+
+        private void SystemEvents_SessionSwitch(object? sender, SessionSwitchEventArgs e)
+        {
+            switch (e.Reason)
+            {
+                case SessionSwitchReason.SessionLock:
+                    _isSessionLocked = true;
+                    UpdateLifecyclePauseState();
+                    break;
+                case SessionSwitchReason.SessionUnlock:
+                    _isSessionLocked = false;
+                    UpdateLifecyclePauseState();
+                    break;
+            }
+        }
+
+        private void SystemEvents_PowerModeChanged(object? sender, PowerModeChangedEventArgs e)
+        {
+            if (e.Mode == PowerModes.Suspend)
+            {
+                _isSuspended = true;
+                UpdateLifecyclePauseState();
+            }
+            else if (e.Mode == PowerModes.Resume)
+            {
+                _isSuspended = false;
+                UpdateLifecyclePauseState();
+            }
+        }
+
+        private void UpdateLifecyclePauseState()
+        {
+            if (_isSessionLocked || _isSuspended)
+            {
+                _screenshotService?.Pause();
+            }
+            else
+            {
+                _screenshotService?.Resume();
+            }
+        }
+
+        private void SystemEvents_SessionEnding(object? sender, SessionEndingEventArgs e)
+        {
+            _isExiting = true;
+            _screenshotService?.Stop();
+
+            try
+            {
+                if (IsHandleCreated)
+                {
+                    BeginInvoke(Application.Exit);
+                }
+                else
+                {
+                    Application.Exit();
+                }
+            }
+            catch (InvalidOperationException)
+            {
+                Application.Exit();
             }
         }
 
@@ -332,6 +419,7 @@ namespace Capillume
 
         private void ExitToolStripMenuItem_Click(object? sender, EventArgs e)
         {
+            _isExiting = true;
             Application.Exit();
         }
 

@@ -22,6 +22,7 @@ namespace Capillume
         private System.Windows.Forms.Timer? _timer;
         private AppSettings _settings;
         private bool _disposed;
+        private bool _isPaused;
 
         [DllImport("user32.dll")]
         private static extern IntPtr GetForegroundWindow();
@@ -54,6 +55,8 @@ namespace Capillume
                 Stop();
             }
 
+            _isPaused = false;
+
             _timer = new System.Windows.Forms.Timer
             {
                 Interval = _settings.IntervalMinutes * 60 * 1000
@@ -77,6 +80,35 @@ namespace Capillume
                 _timer.Dispose();
                 _timer = null;
             }
+
+            _isPaused = false;
+        }
+
+        public void Pause()
+        {
+            if (_timer == null || _isPaused)
+            {
+                return;
+            }
+
+            _isPaused = true;
+            _timer.Stop();
+        }
+
+        public void Resume()
+        {
+            if (_timer == null || !_isPaused)
+            {
+                return;
+            }
+
+            _isPaused = false;
+            _timer.Start();
+
+            if (_settings.IsScreenshotEnabled)
+            {
+                CaptureScreenshot();
+            }
         }
 
         public void UpdateSettings(AppSettings settings)
@@ -87,11 +119,16 @@ namespace Capillume
 
         private void OnTimerTick(object? sender, EventArgs e)
         {
-            if (_settings.IsScreenshotEnabled) CaptureScreenshot();
+            if (!_isPaused && _settings.IsScreenshotEnabled) CaptureScreenshot();
         }
 
         public void CaptureScreenshot()
         {
+            if (_isPaused)
+            {
+                return;
+            }
+
             try
             {
                 var sw = System.Diagnostics.Stopwatch.StartNew();
