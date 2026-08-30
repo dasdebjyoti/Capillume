@@ -64,6 +64,7 @@
     </None>
     <None Update="LICENSE">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <TargetPath>LICENSE.txt</TargetPath>
     </None>
     <None Update="README_USER.txt">
@@ -77,5 +78,16 @@
   <Target Name="PublishForInstaller" AfterTargets="Build" Condition="'$(Configuration)' == 'Release' and '$(PublishForInstallerRunning)' != 'true'">
 
     <MSBuild Projects="$(MSBuildProjectFullPath)" Targets="Publish" Properties="Configuration=$(Configuration);&#xD;&#xA;                         RuntimeIdentifier=win-x64;&#xD;&#xA;                         SelfContained=true;&#xD;&#xA;                         PublishSingleFile=true;&#xD;&#xA;                         PublishDir=$(MSBuildProjectDirectory)\bin\$(Configuration)\$(TargetFramework)\publish\win-x64\;&#xD;&#xA;                         PublishForInstallerRunning=true" />
+  </Target>
+
+  <!-- Explicit post-publish copy target.  -->
+  <!-- CopyToPublishDirectory metadata used above alone was not reliable with the custom single-file publish target -->
+  <Target Name="CopyInstallerDocumentation" AfterTargets="Publish" Condition="'$(PublishForInstallerRunning)' == 'true'">
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\LICENSE"
+          DestinationFiles="$(PublishDir)LICENSE.txt"
+          SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\README_USER.txt"
+          DestinationFiles="$(PublishDir)README.txt"
+          SkipUnchangedFiles="true" />
   </Target>
 </Project>
