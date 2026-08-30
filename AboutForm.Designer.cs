@@ -84,9 +84,9 @@ namespace Capillume
             labelCopyright.Location = new Point(60, 560);
             labelCopyright.Margin = new Padding(6, 0, 6, 0);
             labelCopyright.Name = "labelCopyright";
-            labelCopyright.Size = new Size(417, 32);
+            labelCopyright.Size = new Size(358, 32);
             labelCopyright.TabIndex = 2;
-            labelCopyright.Text = "© 2026 Capillume. All rights reserved.";
+            labelCopyright.Text = "© 2026 Capillume - MIT License";
             // 
             // linkLabelGitHub
             // 

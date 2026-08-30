@@ -62,20 +62,15 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
+    <None Update="LICENSE">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>LICENSE.txt</TargetPath>
+    </None>
   </ItemGroup>
 
   <!-- Added for auto-publish. 2026-08-29. DjD -->
-  <Target Name="PublishForInstaller"
-          AfterTargets="Build"
-          Condition="'$(Configuration)' == 'Release' and '$(PublishForInstallerRunning)' != 'true'">
+  <Target Name="PublishForInstaller" AfterTargets="Build" Condition="'$(Configuration)' == 'Release' and '$(PublishForInstallerRunning)' != 'true'">
 
-    <MSBuild Projects="$(MSBuildProjectFullPath)"
-             Targets="Publish"
-             Properties="Configuration=$(Configuration);
-                         RuntimeIdentifier=win-x64;
-                         SelfContained=true;
-                         PublishSingleFile=true;
-                         PublishDir=$(MSBuildProjectDirectory)\bin\$(Configuration)\$(TargetFramework)\publish\win-x64\;
-                         PublishForInstallerRunning=true" />
+    <MSBuild Projects="$(MSBuildProjectFullPath)" Targets="Publish" Properties="Configuration=$(Configuration);&#xD;&#xA;                         RuntimeIdentifier=win-x64;&#xD;&#xA;                         SelfContained=true;&#xD;&#xA;                         PublishSingleFile=true;&#xD;&#xA;                         PublishDir=$(MSBuildProjectDirectory)\bin\$(Configuration)\$(TargetFramework)\publish\win-x64\;&#xD;&#xA;                         PublishForInstallerRunning=true" />
   </Target>
 </Project>
