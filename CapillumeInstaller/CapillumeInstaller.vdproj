@@ -27,6 +27,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_98C05E3F7E70430E9D1AA63559BDC3CF"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_F57F8904D9574841AFDADB2516659FBB"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -142,6 +148,26 @@
             {
             "SourcePath" = "8:..\\bin\\Release\\net10.0-windows\\publish\\win-x64\\Capillume.exe"
             "TargetName" = "8:Capillume.exe"
+            "Tag" = "8:"
+            "Folder" = "8:_40217565DF2D462D8EC66BC447251137"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_98C05E3F7E70430E9D1AA63559BDC3CF"
+            {
+            "SourcePath" = "8:..\\bin\\Release\\net10.0-windows\\publish\\win-x64\\README.txt"
+            "TargetName" = "8:README.txt"
             "Tag" = "8:"
             "Folder" = "8:_40217565DF2D462D8EC66BC447251137"
             "Condition" = "8:"

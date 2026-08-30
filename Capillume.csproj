@@ -66,6 +66,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>LICENSE.txt</TargetPath>
     </None>
+    <None Update="README_USER.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <TargetPath>README.txt</TargetPath>
+    </None>
   </ItemGroup>
 
   <!-- Added for auto-publish. 2026-08-29. DjD -->
