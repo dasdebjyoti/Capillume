@@ -74,6 +74,8 @@
             buttonUndo = new Button();
             labelStatus = new Label();
             buttonWatermark = new Button();
+            buttonAnnotation = new Button();
+            panel3 = new Panel();
             contextMenuStrip.SuspendLayout();
             panelHeader.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxLogo).BeginInit();
@@ -502,12 +504,33 @@
             buttonWatermark.UseVisualStyleBackColor = true;
             buttonWatermark.Click += ButtonWatermark_Click;
             // 
+            // buttonAnnotation
+            // 
+            buttonAnnotation.Font = new Font("Segoe UI", 10F);
+            buttonAnnotation.Location = new Point(936, 615);
+            buttonAnnotation.Name = "buttonAnnotation";
+            buttonAnnotation.Size = new Size(230, 46);
+            buttonAnnotation.TabIndex = 27;
+            buttonAnnotation.Text = "Anno&tation";
+            buttonAnnotation.UseVisualStyleBackColor = true;
+            buttonAnnotation.Click += ButtonAnnotation_Click;
+            // 
+            // panel3
+            // 
+            panel3.BorderStyle = BorderStyle.FixedSingle;
+            panel3.Location = new Point(911, 615);
+            panel3.Name = "panel3";
+            panel3.Size = new Size(1, 50);
+            panel3.TabIndex = 28;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(192F, 192F);
             AutoScaleMode = AutoScaleMode.Dpi;
             BackColor = Color.White;
             ClientSize = new Size(1480, 828);
+            Controls.Add(panel3);
+            Controls.Add(buttonAnnotation);
             Controls.Add(buttonWatermark);
             Controls.Add(labelStatus);
             Controls.Add(buttonUndo);
@@ -604,5 +627,7 @@
         private Button buttonUndo;
         private Label labelStatus;
         private Button buttonWatermark;
+        private Button buttonAnnotation;
+        private Panel panel3;
     }
 }

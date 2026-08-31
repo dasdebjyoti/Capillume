@@ -35,7 +35,7 @@ namespace Capillume
                 WatermarkImageScale = settings.WatermarkImageScale,
                 WatermarkOpacity = settings.WatermarkOpacity,
                 WatermarkPosition = settings.WatermarkPosition,
-                WatermarkRotation = settings.WatermarkRotation
+                WatermarkRotation = settings.WatermarkRotation,
             };
             InitializeComponent();
             InitializeUI();
@@ -56,13 +56,6 @@ namespace Capillume
 
         private void ButtonOk_Click(object sender, EventArgs e)
         {
-            /*if (!toggleUseText.Checked && !toggleUseImage.Checked)
-            {
-                MessageBox.Show("Select text, image, or both.", "Watermark", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                DialogResult = DialogResult.None;
-                return;
-            }*/
-
             if (toggleUseText.Checked && (
                 string.IsNullOrWhiteSpace(textBoxWatermarkText.Text) || textBoxWatermarkText.Text == PlaceholderText))
             {
@@ -101,7 +94,7 @@ namespace Capillume
 
         private void ButtonChooseFont_Click(object sender, EventArgs e)
         {
-            using var dialog = new FontDialog { Font = _font, ShowColor = false };
+            using var dialog = new FontDialog { Font = _font, ShowColor = false, AllowVectorFonts = true, FontMustExist = true };
             if (dialog.ShowDialog(this) == DialogResult.OK)
             {
                 _font.Dispose();
@@ -137,11 +130,6 @@ namespace Capillume
             UpdateSaveButtonState();
         }
 
-        private void TrackBarWatermarkImageScale_Scroll(object sender, EventArgs e)
-        {
-
-        }
-
         private void TrackBarWatermarkImageScale_ValueChanged(object sender, EventArgs e)
         {
             labelWatermarkImageScaleValue.Text = $"{trackBarWatermarkImageScale.Value}%";
@@ -158,6 +146,49 @@ namespace Capillume
             UpdateControlState();
             UpdateSaveButtonState();
         }
+
+        private void TextBoxWatermarkImagePath_TextChanged(object sender, EventArgs e)
+        {
+            Image? image = null;
+
+            try
+            {
+                if (File.Exists(textBoxWatermarkImagePath.Text))
+                {
+                    using var loadedImage = Image.FromFile(textBoxWatermarkImagePath.Text);
+                    image = new Bitmap(loadedImage);
+                }
+            }
+            catch
+            {
+                image = null;
+            }
+
+            pictureBoxWatermarkImage.Image?.Dispose();
+
+            if (image != null)
+            {
+                pictureBoxWatermarkImage.Image = image;
+                return;
+            }
+
+            var invalidImage = new Bitmap(
+                Math.Max(1, pictureBoxWatermarkImage.ClientSize.Width),
+                Math.Max(1, pictureBoxWatermarkImage.ClientSize.Height));
+
+            using (var graphics = Graphics.FromImage(invalidImage))
+            using (var font = new Font("Segoe UI", 10F))
+            using (var brush = new SolidBrush(Color.Gray))
+            using (var format = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center })
+            {
+                graphics.Clear(Color.White);
+                var bounds = new RectangleF(0, 0, invalidImage.Width, invalidImage.Height);
+                graphics.DrawString("Invalid image", font, brush, bounds, format);
+            }
+
+            pictureBoxWatermarkImage.Image = invalidImage;
+        }
+
         private void InitializeUI()
         {
             var assembly = Assembly.GetExecutingAssembly();
@@ -292,48 +323,5 @@ namespace Capillume
                 UpdateSaveButtonState();
             };
         }
-
-        private void TextBoxWatermarkImagePath_TextChanged(object sender, EventArgs e)
-        {
-            Image? image = null;
-
-            try
-            {
-                if (File.Exists(textBoxWatermarkImagePath.Text))
-                {
-                    using var loadedImage = Image.FromFile(textBoxWatermarkImagePath.Text);
-                    image = new Bitmap(loadedImage);
-                }
-            }
-            catch
-            {
-                image = null;
-            }
-
-            pictureBoxWatermarkImage.Image?.Dispose();
-
-            if (image != null)
-            {
-                pictureBoxWatermarkImage.Image = image;
-                return;
-            }
-
-            var invalidImage = new Bitmap(
-                Math.Max(1, pictureBoxWatermarkImage.ClientSize.Width),
-                Math.Max(1, pictureBoxWatermarkImage.ClientSize.Height));
-
-            using (var graphics = Graphics.FromImage(invalidImage))
-            using (var font = new Font("Segoe UI", 10F))
-            using (var brush = new SolidBrush(Color.Gray))
-            using (var format = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center })
-            {
-                graphics.Clear(Color.White);
-                var bounds = new RectangleF(0, 0, invalidImage.Width, invalidImage.Height);
-                graphics.DrawString("Invalid image", font, brush, bounds, format);
-            }
-
-            pictureBoxWatermarkImage.Image = invalidImage;
-        }
-
     }
 }

@@ -7,8 +7,8 @@ namespace Capillume
     {
         private ScreenshotService? _screenshotService;
         private AppSettings _settings;
-
         private bool WatermarkSettingsChanged = false;
+        private bool AnnotationSettingsChanged = false;
         private Icon? _appIcon;
         private bool _isStartedWithWindows;
         private bool _isSessionLocked;
@@ -62,7 +62,7 @@ namespace Capillume
                     return;
                 }
             }
-            
+
             if (!_isExiting && e.CloseReason == CloseReason.UserClosing)
             {
                 e.Cancel = true;
@@ -290,6 +290,7 @@ namespace Capillume
             labelSaveFolder.Enabled = toggleSwitchEnabled.Checked;
             textBoxFolder.Enabled = toggleSwitchEnabled.Checked;
             buttonBrowse.Enabled = toggleSwitchEnabled.Checked;
+            buttonAnnotation.Enabled = toggleSwitchEnabled.Checked;
             buttonWatermark.Enabled = toggleSwitchEnabled.Checked;
         }
 
@@ -392,6 +393,21 @@ namespace Capillume
             UpdateSaveButtonState();
         }
 
+        private void ButtonAnnotation_Click(object sender, EventArgs e)
+        {
+            using var annotationForm = new FormAnnotation(_settings.Annotation);
+            if (annotationForm.ShowDialog(this) != DialogResult.OK)
+            {
+                return;
+            }
+
+            _settings.Annotation = annotationForm._settings;
+            AnnotationSettingsChanged = true;
+            //SettingsManager.SaveSettings(_settings);
+            //_screenshotService?.UpdateSettings(_settings);
+            //labelStatus.Text = "Watermark settings saved.";
+            UpdateSaveButtonState();
+        }
         private void UpdateQualityControlsVisibility()
         {
             string? format = comboBoxFormat.SelectedItem?.ToString();
@@ -457,7 +473,8 @@ namespace Capillume
                 || !string.Equals(textBoxFolder.Text, _settings.SaveFolder, StringComparison.OrdinalIgnoreCase)
                 || !string.Equals(comboBoxFormat.SelectedItem?.ToString(), _settings.ImageFormat, StringComparison.OrdinalIgnoreCase)
                 || trackBarQuality.Value != _settings.ImageQuality
-                || WatermarkSettingsChanged == true;
+                || WatermarkSettingsChanged == true
+                || AnnotationSettingsChanged == true;
         }
 
         /// <summary>
@@ -542,6 +559,7 @@ namespace Capillume
             SettingsManager.SaveSettings(_settings);
             SettingsManager.SetAutoStart(_settings.StartWithWindows);
             WatermarkSettingsChanged = false;
+            AnnotationSettingsChanged = false;
 
             _screenshotService?.UpdateSettings(_settings);
 
@@ -568,5 +586,6 @@ namespace Capillume
 
             return true;
         }
+
     }
 }

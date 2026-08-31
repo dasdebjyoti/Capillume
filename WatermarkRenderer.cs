@@ -1,29 +1,50 @@
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.Reflection;
 
 namespace Capillume
 {
     public static class WatermarkRenderer
     {
-        public static void Apply(Bitmap screenshot, WatermarkSettings settings)
+        public static void Apply(Bitmap screenshot, WatermarkSettings watermarkSettings, AnnotationSettings annotationSettings)
         {
-            if (!settings.Enabled || (!settings.UseText && !settings.UseImage))
+            bool drawWatermark = watermarkSettings.Enabled && (watermarkSettings.UseText || watermarkSettings.UseImage);
+            bool drawAnnotation = /*annotationSettings.Enabled &&*/ annotationSettings.UseAnnotation;
+            if (!drawWatermark && !drawAnnotation)
             {
                 return;
             }
 
-            using var font = new Font(settings.WatermarkTextFontFamily, settings.WatermarkTextFontSize, settings.WatermarkTextFontStyle);
-            using var sourceImage = settings.UseImage ? LoadImage(settings.WatermarkImagePath) : null;
-            using var measureGraphics = Graphics.FromImage(screenshot);
+            using var targetGraphics = Graphics.FromImage(screenshot);
+            targetGraphics.CompositingMode = CompositingMode.SourceOver;
 
+            if (drawWatermark)
+            {
+                DrawWatermark(targetGraphics, screenshot, watermarkSettings);
+            }
+
+            if (drawAnnotation)
+            {
+                DrawAnnotation(targetGraphics, screenshot, annotationSettings);
+            }
+        }
+
+        private static void DrawWatermark(Graphics targetGraphics, Bitmap screenshot, WatermarkSettings settings)
+        {
             const int padding = 16;
             const int gap = 12;
-            SizeF textSize = settings.UseText
-                ? measureGraphics.MeasureString(settings.WatermarkText, font)
+
+            using var sourceImage = settings.UseImage ? LoadImage(settings.WatermarkImagePath) : null;
+            using var font = settings.UseText
+                ? new Font(settings.WatermarkTextFontFamily, settings.WatermarkTextFontSize, settings.WatermarkTextFontStyle)
+                : null;
+
+            SizeF textSize = font is not null
+                ? targetGraphics.MeasureString(settings.WatermarkText, font)
                 : SizeF.Empty;
             Size imageSize = GetImageSize(sourceImage, screenshot.Size, settings.WatermarkImageScale);
             int width = (int)Math.Ceiling(Math.Max(textSize.Width, imageSize.Width)) + padding * 2;
-            int height = (int)Math.Ceiling(textSize.Height + (settings.UseText && settings.UseImage ? gap : 0) + imageSize.Height) + padding * 2;
+            int height = (int)Math.Ceiling(textSize.Height + (font is not null && sourceImage is not null ? gap : 0) + imageSize.Height) + padding * 2;
 
             using var watermark = new Bitmap(Math.Max(width, 1), Math.Max(height, 1), PixelFormat.Format32bppArgb);
             using (var graphics = Graphics.FromImage(watermark))
@@ -33,41 +54,22 @@ namespace Capillume
                 graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
 
                 int y = padding;
-                //if (settings.UseText)
-                //{
-                //    using var brush = new SolidBrush(Color.FromArgb(GetAlpha(settings.WatermarkOpacity), Color.White));
-                //    var textPoint = new PointF((watermark.Width - textSize.Width) / 2, y);
-                //    graphics.DrawString(settings.WatermarkText, font, brush, textPoint);
-                //    y += (int)Math.Ceiling(textSize.Height) + (settings.UseImage ? gap : 0);
-                //}
-
-                //if (settings.UseImage && sourceImage != null)
-                //{
-                //    using var attributes = new ImageAttributes();
-                //    var matrix = new ColorMatrix { Matrix33 = settings.WatermarkOpacity / 100f };
-                //    attributes.SetColorMatrix(matrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
-                //    var imageRect = new Rectangle((watermark.Width - imageSize.Width) / 2, y, imageSize.Width, imageSize.Height);
-                //    graphics.DrawImage(sourceImage, imageRect, 0, 0, sourceImage.Width, sourceImage.Height, GraphicsUnit.Pixel, attributes);
-                //}
-
-                if (settings.UseImage && sourceImage != null)
+                if (sourceImage is not null)
                 {
                     using var attributes = new ImageAttributes();
-                    var matrix = new ColorMatrix { Matrix33 = settings.WatermarkOpacity / 100f };
+                    var matrix = new ColorMatrix { Matrix33 = GetAlpha(settings.WatermarkOpacity) / 255f };
                     attributes.SetColorMatrix(matrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
                     var imageRect = new Rectangle((watermark.Width - imageSize.Width) / 2, y, imageSize.Width, imageSize.Height);
                     graphics.DrawImage(sourceImage, imageRect, 0, 0, sourceImage.Width, sourceImage.Height, GraphicsUnit.Pixel, attributes);
-                    y += (int)Math.Ceiling((float)imageSize.Height) + (settings.UseText ? gap : 0);
+                    y += imageSize.Height + (font is not null ? gap : 0);
                 }
 
-                if (settings.UseText)
+                if (font is not null)
                 {
                     using var brush = new SolidBrush(Color.FromArgb(GetAlpha(settings.WatermarkOpacity), Color.White));
                     var textPoint = new PointF((watermark.Width - textSize.Width) / 2, y);
                     graphics.DrawString(settings.WatermarkText, font, brush, textPoint);
-                    //y += (int)Math.Ceiling(textSize.Height) + (settings.UseImage ? gap : 0);
                 }
-
             }
 
             switch (settings.WatermarkRotation)
@@ -84,9 +86,71 @@ namespace Capillume
             }
 
             Point location = GetLocation(screenshot.Size, watermark.Size, settings.WatermarkPosition);
-            using var targetGraphics = Graphics.FromImage(screenshot);
-            targetGraphics.CompositingMode = CompositingMode.SourceOver;
             targetGraphics.DrawImageUnscaled(watermark, location);
+        }
+
+        private static void DrawAnnotation(Graphics graphics, Bitmap screenshot, AnnotationSettings settings)
+        {
+            if (string.IsNullOrWhiteSpace(settings.AnnotationFormat))
+            {
+                return;
+            }
+
+            string annotation = ResolveAnnotation(settings.AnnotationFormat);
+            if (string.IsNullOrWhiteSpace(annotation))
+            {
+                return;
+            }
+
+            using var font = new Font(settings.AnnotationFontFamily, settings.AnnotationFontSize, settings.AnnotationFontStyle);
+            using var brush = new SolidBrush(Color.FromArgb(GetAlpha(settings.AnnotationOpacity), Color.FromArgb(settings.AnnotationFontColorArgb)));
+            using var format = new StringFormat
+            {
+                Alignment = StringAlignment.Center,
+                LineAlignment = StringAlignment.Far,
+                FormatFlags = StringFormatFlags.NoWrap
+            };
+
+            const float margin = 24;
+            var bounds = new RectangleF(0, 0, screenshot.Width, Math.Max(1, screenshot.Height - margin));
+            if (settings.AnnotationBackgroundColorArgb.HasValue)
+            {
+                SizeF textSize = graphics.MeasureString(annotation, font, bounds.Size, format);
+                const float horizontalPadding = 8;
+                const float verticalPadding = 4;
+                var backgroundBounds = new RectangleF(
+                    (screenshot.Width - textSize.Width) / 2 - horizontalPadding,
+                    screenshot.Height - margin - textSize.Height - verticalPadding,
+                    textSize.Width + horizontalPadding * 2,
+                    textSize.Height + verticalPadding * 2);
+                using var backgroundBrush = new SolidBrush(Color.FromArgb(
+                    GetAlpha(settings.AnnotationOpacity),
+                    Color.FromArgb(settings.AnnotationBackgroundColorArgb.Value)));
+                graphics.FillRectangle(backgroundBrush, backgroundBounds);
+            }
+
+            graphics.DrawString(annotation, font, brush, bounds, format);
+        }
+
+        public static string ResolveAnnotation(string format)
+        {
+            DateTimeOffset now = DateTimeOffset.Now;
+
+            return format
+                .Replace("{{DATE}}", now.ToString("yyyy-MM-dd"), StringComparison.Ordinal)
+                .Replace("{{TIME}}", now.ToString("HH:mm:ss"), StringComparison.Ordinal)
+                .Replace("{{DATETIME}}", now.ToString("yyyy-MM-dd HH:mm:ss"), StringComparison.Ordinal)
+                .Replace("{{UTC}}", now.UtcDateTime.ToString("yyyy-MM-dd HH:mm:ss'Z'"), StringComparison.Ordinal)
+                .Replace("{{TIMEZONE}}", TimeZoneInfo.Local.StandardName, StringComparison.Ordinal)
+                .Replace("{{OFFSET}}", now.ToString("zzz"), StringComparison.Ordinal)
+                .Replace("{{MILLISECONDS}}", now.ToString("fff"), StringComparison.Ordinal)
+                .Replace("{{PCNAME}}", Environment.MachineName, StringComparison.Ordinal)
+                .Replace("{{USER}}", Environment.UserName, StringComparison.Ordinal)
+                .Replace("{{OS}}", Environment.OSVersion.VersionString, StringComparison.Ordinal)
+                .Replace("{{APP}}", Application.ProductName, StringComparison.Ordinal)
+                //.Replace("{{VERSION}}", Application.ProductVersion, StringComparison.Ordinal)
+                .Replace("{{VERSION}}", Assembly.GetExecutingAssembly().GetName().Version.ToString(), StringComparison.Ordinal)
+                .Replace("{{PID}}", Environment.ProcessId.ToString(), StringComparison.Ordinal);
         }
 
         private static Image? LoadImage(string path)

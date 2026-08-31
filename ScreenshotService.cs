@@ -156,7 +156,7 @@ namespace Capillume
                         return;
                     }
 
-                    WatermarkRenderer.Apply(screenshot, _settings.Watermark);
+                    WatermarkRenderer.Apply(screenshot, _settings.Watermark, _settings.Annotation);
 
                     string filePath = Path.Combine(_settings.SaveFolder, GenerateFileName());
 

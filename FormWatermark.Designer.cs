@@ -53,6 +53,10 @@
             buttonOk = new Button();
             buttonCancel = new Button();
             groupBoxCommon = new GroupBox();
+            buttonAnnotationFont = new Button();
+            buttonAnnotationFields = new Button();
+            textBoxAnnotationFormat = new TextBox();
+            labelAAnnotation = new Label();
             groupBoxUseText.SuspendLayout();
             groupBoxUseImage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxWatermarkImage).BeginInit();
@@ -182,7 +186,6 @@
             trackBarWatermarkImageScale.TabIndex = 5;
             trackBarWatermarkImageScale.TickFrequency = 10;
             trackBarWatermarkImageScale.Value = 50;
-            trackBarWatermarkImageScale.Scroll += TrackBarWatermarkImageScale_Scroll;
             trackBarWatermarkImageScale.ValueChanged += TrackBarWatermarkImageScale_ValueChanged;
             // 
             // labelWatermarkImage
@@ -313,7 +316,7 @@
             buttonOk.FlatStyle = FlatStyle.Flat;
             buttonOk.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             buttonOk.ForeColor = Color.White;
-            buttonOk.Location = new Point(1177, 535);
+            buttonOk.Location = new Point(1177, 621);
             buttonOk.Margin = new Padding(6);
             buttonOk.Name = "buttonOk";
             buttonOk.Size = new Size(230, 70);
@@ -325,7 +328,7 @@
             // buttonCancel
             // 
             buttonCancel.Font = new Font("Segoe UI", 10F);
-            buttonCancel.Location = new Point(938, 535);
+            buttonCancel.Location = new Point(938, 621);
             buttonCancel.Name = "buttonCancel";
             buttonCancel.Size = new Size(230, 70);
             buttonCancel.TabIndex = 3;
@@ -335,6 +338,10 @@
             // 
             // groupBoxCommon
             // 
+            groupBoxCommon.Controls.Add(buttonAnnotationFont);
+            groupBoxCommon.Controls.Add(buttonAnnotationFields);
+            groupBoxCommon.Controls.Add(textBoxAnnotationFormat);
+            groupBoxCommon.Controls.Add(labelAAnnotation);
             groupBoxCommon.Controls.Add(trackBarOpacity);
             groupBoxCommon.Controls.Add(labelOpacity);
             groupBoxCommon.Controls.Add(labelOpacityValue);
@@ -344,10 +351,48 @@
             groupBoxCommon.Controls.Add(comboBoxWatermarkRotation);
             groupBoxCommon.Location = new Point(27, 358);
             groupBoxCommon.Name = "groupBoxCommon";
-            groupBoxCommon.Size = new Size(1380, 159);
+            groupBoxCommon.Size = new Size(1380, 232);
             groupBoxCommon.TabIndex = 2;
             groupBoxCommon.TabStop = false;
             groupBoxCommon.Text = "Common Settings";
+            // 
+            // buttonAnnotationFont
+            // 
+            buttonAnnotationFont.Font = new Font("Segoe UI", 10F);
+            buttonAnnotationFont.Location = new Point(990, 140);
+            buttonAnnotationFont.Name = "buttonAnnotationFont";
+            buttonAnnotationFont.Size = new Size(150, 46);
+            buttonAnnotationFont.TabIndex = 10;
+            buttonAnnotationFont.Text = "Font";
+            buttonAnnotationFont.UseVisualStyleBackColor = true;
+            // 
+            // buttonAnnotationFields
+            // 
+            buttonAnnotationFields.Font = new Font("Segoe UI", 10F);
+            buttonAnnotationFields.Location = new Point(831, 140);
+            buttonAnnotationFields.Name = "buttonAnnotationFields";
+            buttonAnnotationFields.Size = new Size(150, 46);
+            buttonAnnotationFields.TabIndex = 9;
+            buttonAnnotationFields.Text = "Fields";
+            buttonAnnotationFields.UseVisualStyleBackColor = true;
+            // 
+            // textBoxAnnotationFormat
+            // 
+            textBoxAnnotationFormat.Font = new Font("Segoe UI", 10F);
+            textBoxAnnotationFormat.Location = new Point(183, 143);
+            textBoxAnnotationFormat.Name = "textBoxAnnotationFormat";
+            textBoxAnnotationFormat.Size = new Size(609, 43);
+            textBoxAnnotationFormat.TabIndex = 8;
+            // 
+            // labelAAnnotation
+            // 
+            labelAAnnotation.AutoSize = true;
+            labelAAnnotation.Font = new Font("Segoe UI", 10F);
+            labelAAnnotation.Location = new Point(17, 146);
+            labelAAnnotation.Name = "labelAAnnotation";
+            labelAAnnotation.Size = new Size(150, 37);
+            labelAAnnotation.TabIndex = 7;
+            labelAAnnotation.Text = "Annotation";
             // 
             // FormWatermark
             // 
@@ -356,7 +401,7 @@
             AutoScaleMode = AutoScaleMode.Dpi;
             BackColor = Color.White;
             CancelButton = buttonCancel;
-            ClientSize = new Size(1430, 625);
+            ClientSize = new Size(1430, 706);
             Controls.Add(groupBoxCommon);
             Controls.Add(groupBoxUseImage);
             Controls.Add(groupBoxUseText);
@@ -408,5 +453,9 @@
         private TrackBar trackBarWatermarkImageScale;
         private PictureBox pictureBoxWatermarkImage;
         private GroupBox groupBoxCommon;
+        private TextBox textBoxAnnotationFormat;
+        private Label labelAAnnotation;
+        private Button buttonAnnotationFields;
+        private Button buttonAnnotationFont;
     }
 }

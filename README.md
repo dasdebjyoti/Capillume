@@ -16,6 +16,7 @@ Capillume is a lightweight Windows screenshot automation tool. Capture your enti
 - Adjust watermark opacity and image scale.
 - Position watermarks at the top, center, or bottom of the screenshot, aligned left, center, or right.
 - Rotate watermarks by 0°, 90°, 180°, or 270°.
+- Add dynamic annotations containing capture time, system, user, application, and process information.
 - Show desktop notifications after screenshots are saved.
 - Start automatically with Windows.
 - Use the **Capture Now** command from the system tray.
@@ -54,7 +55,35 @@ Use the main window to configure:
 4. The destination folder.
 5. The image format and, for JPG/WebP, image quality.
 6. Watermark settings.
-7. Notifications and Windows startup behavior.
+7. Annotation settings.
+8. Notifications and Windows startup behavior.
+
+### Annotations
+
+Open **Annotation** from the main window to add dynamic information to each
+captured screenshot. Annotations are rendered at the bottom center and support
+custom text formats, font settings, text color, optional highlighting, and
+opacity.
+
+Use these fields in an annotation format:
+
+| Field | Value |
+| --- | --- |
+| `{{DATE}}` | Local date (`yyyy-MM-dd`) |
+| `{{TIME}}` | Local time (`HH:mm:ss`) |
+| `{{DATETIME}}` | Local date and time |
+| `{{UTC}}` | UTC date and time |
+| `{{TIMEZONE}}` | Local time zone |
+| `{{OFFSET}}` | Local UTC offset |
+| `{{MILLISECONDS}}` | Milliseconds component |
+| `{{PCNAME}}` | Computer name |
+| `{{USER}}` | Windows user name |
+| `{{OS}}` | Operating system version |
+| `{{APP}}` | Application name |
+| `{{VERSION}}` | Application version |
+| `{{PID}}` | Process ID |
+
+The default annotation format is `{{OS}} | {{DATETIME}}`.
 
 ### Watermarks
 

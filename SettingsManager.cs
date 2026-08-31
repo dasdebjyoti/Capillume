@@ -1,10 +1,17 @@
 using Microsoft.VisualBasic;
 using System.Text.Json;
 
+// TODO
+// Would you like me to also show you how to auto‑detect the user’s DPI scaling so the watermark
+// font size adjusts proportionally to their Windows display settings? That would make your
+// watermark look consistent across different monitors.
+
 namespace Capillume
 {
     public static class Constants
     {
+        public const string ScreenshotsFoldername = "Capillume Screenshots";
+        public const string StatusReady = "Ready.";
         public const int ScreenshotImageQualityMin = 1;
         public const int ScreenshotImageQualityMax = 100;
         public const int ScreenshotImageQualityDefault = 70;
@@ -15,7 +22,10 @@ namespace Capillume
         public const int WatermarkImageScaleMax = 100;
         public const int WatermarkImageScaleDefault = 50;
         public const string WatermarkPositionDefault = "Top Right";
-        public const string StatusReady = "Ready.";
+        public const int AnnotationOpacityMin = 1;
+        public const int AnnotationOpacityMax = 100;
+        public const int AnnotationOpacityDefault = 80;
+        public const string AnnotationFormatDefault = "{{OS}} | {{DATETIME}}";
     }
 
     public class AppSettings
@@ -30,12 +40,8 @@ namespace Capillume
         public int ImageQuality { get; set; } = Constants.ScreenshotImageQualityDefault; // 70;
         public bool AutoStartWithWindows { get; set; } = false;
         public WatermarkSettings Watermark { get; set; } = new();
+        public AnnotationSettings Annotation { get; set; } = new();
     }
-
-    // TODO
-    // Would you like me to also show you how to auto‑detect the user’s DPI scaling so the watermark
-    // font size adjusts proportionally to their Windows display settings? That would make your
-    // watermark look consistent across different monitors.
 
     public class WatermarkSettings
     {
@@ -51,6 +57,19 @@ namespace Capillume
         public int WatermarkOpacity { get; set; } = Constants.WatermarkOpacityDefault; // 50
         public string WatermarkPosition { get; set; } = Constants.WatermarkPositionDefault;
         public int WatermarkRotation { get; set; } = 0; // 0, 90, 180, 270
+    }
+
+    public class AnnotationSettings
+    {
+        //public bool Enabled { get; set; }
+        public bool UseAnnotation { get; set; } = false;
+        public string AnnotationFormat { get; set; } = Constants.AnnotationFormatDefault;
+        public string AnnotationFontFamily { get; set; } = SystemFonts.DefaultFont.FontFamily.Name; //"Segoe UI";
+        public float AnnotationFontSize { get; set; } = (float)Math.Ceiling(SystemFonts.DefaultFont.Size + 8); //10;
+        public FontStyle AnnotationFontStyle { get; set; } = FontStyle.Regular;
+        public int AnnotationFontColorArgb { get; set; } = Color.Black.ToArgb();
+        public int? AnnotationBackgroundColorArgb { get; set; } = Color.White.ToArgb();
+        public int AnnotationOpacity { get; set; } = Constants.AnnotationOpacityDefault; // 80
     }
 
     public static class SettingsManager
@@ -116,7 +135,7 @@ namespace Capillume
             {
                 SaveFolder = Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.MyPictures),
-                    "Capillume Screenshots"
+                    Constants.ScreenshotsFoldername
                 )
             };
         }
@@ -127,7 +146,7 @@ namespace Capillume
             {
                 settings.SaveFolder = Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.MyPictures),
-                    "Capillume Screenshots"
+                    Constants.ScreenshotsFoldername
                 );
             }
 
@@ -148,13 +167,20 @@ namespace Capillume
             }
 
             settings.Watermark ??= new WatermarkSettings();
-            settings.Watermark.WatermarkOpacity = Math.Clamp(settings.Watermark.WatermarkOpacity, Constants.WatermarkOpacityMin, Constants.WatermarkOpacityMax);
+            settings.Watermark.WatermarkTextFontFamily ??= SystemFonts.DefaultFont.FontFamily.Name;
             settings.Watermark.WatermarkTextFontSize = Math.Clamp(settings.Watermark.WatermarkTextFontSize, 6, 200);
             settings.Watermark.WatermarkImageScale = Math.Clamp(settings.Watermark.WatermarkImageScale, Constants.WatermarkImageScaleMin, Constants.WatermarkImageScaleMax);
+            settings.Watermark.WatermarkOpacity = Math.Clamp(settings.Watermark.WatermarkOpacity, Constants.WatermarkOpacityMin, Constants.WatermarkOpacityMax);
             if (settings.Watermark.WatermarkRotation is not (0 or 90 or 180 or 270))
             {
                 settings.Watermark.WatermarkRotation = 0;
             }
+
+            settings.Annotation ??= new AnnotationSettings();
+            settings.Annotation.AnnotationFontFamily ??= SystemFonts.DefaultFont.FontFamily.Name;
+            settings.Annotation.AnnotationFontSize = Math.Clamp(settings.Annotation.AnnotationFontSize, 6, 200);
+            settings.Annotation.AnnotationFormat ??= string.Empty;
+            settings.Annotation.AnnotationOpacity = Math.Clamp(settings.Annotation.AnnotationOpacity, Constants.AnnotationOpacityMin, Constants.AnnotationOpacityMax);
         }
 
         public static void SetAutoStart(bool enable)

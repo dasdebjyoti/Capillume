@@ -51,7 +51,8 @@ GETTING STARTED
 5. Choose Full Screen or Active Window capture.
 6. Select the folder where screenshots should be saved.
 7. Select the image format.
-8. Click Save.
+8. Configure annotations if needed.
+9. Click Save.
 
 The default screenshot folder is:
 
@@ -107,6 +108,33 @@ Image watermarks support:
 - Rotation
 
 Watermarks are applied before screenshots are saved.
+
+ANNOTATIONS
+-----------
+
+Click Annotation in the main window to add dynamic information to captured
+screenshots. Annotations appear at the bottom center of the image and support
+custom formats, font settings, text color, optional highlighting, and opacity.
+
+Insert one or more of these fields into the annotation format:
+
+    {{DATE}}         Local date (yyyy-MM-dd)
+    {{TIME}}         Local time (HH:mm:ss)
+    {{DATETIME}}     Local date and time
+    {{UTC}}          UTC date and time
+    {{TIMEZONE}}     Local time zone
+    {{OFFSET}}       Local UTC offset
+    {{MILLISECONDS}} Milliseconds component
+    {{PCNAME}}       Computer name
+    {{USER}}         Windows user name
+    {{OS}}           Operating system version
+    {{APP}}          Application name
+    {{VERSION}}      Application version
+    {{PID}}          Process ID
+
+The default annotation format is:
+
+    {{OS}} | {{DATETIME}}
 
 SYSTEM TRAY
 -----------
