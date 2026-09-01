@@ -73,7 +73,7 @@
             trackBarOpacity.Minimum = 1;
             trackBarOpacity.Name = "trackBarOpacity";
             trackBarOpacity.Size = new Size(1012, 90);
-            trackBarOpacity.TabIndex = 16;
+            trackBarOpacity.TabIndex = 8;
             trackBarOpacity.TickFrequency = 10;
             trackBarOpacity.Value = 50;
             trackBarOpacity.ValueChanged += TrackBarOpacity_ValueChanged;
@@ -86,8 +86,8 @@
             labelOpacity.Margin = new Padding(6, 0, 6, 0);
             labelOpacity.Name = "labelOpacity";
             labelOpacity.Size = new Size(108, 37);
-            labelOpacity.TabIndex = 15;
-            labelOpacity.Text = "Opacity";
+            labelOpacity.TabIndex = 7;
+            labelOpacity.Text = "&Opacity";
             // 
             // labelOpacityValue
             // 
@@ -97,7 +97,7 @@
             labelOpacityValue.Margin = new Padding(6, 0, 6, 0);
             labelOpacityValue.Name = "labelOpacityValue";
             labelOpacityValue.Size = new Size(72, 37);
-            labelOpacityValue.TabIndex = 17;
+            labelOpacityValue.TabIndex = 9;
             labelOpacityValue.Text = "50%";
             labelOpacityValue.TextAlign = ContentAlignment.MiddleLeft;
             // 
@@ -108,7 +108,7 @@
             labelAnnotationSample.Location = new Point(36, 193);
             labelAnnotationSample.Name = "labelAnnotationSample";
             labelAnnotationSample.Size = new Size(105, 45);
-            labelAnnotationSample.TabIndex = 14;
+            labelAnnotationSample.TabIndex = 6;
             labelAnnotationSample.Text = "label1";
             // 
             // buttonAnnotationBackgroundColor
@@ -116,8 +116,8 @@
             buttonAnnotationBackgroundColor.Location = new Point(1095, 78);
             buttonAnnotationBackgroundColor.Name = "buttonAnnotationBackgroundColor";
             buttonAnnotationBackgroundColor.Size = new Size(150, 46);
-            buttonAnnotationBackgroundColor.TabIndex = 13;
-            buttonAnnotationBackgroundColor.Text = "Highlight";
+            buttonAnnotationBackgroundColor.TabIndex = 5;
+            buttonAnnotationBackgroundColor.Text = "&Highlight";
             buttonAnnotationBackgroundColor.UseVisualStyleBackColor = true;
             buttonAnnotationBackgroundColor.Click += ButtonAnnotationBackgroundColor_Click;
             // 
@@ -127,8 +127,8 @@
             buttonAnnotationFont.Location = new Point(939, 78);
             buttonAnnotationFont.Name = "buttonAnnotationFont";
             buttonAnnotationFont.Size = new Size(150, 46);
-            buttonAnnotationFont.TabIndex = 12;
-            buttonAnnotationFont.Text = "Font";
+            buttonAnnotationFont.TabIndex = 4;
+            buttonAnnotationFont.Text = "&Font";
             buttonAnnotationFont.UseVisualStyleBackColor = true;
             buttonAnnotationFont.Click += ButtonAnnotationFont_Click;
             // 
@@ -138,8 +138,8 @@
             buttonAnnotationFields.Location = new Point(783, 78);
             buttonAnnotationFields.Name = "buttonAnnotationFields";
             buttonAnnotationFields.Size = new Size(150, 46);
-            buttonAnnotationFields.TabIndex = 11;
-            buttonAnnotationFields.Text = "Fields";
+            buttonAnnotationFields.TabIndex = 3;
+            buttonAnnotationFields.Text = "Fiel&ds";
             buttonAnnotationFields.UseVisualStyleBackColor = true;
             buttonAnnotationFields.Click += ButtonAnnotationFields_Click;
             // 
@@ -150,8 +150,8 @@
             labelAnnotationFormat.Location = new Point(36, 83);
             labelAnnotationFormat.Name = "labelAnnotationFormat";
             labelAnnotationFormat.Size = new Size(101, 37);
-            labelAnnotationFormat.TabIndex = 10;
-            labelAnnotationFormat.Text = "Format";
+            labelAnnotationFormat.TabIndex = 1;
+            labelAnnotationFormat.Text = "F&ormat";
             // 
             // comboBoxAnnotationFormat
             // 
@@ -162,7 +162,7 @@
             comboBoxAnnotationFormat.Location = new Point(149, 80);
             comboBoxAnnotationFormat.Name = "comboBoxAnnotationFormat";
             comboBoxAnnotationFormat.Size = new Size(628, 45);
-            comboBoxAnnotationFormat.TabIndex = 9;
+            comboBoxAnnotationFormat.TabIndex = 2;
             comboBoxAnnotationFormat.TextChanged += ComboBoxAnnotationFormat_TextChanged;
             // 
             // toggleUseAnnotation
@@ -174,7 +174,7 @@
             toggleUseAnnotation.OffColor = Color.FromArgb(200, 200, 200);
             toggleUseAnnotation.OnColor = Color.FromArgb(0, 120, 212);
             toggleUseAnnotation.Size = new Size(75, 30);
-            toggleUseAnnotation.TabIndex = 1;
+            toggleUseAnnotation.TabIndex = 0;
             toggleUseAnnotation.ThumbColor = Color.White;
             toggleUseAnnotation.CheckedChanged += ToggleUseAnnotation_CheckedChanged;
             // 
@@ -184,7 +184,7 @@
             buttonCancel.Location = new Point(818, 454);
             buttonCancel.Name = "buttonCancel";
             buttonCancel.Size = new Size(230, 70);
-            buttonCancel.TabIndex = 5;
+            buttonCancel.TabIndex = 1;
             buttonCancel.Text = "Cancel";
             buttonCancel.UseVisualStyleBackColor = true;
             buttonCancel.Click += ButtonCancel_Click;
@@ -200,7 +200,7 @@
             buttonOk.Margin = new Padding(6);
             buttonOk.Name = "buttonOk";
             buttonOk.Size = new Size(230, 70);
-            buttonOk.TabIndex = 6;
+            buttonOk.TabIndex = 2;
             buttonOk.Text = "OK";
             buttonOk.UseVisualStyleBackColor = false;
             buttonOk.Click += ButtonOk_Click;

@@ -191,7 +191,7 @@
             labelWatermarkImage.Name = "labelWatermarkImage";
             labelWatermarkImage.Size = new Size(91, 37);
             labelWatermarkImage.TabIndex = 1;
-            labelWatermarkImage.Text = "Image";
+            labelWatermarkImage.Text = "I&mage";
             // 
             // buttonBrowseWatermarkImage
             // 
@@ -245,7 +245,7 @@
             labelOpacity.Name = "labelOpacity";
             labelOpacity.Size = new Size(108, 37);
             labelOpacity.TabIndex = 0;
-            labelOpacity.Text = "Opacity";
+            labelOpacity.Text = "&Opacity";
             // 
             // trackBarOpacity
             // 
@@ -269,7 +269,7 @@
             labelWatermarkPosition.Name = "labelWatermarkPosition";
             labelWatermarkPosition.Size = new Size(112, 37);
             labelWatermarkPosition.TabIndex = 3;
-            labelWatermarkPosition.Text = "Position";
+            labelWatermarkPosition.Text = "&Position";
             // 
             // comboBoxWatermarkPosition
             // 
@@ -291,7 +291,7 @@
             labelWatermarkRotation.Name = "labelWatermarkRotation";
             labelWatermarkRotation.Size = new Size(118, 37);
             labelWatermarkRotation.TabIndex = 5;
-            labelWatermarkRotation.Text = "Rotation";
+            labelWatermarkRotation.Text = "&Rotation";
             // 
             // comboBoxWatermarkRotation
             // 

@@ -45,42 +45,62 @@ namespace Capillume
 
         private static readonly (string Name, Color Color)[] AnnotationBackgroundColors =
         [
+            // --- Grays ---
             ("Black", Color.Black),
-            ("White", Color.White),
-            ("Gray", Color.Gray),
             ("DarkGray", Color.DarkGray),
+            ("Gray", Color.Gray),
             ("LightGray", Color.LightGray),
+            ("White", Color.White),
 
-            ("Red", Color.Red),
+            // --- Reds / Oranges / Yellows ---
             ("DarkRed", Color.DarkRed),
+            ("Red", Color.Red),
             ("Orange", Color.Orange),
-            ("Yellow", Color.Yellow),
             ("Goldenrod", Color.Goldenrod),
+            ("Yellow", Color.Yellow),
+            ("LightYellow", Color.LightYellow),
+            ("LightCoral", Color.LightCoral),
+            ("LightPink", Color.LightPink),
 
-            ("Green", Color.Green),
+            // --- Greens (Windows 11 adds soft greens) ---
             ("DarkGreen", Color.DarkGreen),
-            ("LightGreen", Color.LightGreen),
+            ("Green", Color.Green),
             ("MediumSeaGreen", Color.MediumSeaGreen),
+            ("LightGreen", Color.LightGreen),
+            ("MintCream", Color.MintCream),
+            ("Honeydew", Color.Honeydew),              // Windows 11 soft green
+            ("PaleGreen", Color.PaleGreen),            // gentle pastel green
 
-            ("Blue", Color.Blue),
+            // --- Blues (Windows 11 uses calm blues) ---
             ("DarkBlue", Color.DarkBlue),
-            ("LightBlue", Color.LightBlue),
-            ("CornflowerBlue", Color.CornflowerBlue),
+            ("Blue", Color.Blue),
             ("RoyalBlue", Color.RoyalBlue),
             ("SteelBlue", Color.SteelBlue),
-
-            ("Purple", Color.Purple),
-            ("Magenta", Color.Magenta),
-            ("Fuchsia", Color.Fuchsia),
-            ("Lavender", Color.Lavender),
-
-            ("Cyan", Color.Cyan),
+            ("CornflowerBlue", Color.CornflowerBlue),
+            ("LightBlue", Color.LightBlue),
             ("Aqua", Color.Aqua),
-            ("MintCream", Color.MintCream),
+            ("LightSteelBlue", Color.LightSteelBlue),  // Windows 11 soft blue
+            ("AliceBlue", Color.AliceBlue),            // very light pastel blue
+            ("Azure", Color.Azure),                    // modern UI tone
+
+            // --- Purples / Magentas (Windows 11 uses soft purples) ---
+            ("Purple", Color.Purple),
+            ("DeepPink", Color.DeepPink),
+            ("Magenta", Color.Magenta),
+            ("MediumOrchid", Color.MediumOrchid),      // modern purple
+            ("Orchid", Color.Orchid),
+            ("MediumPurple", Color.MediumPurple),
+            ("Lavender", Color.Lavender),
+            ("Thistle", Color.Thistle),                // soft pastel purple
+            ("GhostWhite", Color.GhostWhite),          // Windows 11 subtle purple-white
+
+            // --- Neutrals / Soft Warm Tones ---
+            ("Teal", Color.Teal),
             ("Beige", Color.Beige),
-            ("LightYellow", Color.LightYellow),
-            ("LightPink", Color.LightPink),
-            ("LightCoral", Color.LightCoral)
+            ("AntiqueWhite", Color.AntiqueWhite),      // warm modern neutral
+            ("FloralWhite", Color.FloralWhite),        // soft warm white
+            ("Seashell", Color.SeaShell),              // Windows 11 warm pastel
+            ("OldLace", Color.OldLace)                 // elegant warm tone
         ];
 
         public AnnotationSettings _settings { get; }
@@ -107,7 +127,11 @@ namespace Capillume
         private void ButtonAnnotationBackgroundColor_Click(object sender, EventArgs e)
         {
             var menu = new ContextMenuStrip(components);
-            var noColorItem = new ToolStripMenuItem("No color");
+            var noColorItem = new ToolStripMenuItem("No color")
+            {
+                Tag = !_fontBackgroundColor.HasValue
+            };
+            noColorItem.Paint += DrawCurrentColorBorder;
             noColorItem.Click += (_, _) => SetAnnotationBackgroundColor(null);
 
             menu.Items.Add(noColorItem);
@@ -123,14 +147,33 @@ namespace Capillume
                 var colorItem = new ToolStripMenuItem(name)
                 {
                     BackColor = color,
-                    ForeColor = luminance < 0.5 ? Color.White : Color.Black
                     //ForeColor = color.GetBrightness() < 0.5f ? Color.White : Color.Black
+                    ForeColor = luminance < 0.5 ? Color.White : Color.Black,
+                    Tag = _fontBackgroundColor?.ToArgb() == color.ToArgb()
                 };
+                colorItem.Paint += DrawCurrentColorBorder;
                 colorItem.Click += (_, _) => SetAnnotationBackgroundColor(color);
                 menu.Items.Add(colorItem);
             }
 
             menu.Show(buttonAnnotationBackgroundColor, buttonAnnotationBackgroundColor.Width, 0);
+        }
+
+        private static void DrawCurrentColorBorder(object? sender, PaintEventArgs e)
+        {
+            if (sender is ToolStripItem { Tag: true } item)
+            {
+                double luminance = (
+                    0.2126 * item.BackColor.R /*_fontBackgroundColor.Value.R*/ +
+                    0.7152 * item.BackColor.G /*_fontBackgroundColor.Value.G*/ +
+                    0.0722 * item.BackColor.B /* _fontBackgroundColor.Value.B*/) / 255.0;
+
+                //Color borderColor = item.BackColor.GetBrightness() < 0.5f ? Color.White : Color.Black;
+                Color borderColor = luminance < 0.5 ? Color.White : Color.Black;
+                using var pen = new Pen(borderColor, 5);
+                Rectangle borderBounds = new(1, 1, item.Width - 3, item.Height - 3);
+                e.Graphics.DrawRectangle(pen, borderBounds);
+            }
         }
 
         private void ButtonOk_Click(object sender, EventArgs e)
@@ -179,7 +222,6 @@ namespace Capillume
                 //labelAnnotationSample.Font = _font;
 
                 UpdateAnnotationSample();
-                UpdateAnnotationFontButton();
                 UpdateSaveButtonState();
             }
         }
@@ -264,7 +306,6 @@ namespace Capillume
             }
             comboBoxAnnotationFormat.Text = _settings.AnnotationFormat;
             comboBoxAnnotationFormat.EndUpdate();
-            UpdateAnnotationFontButton();
             UpdateAnnotationBackgroundButton();
             labelAnnotationSample.Text = $"{_font.Name}, {_font.SizeInPoints:0.#} pt";
             trackBarOpacity.Value = Math.Clamp(_settings.AnnotationOpacity, Constants.AnnotationOpacityMin, Constants.AnnotationOpacityMax);
@@ -312,14 +353,11 @@ namespace Capillume
                 //    ? Color.White
                 //    : Color.Black;
             }
-        }
-
-        private void UpdateAnnotationFontButton()
-        {
-            //buttonAnnotationFont.Text = $"{_font.Name}, {_font.SizeInPoints:0.#} pt";
-            //buttonAnnotationFont.BackColor = _fontColor;
-            //buttonAnnotationFont.ForeColor = _fontColor;
-            //buttonAnnotationFont.ForeColor = _fontColor.GetBrightness() < 0.5f ? Color.White : Color.Black;
+            else
+            {
+                buttonAnnotationBackgroundColor.ForeColor = SystemColors.ControlText;
+                buttonAnnotationBackgroundColor.BackColor = Color.White; // SystemColors.Control;
+            }
         }
 
         private void UpdateControlState()
@@ -329,6 +367,7 @@ namespace Capillume
             buttonAnnotationFields.Enabled = toggleUseAnnotation.Checked;
             buttonAnnotationFont.Enabled = toggleUseAnnotation.Checked;
             buttonAnnotationBackgroundColor.Enabled = toggleUseAnnotation.Checked;
+            labelAnnotationSample.Enabled = toggleUseAnnotation.Checked;
             labelAnnotationSample.Enabled = toggleUseAnnotation.Checked;
             labelOpacity.Enabled = toggleUseAnnotation.Checked;
             trackBarOpacity.Enabled = toggleUseAnnotation.Checked;

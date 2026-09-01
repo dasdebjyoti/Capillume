@@ -13,7 +13,7 @@
     <PackageProjectUrl>https://github.com/dasdebjyoti/Capillume</PackageProjectUrl>
     <Description>Lightweigt screenshot automation tool for Windows.</Description>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>screenshot; screen-shot; screen-capture; productivity</PackageTags>
+    <PackageTags>productivity, productivity-tools; proof-of-work; screen-capture; screenshot; screenshot-annotation; screenshot-application; screenshot-automation; screenshot-utility</PackageTags>
     <PackageIcon>icon.png</PackageIcon>
     <Title>Capillume Screenshot Automation</Title>
     <AssemblyVersion>1.4.0.0</AssemblyVersion>
