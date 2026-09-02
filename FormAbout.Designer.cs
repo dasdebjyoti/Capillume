@@ -1,6 +1,6 @@
 namespace Capillume
 {
-    partial class AboutForm
+    partial class FormAbout
     {
         private System.ComponentModel.IContainer components = null;
 
@@ -17,7 +17,7 @@ namespace Capillume
 
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AboutForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormAbout));
             pictureBoxLogo = new PictureBox();
             labelAppName = new Label();
             labelVersion = new Label();

@@ -53,6 +53,7 @@ GETTING STARTED
 7. Select the image format.
 8. Configure annotations if needed.
 9. Click Save.
+10. Use Capture Now at any time to save an immediate screenshot.
 
 The default screenshot folder is:
 
@@ -68,8 +69,12 @@ Active Window
     Captures the currently active window.
 
 Capture Now
-    To take an immediate screenshot, right-click the Capillume icon in the
-    Windows system tray and select Capture Now.
+    Click the Capture Now button in the main window to take an immediate
+    screenshot. You can also press Alt+C when the main window is active. This
+    action is available even when scheduled screenshots are disabled.
+
+    To take an immediate screenshot while the application is minimized, right-
+    click the Capillume icon in the Windows system tray and select Capture Now.
 
 IMAGE FORMATS
 -------------
@@ -194,6 +199,7 @@ REQUIREMENTS
 ------------
 
 - Windows 10 or later.
+- .NET 10 runtime with Windows desktop support.
 - A Windows user account with permission to capture the desktop and write to
   the selected destination folder.
 

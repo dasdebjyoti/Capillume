@@ -36,6 +36,12 @@ namespace Capillume
 
         public static Icon CreateAppIconAdvanced()
         {
+            using var bmp = CreateAppImageAdvanced();
+            return Icon.FromHandle(bmp.GetHicon());
+        }
+
+        public static Bitmap CreateAppImageAdvanced()
+        {
             var bmp = new Bitmap(32, 32);
             using (var g = Graphics.FromImage(bmp))
             {
@@ -79,7 +85,7 @@ namespace Capillume
                 }
             }
 
-            return Icon.FromHandle(bmp.GetHicon());
+            return bmp;
         }
 
     }

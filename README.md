@@ -19,6 +19,7 @@ Capillume is a lightweight Windows screenshot automation tool. Capture your enti
 - Add dynamic annotations containing capture time, system, user, application, and process information.
 - Show desktop notifications after screenshots are saved.
 - Start automatically with Windows.
+- Use the **Capture Now** button in the main window for an immediate screenshot.
 - Use the **Capture Now** command from the system tray.
 - Minimize to the system tray instead of closing the application.
 - Pause screenshot capture when Windows locks the session.

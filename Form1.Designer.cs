@@ -34,6 +34,7 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
+            toolTipCaptureNow = new ToolTip(components);
             notifyIcon = new NotifyIcon(components);
             contextMenuStrip = new ContextMenuStrip(components);
             showToolStripMenuItem = new ToolStripMenuItem();
@@ -48,11 +49,11 @@
             pictureBoxLogo = new PictureBox();
             labelTitle = new Label();
             labelSubtitle = new Label();
+            CaptureNow = new CaptureNowButton();
             labelEnableScreenshots = new Label();
             toggleSwitchEnabled = new ToggleSwitch();
             toggleSwitchNotify = new ToggleSwitch();
             toggleSwitchStartWithWindows = new ToggleSwitch();
-            labelEnabledStatus = new Label();
             labelCaptureMode = new Label();
             comboBoxCaptureMode = new ComboBox();
             labelSaveFolder = new Label();
@@ -71,7 +72,6 @@
             panel2 = new Panel();
             labelShowNotifications = new Label();
             labelStartWithWindows = new Label();
-            buttonUndo = new Button();
             labelStatus = new Label();
             buttonWatermark = new Button();
             buttonAnnotation = new Button();
@@ -147,6 +147,7 @@
             panelHeader.Controls.Add(pictureBoxLogo);
             panelHeader.Controls.Add(labelTitle);
             panelHeader.Controls.Add(labelSubtitle);
+            panelHeader.Controls.Add(CaptureNow);
             panelHeader.Dock = DockStyle.Top;
             panelHeader.Location = new Point(0, 0);
             panelHeader.Margin = new Padding(6);
@@ -158,7 +159,7 @@
             // 
             linkLabelAbout.AutoSize = true;
             linkLabelAbout.Font = new Font("Segoe UI", 9F);
-            linkLabelAbout.Location = new Point(1343, 112);
+            linkLabelAbout.Location = new Point(398, 112);
             linkLabelAbout.Margin = new Padding(6, 0, 6, 0);
             linkLabelAbout.Name = "linkLabelAbout";
             linkLabelAbout.Size = new Size(79, 32);
@@ -203,6 +204,23 @@
             labelSubtitle.TabIndex = 1;
             labelSubtitle.Text = "Settings • v1.X.X.X";
             // 
+            // CaptureNow
+            // 
+            CaptureNow.AccessibleName = "Capture screenshot now";
+            CaptureNow.AccessibleRole = AccessibleRole.PushButton;
+            CaptureNow.ButtonBackColor = Color.FromArgb(0, 120, 212);
+            CaptureNow.ButtonTextColor = Color.White;
+            CaptureNow.CornerRadius = 10;
+            CaptureNow.Font = new Font("Segoe UI Semibold", 10F);
+            CaptureNow.HoverBackColor = Color.FromArgb(16, 110, 190);
+            CaptureNow.Location = new Point(1123, 30);
+            CaptureNow.Name = "CaptureNow";
+            CaptureNow.PressedBackColor = Color.FromArgb(0, 92, 158);
+            CaptureNow.Size = new Size(299, 114);
+            CaptureNow.TabIndex = 3;
+            CaptureNow.Text = "&Capture Now";
+            CaptureNow.Click += CaptureNow_Click;
+            // 
             // labelEnableScreenshots
             // 
             labelEnableScreenshots.AutoSize = true;
@@ -210,9 +228,9 @@
             labelEnableScreenshots.Location = new Point(60, 215);
             labelEnableScreenshots.Margin = new Padding(6, 0, 6, 0);
             labelEnableScreenshots.Name = "labelEnableScreenshots";
-            labelEnableScreenshots.Size = new Size(244, 37);
+            labelEnableScreenshots.Size = new Size(281, 37);
             labelEnableScreenshots.TabIndex = 2;
-            labelEnableScreenshots.Text = "&Enable Screenshots";
+            labelEnableScreenshots.Text = "A&utomate Screenshots";
             // 
             // toggleSwitchEnabled
             // 
@@ -253,19 +271,6 @@
             toggleSwitchStartWithWindows.ThumbColor = Color.White;
             toggleSwitchStartWithWindows.CheckedChanged += ToggleSwitchStartWithWindows_CheckedChanged;
             // 
-            // labelEnabledStatus
-            // 
-            labelEnabledStatus.AutoSize = true;
-            labelEnabledStatus.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            labelEnabledStatus.ForeColor = Color.Gray;
-            labelEnabledStatus.Location = new Point(325, 221);
-            labelEnabledStatus.Margin = new Padding(6, 0, 6, 0);
-            labelEnabledStatus.Name = "labelEnabledStatus";
-            labelEnabledStatus.Size = new Size(56, 32);
-            labelEnabledStatus.TabIndex = 3;
-            labelEnabledStatus.Text = "OFF";
-            labelEnabledStatus.TextAlign = ContentAlignment.MiddleRight;
-            // 
             // labelCaptureMode
             // 
             labelCaptureMode.AutoSize = true;
@@ -275,7 +280,7 @@
             labelCaptureMode.Name = "labelCaptureMode";
             labelCaptureMode.Size = new Size(188, 37);
             labelCaptureMode.TabIndex = 10;
-            labelCaptureMode.Text = "&Capture Mode";
+            labelCaptureMode.Text = "Capture &Mode";
             // 
             // comboBoxCaptureMode
             // 
@@ -472,17 +477,6 @@
             labelStartWithWindows.TabIndex = 7;
             labelStartWithWindows.Text = "Start With &Windows";
             // 
-            // buttonUndo
-            // 
-            buttonUndo.Font = new Font("Segoe UI", 10F);
-            buttonUndo.Location = new Point(936, 730);
-            buttonUndo.Name = "buttonUndo";
-            buttonUndo.Size = new Size(230, 70);
-            buttonUndo.TabIndex = 25;
-            buttonUndo.Text = "&Revert Changes";
-            buttonUndo.UseVisualStyleBackColor = true;
-            buttonUndo.Click += ButtonUndo_Click;
-            // 
             // labelStatus
             // 
             labelStatus.AutoSize = true;
@@ -533,7 +527,6 @@
             Controls.Add(buttonAnnotation);
             Controls.Add(buttonWatermark);
             Controls.Add(labelStatus);
-            Controls.Add(buttonUndo);
             Controls.Add(labelStartWithWindows);
             Controls.Add(panel2);
             Controls.Add(panel1);
@@ -551,7 +544,6 @@
             Controls.Add(labelSaveFolder);
             Controls.Add(comboBoxCaptureMode);
             Controls.Add(labelCaptureMode);
-            Controls.Add(labelEnabledStatus);
             Controls.Add(toggleSwitchEnabled);
             Controls.Add(labelEnableScreenshots);
             Controls.Add(toggleSwitchNotify);
@@ -578,6 +570,7 @@
         #endregion
 
         private NotifyIcon notifyIcon;
+        private ToolTip toolTipCaptureNow;
         private ContextMenuStrip contextMenuStrip;
         private ToolStripMenuItem showToolStripMenuItem;
         private ToolStripSeparator toolStripSeparator1;
@@ -595,7 +588,7 @@
 
         private Label labelEnableScreenshots;
         private ToggleSwitch toggleSwitchEnabled;
-        private Label labelEnabledStatus;
+        private CaptureNowButton CaptureNow;
 
         private Label labelShowNotifications;
         private ToggleSwitch toggleSwitchNotify;
@@ -624,7 +617,6 @@
         private Panel panel1;
         private Panel panel2;
         private Label labelStartWithWindows;
-        private Button buttonUndo;
         private Label labelStatus;
         private Button buttonWatermark;
         private Button buttonAnnotation;

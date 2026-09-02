@@ -2,10 +2,10 @@ using System.Reflection;
 
 namespace Capillume
 {
-    public partial class AboutForm : Form
+    public partial class FormAbout : Form
     {
         private Icon? _appIcon;
-        public AboutForm()
+        public FormAbout()
         {
             InitializeComponent();
             InitializeUI();

@@ -20,6 +20,7 @@ namespace Capillume
         public Form1(bool isStartedWithWindows = false)
         {
             InitializeComponent();
+
             _isStartedWithWindows = isStartedWithWindows;
             _settings = SettingsManager.LoadSettings();
             InitializeUI();
@@ -200,12 +201,16 @@ namespace Capillume
             this.labelSubtitle.Text = $"Settings • v{assembly.GetName().Version}";
             this.labelTitle.Text = $"{Application.ProductName}";
 
-            toggleSwitchEnabled.Checked = _settings.IsScreenshotEnabled;
+            toolTipCaptureNow.InitialDelay = 5000;
+            toolTipCaptureNow.ReshowDelay = 100;
+            toolTipCaptureNow.AutoPopDelay = 5000;
+            toolTipCaptureNow.ShowAlways = true;
+            toolTipCaptureNow.SetToolTip(CaptureNow, "Capture screenshot now");
 
+            toggleSwitchEnabled.Checked = _settings.IsScreenshotEnabled;
             toggleSwitchNotify.Checked = _settings.ShowNotifications;
             toggleSwitchStartWithWindows.Checked = _settings.StartWithWindows;
             numericUpDownInterval.Value = _settings.IntervalMinutes;
-
             comboBoxCaptureMode.SelectedIndex = _settings.CaptureFullScreen ? 0 : 1;
 
             textBoxFolder.Text = _settings.SaveFolder;
@@ -266,18 +271,9 @@ namespace Capillume
 
         private void UpdateEnabledStatus()
         {
-            if (toggleSwitchEnabled.Checked)
-            {
-                labelEnabledStatus.Text = "ON";
-                labelEnabledStatus.ForeColor = Color.FromArgb(0, 120, 212);
-            }
-            else
-            {
-                labelEnabledStatus.Text = "OFF";
-                labelEnabledStatus.ForeColor = Color.Gray;
-            }
-
+            labelShowNotifications.Enabled = toggleSwitchEnabled.Checked;
             toggleSwitchNotify.Enabled = toggleSwitchEnabled.Checked;
+            labelStartWithWindows.Enabled = toggleSwitchEnabled.Checked;
             toggleSwitchStartWithWindows.Enabled = toggleSwitchEnabled.Checked;
             labelCaptureMode.Enabled = toggleSwitchEnabled.Checked;
             comboBoxCaptureMode.Enabled = toggleSwitchEnabled.Checked;
@@ -344,10 +340,6 @@ namespace Capillume
             SaveSettings();
         }
 
-        private void ButtonUndo_Click(object sender, EventArgs e)
-        {
-            RestoreSettingsToUi();
-        }
         private void ButtonBrowse_Click(object? sender, EventArgs e)
         {
             using var dialog = new FolderBrowserDialog
@@ -430,6 +422,16 @@ namespace Capillume
 
         private void CaptureNowToolStripMenuItem_Click(object? sender, EventArgs e)
         {
+            CaptureScreenshotNow();
+        }
+
+        private void CaptureNow_Click(object? sender, EventArgs e)
+        {
+            CaptureScreenshotNow();
+        }
+
+        private void CaptureScreenshotNow()
+        {
             _screenshotService?.CaptureScreenshot();
         }
 
@@ -441,13 +443,13 @@ namespace Capillume
 
         private void AboutToolStripMenuItem_Click(object? sender, EventArgs e)
         {
-            using var aboutForm = new AboutForm();
+            using var aboutForm = new FormAbout();
             aboutForm.ShowDialog(this);
         }
 
         private void LinkLabelAbout_LinkClicked(object? sender, LinkLabelLinkClickedEventArgs e)
         {
-            using var aboutForm = new AboutForm();
+            using var aboutForm = new FormAbout();
             aboutForm.ShowDialog(this);
         }
 
@@ -490,7 +492,6 @@ namespace Capillume
             bool hasChanges = HasUnsavedChanges();
 
             buttonSave.Enabled = hasChanges;
-            buttonUndo.Enabled = hasChanges;
 
             if (hasChanges)
             {
@@ -577,11 +578,6 @@ namespace Capillume
             if (showSuccessMessage)
             {
                 labelStatus.Text = "Settings saved successfully.";
-                /*MessageBox.Show(
-                    "Settings saved successfully!",
-                    "Success",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);*/
             }
 
             return true;
