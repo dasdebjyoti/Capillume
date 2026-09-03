@@ -21,6 +21,7 @@ namespace Capillume
     {
         private System.Windows.Forms.Timer? _timer;
         private AppSettings _settings;
+        private readonly IntPtr _capillumeWindowHandle;
         private bool _disposed;
         private bool _isPaused;
 
@@ -29,6 +30,29 @@ namespace Capillume
 
         [DllImport("user32.dll")]
         private static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+
+        [DllImport("user32.dll")]
+        private static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
+
+        [DllImport("user32.dll")]
+        private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+
+        [DllImport("user32.dll")]
+        private static extern bool IsWindowVisible(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        private static extern bool IsIconic(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+        [DllImport("user32.dll")]
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
+
+        private delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
+
+        private const int SW_HIDE = 0;
+        private const int SW_SHOWNOACTIVATE = 4;
 
         [StructLayout(LayoutKind.Sequential)]
         private struct RECT
@@ -43,9 +67,10 @@ namespace Capillume
         public event EventHandler<ScreenshotCapturedEventArgs>? ScreenshotCaptured;
         public event EventHandler<string>? ErrorOccurred;
 
-        public ScreenshotService(AppSettings settings)
+        public ScreenshotService(AppSettings settings, IntPtr capillumeWindowHandle)
         {
             _settings = settings;
+            _capillumeWindowHandle = capillumeWindowHandle;
         }
 
         public void Start()
@@ -122,7 +147,7 @@ namespace Capillume
             if (!_isPaused && _settings.IsScreenshotEnabled) CaptureScreenshot();
         }
 
-        public void CaptureScreenshot()
+        public void CaptureScreenshot(bool captureWindowBelowCapillume = false)
         {
             if (_isPaused)
             {
@@ -147,7 +172,7 @@ namespace Capillume
                     }
                     else
                     {
-                        screenshot = CaptureActiveWindow();
+                        screenshot = CaptureActiveWindow(captureWindowBelowCapillume);
                     }
 
                     if (screenshot == null)
@@ -189,21 +214,48 @@ namespace Capillume
             int width = maxX - minX;
             int height = maxY - minY;
 
-            var bitmap = new Bitmap(width, height);
-            using (var graphics = Graphics.FromImage(bitmap))
-            {
-                graphics.CopyFromScreen(minX, minY, 0, 0, new System.Drawing.Size(width, height));
-            }
+            List<IntPtr> hiddenWindows = _settings.IncludeCapillume
+                ? new List<IntPtr>()
+                : HideCapillumeWindows();
 
-            return bitmap;
+            try
+            {
+                var bitmap = new Bitmap(width, height);
+                using (var graphics = Graphics.FromImage(bitmap))
+                {
+                    graphics.CopyFromScreen(minX, minY, 0, 0, new System.Drawing.Size(width, height));
+                }
+
+                return bitmap;
+            }
+            finally
+            {
+                RestoreWindows(hiddenWindows);
+            }
         }
 
-        private Bitmap? CaptureActiveWindow()
+        private Bitmap? CaptureActiveWindow(bool captureWindowBelowCapillume)
         {
             IntPtr handle = GetForegroundWindow();
             if (handle == IntPtr.Zero)
             {
                 return null;
+            }
+
+            bool hideCapillume = false;
+            if (!_settings.IncludeCapillume && captureWindowBelowCapillume)
+            {
+                handle = FindWindowBelow(_capillumeWindowHandle);
+                hideCapillume = true;
+            }
+            else if (!_settings.IncludeCapillume && IsCapillumeWindow(handle))
+            {
+                handle = FindWindowBelow(handle);
+                hideCapillume = true;
+                if (handle == IntPtr.Zero)
+                {
+                    return null;
+                }
             }
 
             if (!GetWindowRect(handle, out RECT rect))
@@ -219,13 +271,98 @@ namespace Capillume
                 return null;
             }
 
-            var bitmap = new Bitmap(width, height);
-            using (var graphics = Graphics.FromImage(bitmap))
+            List<IntPtr> hiddenWindows = hideCapillume
+                ? HideCapillumeWindows()
+                : new List<IntPtr>();
+
+            try
             {
-                graphics.CopyFromScreen(rect.Left, rect.Top, 0, 0, new System.Drawing.Size(width, height));
+                var bitmap = new Bitmap(width, height);
+                using (var graphics = Graphics.FromImage(bitmap))
+                {
+                    graphics.CopyFromScreen(rect.Left, rect.Top, 0, 0, new System.Drawing.Size(width, height));
+                }
+
+                return bitmap;
+            }
+            finally
+            {
+                RestoreWindows(hiddenWindows);
+                if (hideCapillume && _capillumeWindowHandle != IntPtr.Zero)
+                {
+                    SetForegroundWindow(_capillumeWindowHandle);
+                }
+            }
+        }
+
+        private IntPtr FindWindowBelow(IntPtr window)
+        {
+            bool foundWindow = false;
+            IntPtr windowBelow = IntPtr.Zero;
+
+            EnumWindows((handle, _) =>
+            {
+                if (!foundWindow)
+                {
+                    if (handle == window)
+                    {
+                        foundWindow = true;
+                    }
+
+                    return true;
+                }
+
+                if (IsWindowVisible(handle) && !IsIconic(handle) && !IsCapillumeWindow(handle))
+                {
+                    windowBelow = handle;
+                    return false;
+                }
+
+                return true;
+            }, IntPtr.Zero);
+
+            return windowBelow;
+        }
+
+        private bool IsCapillumeWindow(IntPtr handle)
+        {
+            if (handle == _capillumeWindowHandle)
+            {
+                return true;
             }
 
-            return bitmap;
+            GetWindowThreadProcessId(handle, out uint processId);
+            return processId == (uint)Environment.ProcessId;
+        }
+
+        private static List<IntPtr> HideCapillumeWindows()
+        {
+            var windows = new List<IntPtr>();
+            uint processId = (uint)Environment.ProcessId;
+
+            EnumWindows((handle, _) =>
+            {
+                GetWindowThreadProcessId(handle, out uint windowProcessId);
+                if (windowProcessId == processId && IsWindowVisible(handle) && !IsIconic(handle))
+                {
+                    if (ShowWindow(handle, SW_HIDE))
+                    {
+                        windows.Add(handle);
+                    }
+                }
+
+                return true;
+            }, IntPtr.Zero);
+
+            return windows;
+        }
+
+        private static void RestoreWindows(IEnumerable<IntPtr> windows)
+        {
+            foreach (IntPtr window in windows)
+            {
+                ShowWindow(window, SW_SHOWNOACTIVATE);
+            }
         }
 
         private void SaveScreenshot(Bitmap bitmap, string filePath)

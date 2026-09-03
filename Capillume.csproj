@@ -16,9 +16,9 @@
     <PackageTags>productivity, productivity-tools; proof-of-work; screen-capture; screenshot; screenshot-annotation; screenshot-application; screenshot-automation; screenshot-utility</PackageTags>
     <PackageIcon>icon.png</PackageIcon>
     <Title>Capillume Screenshot Automation</Title>
-    <AssemblyVersion>1.5.0.0</AssemblyVersion>
-    <FileVersion>1.5.0.0</FileVersion>
-    <Version>1.5.0</Version>
+    <AssemblyVersion>1.6.0.0</AssemblyVersion>
+    <FileVersion>1.6.0.0</FileVersion>
+    <Version>1.6.0</Version>
 
     <!-- Uncomment to force SkiaSharp to be bundled inside the published application exe -->
     <!-- Added DjD.20260823 -->
@@ -40,6 +40,10 @@
 
   <ItemGroup>
     <EmbeddedResource Include="icon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include=".github\copilot-instructions.md" />
   </ItemGroup>
 
   <ItemGroup>
@@ -83,11 +87,7 @@
   <!-- Explicit post-publish copy target.  -->
   <!-- CopyToPublishDirectory metadata used above alone was not reliable with the custom single-file publish target -->
   <Target Name="CopyInstallerDocumentation" AfterTargets="Publish" Condition="'$(PublishForInstallerRunning)' == 'true'">
-    <Copy SourceFiles="$(MSBuildProjectDirectory)\LICENSE"
-          DestinationFiles="$(PublishDir)LICENSE.txt"
-          SkipUnchangedFiles="true" />
-    <Copy SourceFiles="$(MSBuildProjectDirectory)\README_USER.txt"
-          DestinationFiles="$(PublishDir)README.txt"
-          SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\LICENSE" DestinationFiles="$(PublishDir)LICENSE.txt" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\README_USER.txt" DestinationFiles="$(PublishDir)README.txt" SkipUnchangedFiles="true" />
   </Target>
 </Project>

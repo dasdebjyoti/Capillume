@@ -119,7 +119,7 @@ namespace Capillume
             // 
             // panelHeader
             // 
-            panelHeader.BackColor = Color.LightGray;
+            panelHeader.BackColor = Color.Gainsboro;
             panelHeader.Controls.Add(pictureBoxLogo);
             panelHeader.Controls.Add(labelAppName);
             panelHeader.Controls.Add(labelVersion);
@@ -130,7 +130,7 @@ namespace Capillume
             panelHeader.Size = new Size(1000, 240);
             panelHeader.TabIndex = 0;
             // 
-            // AboutForm
+            // FormAbout
             // 
             AcceptButton = buttonClose;
             AutoScaleDimensions = new SizeF(192F, 192F);
@@ -147,7 +147,7 @@ namespace Capillume
             Margin = new Padding(6);
             MaximizeBox = false;
             MinimizeBox = false;
-            Name = "AboutForm";
+            Name = "FormAbout";
             ShowInTaskbar = false;
             StartPosition = FormStartPosition.CenterParent;
             Text = "About Capillume";

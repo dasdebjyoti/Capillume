@@ -198,7 +198,6 @@ namespace Capillume
 
             // Load settings into UI
             this.Text = $"{Application.ProductName}"; // v{assembly.GetName().Version}";
-            this.labelSubtitle.Text = $"Settings • v{assembly.GetName().Version}";
             this.labelTitle.Text = $"{Application.ProductName}";
 
             toolTipCaptureNow.InitialDelay = 5000;
@@ -212,6 +211,7 @@ namespace Capillume
             toggleSwitchStartWithWindows.Checked = _settings.StartWithWindows;
             numericUpDownInterval.Value = _settings.IntervalMinutes;
             comboBoxCaptureMode.SelectedIndex = _settings.CaptureFullScreen ? 0 : 1;
+            checkBoxIncludeCapillume.Checked = _settings.IncludeCapillume;
 
             textBoxFolder.Text = _settings.SaveFolder;
             comboBoxFormat.SelectedItem = _settings.ImageFormat;
@@ -227,7 +227,7 @@ namespace Capillume
 
         private void InitializeScreenshotService()
         {
-            _screenshotService = new ScreenshotService(_settings);
+            _screenshotService = new ScreenshotService(_settings, Handle);
             _screenshotService.ScreenshotCaptured += OnScreenshotCaptured;
             _screenshotService.ErrorOccurred += OnErrorOccurred;
 
@@ -279,11 +279,11 @@ namespace Capillume
             comboBoxCaptureMode.Enabled = toggleSwitchEnabled.Checked;
             labelInterval.Enabled = toggleSwitchEnabled.Checked;
             numericUpDownInterval.Enabled = toggleSwitchEnabled.Checked;
+            checkBoxIncludeCapillume.Enabled = toggleSwitchEnabled.Checked;
             labelFileFormat.Enabled = toggleSwitchEnabled.Checked;
             comboBoxFormat.Enabled = toggleSwitchEnabled.Checked;
             labelQuality.Enabled = toggleSwitchEnabled.Checked;
             trackBarQuality.Enabled = toggleSwitchEnabled.Checked;
-            labelSaveFolder.Enabled = toggleSwitchEnabled.Checked;
             textBoxFolder.Enabled = toggleSwitchEnabled.Checked;
             buttonBrowse.Enabled = toggleSwitchEnabled.Checked;
             buttonAnnotation.Enabled = toggleSwitchEnabled.Checked;
@@ -305,6 +305,11 @@ namespace Capillume
         private void ToggleSwitchStartWithWindows_CheckedChanged(object? sender, EventArgs e)
         {
             // UpdateEnabledStatus();
+            UpdateSaveButtonState();
+        }
+
+        private void CheckBoxIncludeCapillume_CheckedChanged(object? sender, EventArgs e)
+        {
             UpdateSaveButtonState();
         }
 
@@ -379,9 +384,6 @@ namespace Capillume
 
             _settings.Watermark = watermarkForm._settings;
             WatermarkSettingsChanged = true;
-            //SettingsManager.SaveSettings(_settings);
-            //_screenshotService?.UpdateSettings(_settings);
-            //labelStatus.Text = "Watermark settings saved.";
             UpdateSaveButtonState();
         }
 
@@ -432,7 +434,8 @@ namespace Capillume
 
         private void CaptureScreenshotNow()
         {
-            _screenshotService?.CaptureScreenshot();
+            _screenshotService?.CaptureScreenshot(
+                captureWindowBelowCapillume: !_settings.IncludeCapillume && !_settings.CaptureFullScreen);
         }
 
         private void ExitToolStripMenuItem_Click(object? sender, EventArgs e)
@@ -472,6 +475,7 @@ namespace Capillume
                 || toggleSwitchStartWithWindows.Checked != _settings.StartWithWindows
                 || numericUpDownInterval.Value != _settings.IntervalMinutes
                 || comboBoxCaptureMode.SelectedIndex != (_settings.CaptureFullScreen ? 0 : 1)
+                || checkBoxIncludeCapillume.Checked != _settings.IncludeCapillume
                 || !string.Equals(textBoxFolder.Text, _settings.SaveFolder, StringComparison.OrdinalIgnoreCase)
                 || !string.Equals(comboBoxFormat.SelectedItem?.ToString(), _settings.ImageFormat, StringComparison.OrdinalIgnoreCase)
                 || trackBarQuality.Value != _settings.ImageQuality
@@ -519,6 +523,7 @@ namespace Capillume
                 toggleSwitchStartWithWindows.Checked = _settings.StartWithWindows;
                 numericUpDownInterval.Value = _settings.IntervalMinutes;
                 comboBoxCaptureMode.SelectedIndex = _settings.CaptureFullScreen ? 0 : 1;
+                checkBoxIncludeCapillume.Checked = _settings.IncludeCapillume;
                 textBoxFolder.Text = _settings.SaveFolder;
                 comboBoxFormat.SelectedItem = _settings.ImageFormat;
                 trackBarQuality.Value = _settings.ImageQuality;
@@ -553,6 +558,7 @@ namespace Capillume
             _settings.StartWithWindows = toggleSwitchStartWithWindows.Checked;
             _settings.IntervalMinutes = (int)numericUpDownInterval.Value;
             _settings.CaptureFullScreen = comboBoxCaptureMode.SelectedIndex == 0;
+            _settings.IncludeCapillume = checkBoxIncludeCapillume.Checked;
             _settings.SaveFolder = textBoxFolder.Text;
             _settings.ImageFormat = comboBoxFormat.SelectedItem?.ToString() ?? "JPG";
             _settings.ImageQuality = trackBarQuality.Value;

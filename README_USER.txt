@@ -49,11 +49,12 @@ GETTING STARTED
 3. Select whether scheduled screenshots are enabled.
 4. Set the capture interval in minutes.
 5. Choose Full Screen or Active Window capture.
-6. Select the folder where screenshots should be saved.
-7. Select the image format.
-8. Configure annotations if needed.
-9. Click Save.
-10. Use Capture Now at any time to save an immediate screenshot.
+6. Choose whether to include the Capillume window in screenshots.
+7. Select the folder where screenshots should be saved.
+8. Select the image format.
+9. Configure annotations if needed.
+10. Click Save.
+11. Use Capture Now at any time to save an immediate screenshot.
 
 The default screenshot folder is:
 
@@ -67,6 +68,12 @@ Full Screen
 
 Active Window
     Captures the currently active window.
+
+Include Capillume in screenshots
+    By default, Capillume does not include its own window in screenshots. Enable
+    Include Capillume in screenshots to include it in both Full Screen and
+    Active Window captures. If it is disabled, no screenshot is saved when the
+    Capillume window is the active window.
 
 Capture Now
     Click the Capture Now button in the main window to take an immediate

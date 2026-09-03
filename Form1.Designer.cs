@@ -48,7 +48,6 @@
             linkLabelAbout = new LinkLabel();
             pictureBoxLogo = new PictureBox();
             labelTitle = new Label();
-            labelSubtitle = new Label();
             CaptureNow = new CaptureNowButton();
             labelEnableScreenshots = new Label();
             toggleSwitchEnabled = new ToggleSwitch();
@@ -56,9 +55,6 @@
             toggleSwitchStartWithWindows = new ToggleSwitch();
             labelCaptureMode = new Label();
             comboBoxCaptureMode = new ComboBox();
-            labelSaveFolder = new Label();
-            textBoxFolder = new TextBox();
-            buttonBrowse = new Button();
             labelInterval = new Label();
             numericUpDownInterval = new NumericUpDown();
             labelFileFormat = new Label();
@@ -66,21 +62,33 @@
             labelQuality = new Label();
             trackBarQuality = new TrackBar();
             labelQualityValue = new Label();
-            buttonOpenFolder = new Button();
             buttonSave = new Button();
-            panel1 = new Panel();
-            panel2 = new Panel();
             labelShowNotifications = new Label();
             labelStartWithWindows = new Label();
             labelStatus = new Label();
             buttonWatermark = new Button();
             buttonAnnotation = new Button();
+            checkBoxIncludeCapillume = new CheckBox();
+            groupBox2 = new GroupBox();
+            panel5 = new Panel();
+            panel6 = new Panel();
+            buttonOpenFolder = new Button();
+            buttonBrowse = new Button();
+            textBoxFolder = new TextBox();
+            groupBox3 = new GroupBox();
             panel3 = new Panel();
+            panel4 = new Panel();
+            groupBox1 = new GroupBox();
             contextMenuStrip.SuspendLayout();
             panelHeader.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxLogo).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numericUpDownInterval).BeginInit();
             ((System.ComponentModel.ISupportInitialize)trackBarQuality).BeginInit();
+            groupBox2.SuspendLayout();
+            panel5.SuspendLayout();
+            groupBox3.SuspendLayout();
+            panel3.SuspendLayout();
+            groupBox1.SuspendLayout();
             SuspendLayout();
             // 
             // notifyIcon
@@ -142,24 +150,23 @@
             // 
             // panelHeader
             // 
-            panelHeader.BackColor = Color.White;
+            panelHeader.BackColor = Color.Gainsboro;
             panelHeader.Controls.Add(linkLabelAbout);
             panelHeader.Controls.Add(pictureBoxLogo);
             panelHeader.Controls.Add(labelTitle);
-            panelHeader.Controls.Add(labelSubtitle);
             panelHeader.Controls.Add(CaptureNow);
             panelHeader.Dock = DockStyle.Top;
             panelHeader.Location = new Point(0, 0);
             panelHeader.Margin = new Padding(6);
             panelHeader.Name = "panelHeader";
-            panelHeader.Size = new Size(1480, 160);
+            panelHeader.Size = new Size(1480, 139);
             panelHeader.TabIndex = 1;
             // 
             // linkLabelAbout
             // 
             linkLabelAbout.AutoSize = true;
             linkLabelAbout.Font = new Font("Segoe UI", 9F);
-            linkLabelAbout.Location = new Point(398, 112);
+            linkLabelAbout.Location = new Point(462, 75);
             linkLabelAbout.Margin = new Padding(6, 0, 6, 0);
             linkLabelAbout.Name = "linkLabelAbout";
             linkLabelAbout.Size = new Size(79, 32);
@@ -172,10 +179,10 @@
             // 
             pictureBoxLogo.BackColor = Color.Transparent;
             pictureBoxLogo.Image = Properties.Resources.icon;
-            pictureBoxLogo.Location = new Point(45, 30);
+            pictureBoxLogo.Location = new Point(28, 30);
             pictureBoxLogo.Margin = new Padding(6);
             pictureBoxLogo.Name = "pictureBoxLogo";
-            pictureBoxLogo.Size = new Size(114, 114);
+            pictureBoxLogo.Size = new Size(90, 90);
             pictureBoxLogo.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBoxLogo.TabIndex = 2;
             pictureBoxLogo.TabStop = false;
@@ -185,24 +192,12 @@
             labelTitle.AutoSize = true;
             labelTitle.Font = new Font("Segoe UI", 24F);
             labelTitle.ForeColor = Color.FromArgb(64, 64, 64);
-            labelTitle.Location = new Point(170, 30);
+            labelTitle.Location = new Point(130, 34);
             labelTitle.Margin = new Padding(6, 0, 6, 0);
             labelTitle.Name = "labelTitle";
             labelTitle.Size = new Size(320, 86);
             labelTitle.TabIndex = 0;
             labelTitle.Text = "Capillume";
-            // 
-            // labelSubtitle
-            // 
-            labelSubtitle.AutoSize = true;
-            labelSubtitle.Font = new Font("Segoe UI", 9F);
-            labelSubtitle.ForeColor = Color.Gray;
-            labelSubtitle.Location = new Point(180, 112);
-            labelSubtitle.Margin = new Padding(6, 0, 6, 0);
-            labelSubtitle.Name = "labelSubtitle";
-            labelSubtitle.Size = new Size(206, 32);
-            labelSubtitle.TabIndex = 1;
-            labelSubtitle.Text = "Settings • v1.X.X.X";
             // 
             // CaptureNow
             // 
@@ -213,10 +208,10 @@
             CaptureNow.CornerRadius = 10;
             CaptureNow.Font = new Font("Segoe UI Semibold", 10F);
             CaptureNow.HoverBackColor = Color.FromArgb(16, 110, 190);
-            CaptureNow.Location = new Point(1123, 30);
+            CaptureNow.Location = new Point(1155, 30);
             CaptureNow.Name = "CaptureNow";
             CaptureNow.PressedBackColor = Color.FromArgb(0, 92, 158);
-            CaptureNow.Size = new Size(299, 114);
+            CaptureNow.Size = new Size(299, 86);
             CaptureNow.TabIndex = 3;
             CaptureNow.Text = "&Capture Now";
             CaptureNow.Click += CaptureNow_Click;
@@ -225,7 +220,7 @@
             // 
             labelEnableScreenshots.AutoSize = true;
             labelEnableScreenshots.Font = new Font("Segoe UI", 10F);
-            labelEnableScreenshots.Location = new Point(60, 215);
+            labelEnableScreenshots.Location = new Point(30, 62);
             labelEnableScreenshots.Margin = new Padding(6, 0, 6, 0);
             labelEnableScreenshots.Name = "labelEnableScreenshots";
             labelEnableScreenshots.Size = new Size(281, 37);
@@ -235,7 +230,7 @@
             // toggleSwitchEnabled
             // 
             toggleSwitchEnabled.Checked = false;
-            toggleSwitchEnabled.Location = new Point(400, 215);
+            toggleSwitchEnabled.Location = new Point(574, 58);
             toggleSwitchEnabled.Margin = new Padding(6);
             toggleSwitchEnabled.Name = "toggleSwitchEnabled";
             toggleSwitchEnabled.OffColor = Color.FromArgb(200, 200, 200);
@@ -248,7 +243,7 @@
             // toggleSwitchNotify
             // 
             toggleSwitchNotify.Checked = false;
-            toggleSwitchNotify.Location = new Point(873, 211);
+            toggleSwitchNotify.Location = new Point(574, 119);
             toggleSwitchNotify.Margin = new Padding(6);
             toggleSwitchNotify.Name = "toggleSwitchNotify";
             toggleSwitchNotify.OffColor = Color.FromArgb(200, 200, 200);
@@ -261,7 +256,7 @@
             // toggleSwitchStartWithWindows
             // 
             toggleSwitchStartWithWindows.Checked = false;
-            toggleSwitchStartWithWindows.Location = new Point(1322, 211);
+            toggleSwitchStartWithWindows.Location = new Point(574, 185);
             toggleSwitchStartWithWindows.Margin = new Padding(6);
             toggleSwitchStartWithWindows.Name = "toggleSwitchStartWithWindows";
             toggleSwitchStartWithWindows.OffColor = Color.FromArgb(200, 200, 200);
@@ -275,7 +270,7 @@
             // 
             labelCaptureMode.AutoSize = true;
             labelCaptureMode.Font = new Font("Segoe UI", 10F);
-            labelCaptureMode.Location = new Point(60, 320);
+            labelCaptureMode.Location = new Point(30, 253);
             labelCaptureMode.Margin = new Padding(6, 0, 6, 0);
             labelCaptureMode.Name = "labelCaptureMode";
             labelCaptureMode.Size = new Size(188, 37);
@@ -288,52 +283,18 @@
             comboBoxCaptureMode.Font = new Font("Segoe UI", 10F);
             comboBoxCaptureMode.FormattingEnabled = true;
             comboBoxCaptureMode.Items.AddRange(new object[] { "Full Screen", "Active Window" });
-            comboBoxCaptureMode.Location = new Point(60, 370);
+            comboBoxCaptureMode.Location = new Point(30, 296);
             comboBoxCaptureMode.Margin = new Padding(6);
             comboBoxCaptureMode.Name = "comboBoxCaptureMode";
-            comboBoxCaptureMode.Size = new Size(626, 45);
+            comboBoxCaptureMode.Size = new Size(256, 45);
             comboBoxCaptureMode.TabIndex = 11;
             comboBoxCaptureMode.SelectedIndexChanged += ComboBoxCaptureMode_SelectedIndexChanged;
-            // 
-            // labelSaveFolder
-            // 
-            labelSaveFolder.AutoSize = true;
-            labelSaveFolder.Font = new Font("Segoe UI", 10F);
-            labelSaveFolder.Location = new Point(60, 568);
-            labelSaveFolder.Margin = new Padding(6, 0, 6, 0);
-            labelSaveFolder.Name = "labelSaveFolder";
-            labelSaveFolder.Size = new Size(154, 37);
-            labelSaveFolder.TabIndex = 19;
-            labelSaveFolder.Text = "S&ave Folder";
-            // 
-            // textBoxFolder
-            // 
-            textBoxFolder.BackColor = Color.White;
-            textBoxFolder.Font = new Font("Segoe UI", 10F);
-            textBoxFolder.Location = new Point(60, 618);
-            textBoxFolder.Margin = new Padding(6);
-            textBoxFolder.Name = "textBoxFolder";
-            textBoxFolder.ReadOnly = true;
-            textBoxFolder.Size = new Size(347, 43);
-            textBoxFolder.TabIndex = 20;
-            // 
-            // buttonBrowse
-            // 
-            buttonBrowse.Font = new Font("Segoe UI", 10F);
-            buttonBrowse.Location = new Point(419, 615);
-            buttonBrowse.Margin = new Padding(6);
-            buttonBrowse.Name = "buttonBrowse";
-            buttonBrowse.Size = new Size(230, 46);
-            buttonBrowse.TabIndex = 21;
-            buttonBrowse.Text = "&Browse...";
-            buttonBrowse.UseVisualStyleBackColor = true;
-            buttonBrowse.Click += ButtonBrowse_Click;
             // 
             // labelInterval
             // 
             labelInterval.AutoSize = true;
             labelInterval.Font = new Font("Segoe UI", 10F);
-            labelInterval.Location = new Point(790, 320);
+            labelInterval.Location = new Point(409, 253);
             labelInterval.Margin = new Padding(6, 0, 6, 0);
             labelInterval.Name = "labelInterval";
             labelInterval.Size = new Size(222, 37);
@@ -343,12 +304,12 @@
             // numericUpDownInterval
             // 
             numericUpDownInterval.Font = new Font("Segoe UI", 10F);
-            numericUpDownInterval.Location = new Point(790, 370);
+            numericUpDownInterval.Location = new Point(418, 298);
             numericUpDownInterval.Margin = new Padding(6);
             numericUpDownInterval.Maximum = new decimal(new int[] { 1440, 0, 0, 0 });
             numericUpDownInterval.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numericUpDownInterval.Name = "numericUpDownInterval";
-            numericUpDownInterval.Size = new Size(626, 43);
+            numericUpDownInterval.Size = new Size(256, 43);
             numericUpDownInterval.TabIndex = 13;
             numericUpDownInterval.Value = new decimal(new int[] { 5, 0, 0, 0 });
             numericUpDownInterval.ValueChanged += NumericUpDownInterval_ValueChanged;
@@ -357,12 +318,12 @@
             // 
             labelFileFormat.AutoSize = true;
             labelFileFormat.Font = new Font("Segoe UI", 10F);
-            labelFileFormat.Location = new Point(60, 444);
+            labelFileFormat.Location = new Point(43, 62);
             labelFileFormat.Margin = new Padding(6, 0, 6, 0);
             labelFileFormat.Name = "labelFileFormat";
-            labelFileFormat.Size = new Size(230, 37);
+            labelFileFormat.Size = new Size(149, 37);
             labelFileFormat.TabIndex = 14;
-            labelFileFormat.Text = "Image &File Format";
+            labelFileFormat.Text = "&File Format";
             // 
             // comboBoxFormat
             // 
@@ -370,10 +331,10 @@
             comboBoxFormat.Font = new Font("Segoe UI", 10F);
             comboBoxFormat.FormattingEnabled = true;
             comboBoxFormat.Items.AddRange(new object[] { "JPG", "PNG", "BMP", "WEBP" });
-            comboBoxFormat.Location = new Point(60, 494);
+            comboBoxFormat.Location = new Point(43, 119);
             comboBoxFormat.Margin = new Padding(6);
             comboBoxFormat.Name = "comboBoxFormat";
-            comboBoxFormat.Size = new Size(626, 45);
+            comboBoxFormat.Size = new Size(149, 45);
             comboBoxFormat.TabIndex = 15;
             comboBoxFormat.SelectedIndexChanged += ComboBoxFormat_SelectedIndexChanged;
             // 
@@ -381,7 +342,7 @@
             // 
             labelQuality.AutoSize = true;
             labelQuality.Font = new Font("Segoe UI", 10F);
-            labelQuality.Location = new Point(790, 444);
+            labelQuality.Location = new Point(229, 62);
             labelQuality.Margin = new Padding(6, 0, 6, 0);
             labelQuality.Name = "labelQuality";
             labelQuality.Size = new Size(183, 37);
@@ -390,14 +351,16 @@
             // 
             // trackBarQuality
             // 
-            trackBarQuality.Location = new Point(790, 494);
+            trackBarQuality.AutoSize = false;
+            trackBarQuality.Location = new Point(229, 119);
             trackBarQuality.Margin = new Padding(6);
             trackBarQuality.Maximum = 100;
             trackBarQuality.Minimum = 1;
             trackBarQuality.Name = "trackBarQuality";
-            trackBarQuality.Size = new Size(538, 90);
+            trackBarQuality.Size = new Size(359, 45);
             trackBarQuality.TabIndex = 17;
             trackBarQuality.TickFrequency = 10;
+            trackBarQuality.TickStyle = TickStyle.None;
             trackBarQuality.Value = 70;
             trackBarQuality.Scroll += TrackBarQuality_Scroll;
             trackBarQuality.ValueChanged += TrackBarQuality_ValueChanged;
@@ -406,7 +369,7 @@
             // 
             labelQualityValue.AutoSize = true;
             labelQualityValue.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            labelQualityValue.Location = new Point(1344, 494);
+            labelQualityValue.Location = new Point(600, 119);
             labelQualityValue.Margin = new Padding(6, 0, 6, 0);
             labelQualityValue.Name = "labelQualityValue";
             labelQualityValue.Size = new Size(72, 37);
@@ -414,55 +377,27 @@
             labelQualityValue.Text = "70%";
             labelQualityValue.TextAlign = ContentAlignment.MiddleLeft;
             // 
-            // buttonOpenFolder
-            // 
-            buttonOpenFolder.Font = new Font("Segoe UI", 10F);
-            buttonOpenFolder.Location = new Point(661, 615);
-            buttonOpenFolder.Margin = new Padding(6);
-            buttonOpenFolder.Name = "buttonOpenFolder";
-            buttonOpenFolder.Size = new Size(230, 46);
-            buttonOpenFolder.TabIndex = 22;
-            buttonOpenFolder.Text = "&Open Folder";
-            buttonOpenFolder.UseVisualStyleBackColor = true;
-            buttonOpenFolder.Click += ButtonOpenFolder_Click;
-            // 
             // buttonSave
             // 
             buttonSave.BackColor = Color.FromArgb(0, 120, 212);
             buttonSave.FlatAppearance.BorderSize = 0;
             buttonSave.FlatStyle = FlatStyle.Flat;
-            buttonSave.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            buttonSave.Font = new Font("Segoe UI", 10F);
             buttonSave.ForeColor = Color.White;
-            buttonSave.Location = new Point(1192, 730);
+            buttonSave.Location = new Point(1224, 664);
             buttonSave.Margin = new Padding(6);
             buttonSave.Name = "buttonSave";
             buttonSave.Size = new Size(230, 70);
             buttonSave.TabIndex = 0;
-            buttonSave.Text = "&Save";
+            buttonSave.Text = "&Save Settings";
             buttonSave.UseVisualStyleBackColor = false;
             buttonSave.Click += ButtonSave_Click;
-            // 
-            // panel1
-            // 
-            panel1.BorderStyle = BorderStyle.FixedSingle;
-            panel1.Location = new Point(60, 283);
-            panel1.Name = "panel1";
-            panel1.Size = new Size(1356, 1);
-            panel1.TabIndex = 9;
-            // 
-            // panel2
-            // 
-            panel2.BorderStyle = BorderStyle.FixedSingle;
-            panel2.Location = new Point(62, 703);
-            panel2.Name = "panel2";
-            panel2.Size = new Size(1356, 1);
-            panel2.TabIndex = 23;
             // 
             // labelShowNotifications
             // 
             labelShowNotifications.AutoSize = true;
             labelShowNotifications.Font = new Font("Segoe UI", 10F);
-            labelShowNotifications.Location = new Point(613, 215);
+            labelShowNotifications.Location = new Point(30, 123);
             labelShowNotifications.Name = "labelShowNotifications";
             labelShowNotifications.Size = new Size(240, 37);
             labelShowNotifications.TabIndex = 5;
@@ -471,9 +406,10 @@
             // labelStartWithWindows
             // 
             labelStartWithWindows.AutoSize = true;
-            labelStartWithWindows.Location = new Point(1080, 217);
+            labelStartWithWindows.Font = new Font("Segoe UI", 10F);
+            labelStartWithWindows.Location = new Point(30, 189);
             labelStartWithWindows.Name = "labelStartWithWindows";
-            labelStartWithWindows.Size = new Size(223, 32);
+            labelStartWithWindows.Size = new Size(251, 37);
             labelStartWithWindows.TabIndex = 7;
             labelStartWithWindows.Text = "Start With &Windows";
             // 
@@ -481,7 +417,7 @@
             // 
             labelStatus.AutoSize = true;
             labelStatus.Font = new Font("Segoe UI", 10F);
-            labelStatus.Location = new Point(45, 747);
+            labelStatus.Location = new Point(754, 693);
             labelStatus.Name = "labelStatus";
             labelStatus.Size = new Size(95, 37);
             labelStatus.TabIndex = 24;
@@ -490,7 +426,7 @@
             // buttonWatermark
             // 
             buttonWatermark.Font = new Font("Segoe UI", 10F);
-            buttonWatermark.Location = new Point(1192, 615);
+            buttonWatermark.Location = new Point(442, 295);
             buttonWatermark.Name = "buttonWatermark";
             buttonWatermark.Size = new Size(230, 46);
             buttonWatermark.TabIndex = 26;
@@ -501,7 +437,7 @@
             // buttonAnnotation
             // 
             buttonAnnotation.Font = new Font("Segoe UI", 10F);
-            buttonAnnotation.Location = new Point(936, 615);
+            buttonAnnotation.Location = new Point(206, 295);
             buttonAnnotation.Name = "buttonAnnotation";
             buttonAnnotation.Size = new Size(230, 46);
             buttonAnnotation.TabIndex = 27;
@@ -509,46 +445,150 @@
             buttonAnnotation.UseVisualStyleBackColor = true;
             buttonAnnotation.Click += ButtonAnnotation_Click;
             // 
+            // checkBoxIncludeCapillume
+            // 
+            checkBoxIncludeCapillume.AutoSize = true;
+            checkBoxIncludeCapillume.Location = new Point(43, 189);
+            checkBoxIncludeCapillume.Name = "checkBoxIncludeCapillume";
+            checkBoxIncludeCapillume.Size = new Size(435, 41);
+            checkBoxIncludeCapillume.TabIndex = 29;
+            checkBoxIncludeCapillume.Text = "Include Capillume in screenshots";
+            checkBoxIncludeCapillume.UseVisualStyleBackColor = true;
+            checkBoxIncludeCapillume.CheckedChanged += CheckBoxIncludeCapillume_CheckedChanged;
+            // 
+            // groupBox2
+            // 
+            groupBox2.Controls.Add(panel5);
+            groupBox2.Controls.Add(labelFileFormat);
+            groupBox2.Controls.Add(comboBoxFormat);
+            groupBox2.Controls.Add(labelQuality);
+            groupBox2.Controls.Add(checkBoxIncludeCapillume);
+            groupBox2.Controls.Add(buttonWatermark);
+            groupBox2.Controls.Add(buttonAnnotation);
+            groupBox2.Controls.Add(trackBarQuality);
+            groupBox2.Controls.Add(labelQualityValue);
+            groupBox2.Font = new Font("Segoe UI", 10F);
+            groupBox2.Location = new Point(754, 181);
+            groupBox2.Name = "groupBox2";
+            groupBox2.Size = new Size(700, 365);
+            groupBox2.TabIndex = 31;
+            groupBox2.TabStop = false;
+            groupBox2.Text = "Output";
+            // 
+            // panel5
+            // 
+            panel5.BorderStyle = BorderStyle.FixedSingle;
+            panel5.Controls.Add(panel6);
+            panel5.Location = new Point(217, 64);
+            panel5.Name = "panel5";
+            panel5.Size = new Size(1, 100);
+            panel5.TabIndex = 32;
+            // 
+            // panel6
+            // 
+            panel6.BorderStyle = BorderStyle.FixedSingle;
+            panel6.Location = new Point(0, -1);
+            panel6.Name = "panel6";
+            panel6.Size = new Size(1, 50);
+            panel6.TabIndex = 29;
+            // 
+            // buttonOpenFolder
+            // 
+            buttonOpenFolder.Font = new Font("Segoe UI", 10F);
+            buttonOpenFolder.Location = new Point(444, 119);
+            buttonOpenFolder.Margin = new Padding(6);
+            buttonOpenFolder.Name = "buttonOpenFolder";
+            buttonOpenFolder.Size = new Size(230, 46);
+            buttonOpenFolder.TabIndex = 22;
+            buttonOpenFolder.Text = "&Open Folder";
+            buttonOpenFolder.UseVisualStyleBackColor = true;
+            buttonOpenFolder.Click += ButtonOpenFolder_Click;
+            // 
+            // buttonBrowse
+            // 
+            buttonBrowse.Font = new Font("Segoe UI", 10F);
+            buttonBrowse.Location = new Point(444, 61);
+            buttonBrowse.Margin = new Padding(6);
+            buttonBrowse.Name = "buttonBrowse";
+            buttonBrowse.Size = new Size(230, 46);
+            buttonBrowse.TabIndex = 21;
+            buttonBrowse.Text = "&Browse...";
+            buttonBrowse.UseVisualStyleBackColor = true;
+            buttonBrowse.Click += ButtonBrowse_Click;
+            // 
+            // textBoxFolder
+            // 
+            textBoxFolder.BackColor = Color.White;
+            textBoxFolder.Font = new Font("Segoe UI", 10F);
+            textBoxFolder.Location = new Point(30, 63);
+            textBoxFolder.Margin = new Padding(6);
+            textBoxFolder.Name = "textBoxFolder";
+            textBoxFolder.ReadOnly = true;
+            textBoxFolder.Size = new Size(402, 43);
+            textBoxFolder.TabIndex = 20;
+            // 
+            // groupBox3
+            // 
+            groupBox3.Controls.Add(textBoxFolder);
+            groupBox3.Controls.Add(buttonBrowse);
+            groupBox3.Controls.Add(buttonOpenFolder);
+            groupBox3.Font = new Font("Segoe UI", 10F);
+            groupBox3.Location = new Point(28, 569);
+            groupBox3.Name = "groupBox3";
+            groupBox3.Size = new Size(700, 183);
+            groupBox3.TabIndex = 32;
+            groupBox3.TabStop = false;
+            groupBox3.Text = "Storage";
+            // 
             // panel3
             // 
             panel3.BorderStyle = BorderStyle.FixedSingle;
-            panel3.Location = new Point(911, 615);
+            panel3.Controls.Add(panel4);
+            panel3.Location = new Point(350, 292);
             panel3.Name = "panel3";
             panel3.Size = new Size(1, 50);
             panel3.TabIndex = 28;
+            // 
+            // panel4
+            // 
+            panel4.BorderStyle = BorderStyle.FixedSingle;
+            panel4.Location = new Point(0, -1);
+            panel4.Name = "panel4";
+            panel4.Size = new Size(1, 50);
+            panel4.TabIndex = 29;
+            // 
+            // groupBox1
+            // 
+            groupBox1.Controls.Add(labelEnableScreenshots);
+            groupBox1.Controls.Add(toggleSwitchEnabled);
+            groupBox1.Controls.Add(labelShowNotifications);
+            groupBox1.Controls.Add(panel3);
+            groupBox1.Controls.Add(toggleSwitchNotify);
+            groupBox1.Controls.Add(labelStartWithWindows);
+            groupBox1.Controls.Add(toggleSwitchStartWithWindows);
+            groupBox1.Controls.Add(labelCaptureMode);
+            groupBox1.Controls.Add(comboBoxCaptureMode);
+            groupBox1.Controls.Add(labelInterval);
+            groupBox1.Controls.Add(numericUpDownInterval);
+            groupBox1.Font = new Font("Segoe UI", 10F);
+            groupBox1.Location = new Point(28, 181);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new Size(700, 365);
+            groupBox1.TabIndex = 30;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "Automation";
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(192F, 192F);
             AutoScaleMode = AutoScaleMode.Dpi;
             BackColor = Color.White;
-            ClientSize = new Size(1480, 828);
-            Controls.Add(panel3);
-            Controls.Add(buttonAnnotation);
-            Controls.Add(buttonWatermark);
+            ClientSize = new Size(1480, 772);
+            Controls.Add(groupBox3);
+            Controls.Add(groupBox2);
+            Controls.Add(groupBox1);
             Controls.Add(labelStatus);
-            Controls.Add(labelStartWithWindows);
-            Controls.Add(panel2);
-            Controls.Add(panel1);
             Controls.Add(buttonSave);
-            Controls.Add(buttonOpenFolder);
-            Controls.Add(labelQualityValue);
-            Controls.Add(trackBarQuality);
-            Controls.Add(labelQuality);
-            Controls.Add(comboBoxFormat);
-            Controls.Add(labelFileFormat);
-            Controls.Add(numericUpDownInterval);
-            Controls.Add(labelInterval);
-            Controls.Add(buttonBrowse);
-            Controls.Add(textBoxFolder);
-            Controls.Add(labelSaveFolder);
-            Controls.Add(comboBoxCaptureMode);
-            Controls.Add(labelCaptureMode);
-            Controls.Add(toggleSwitchEnabled);
-            Controls.Add(labelEnableScreenshots);
-            Controls.Add(toggleSwitchNotify);
-            Controls.Add(labelShowNotifications);
-            Controls.Add(toggleSwitchStartWithWindows);
             Controls.Add(panelHeader);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             Margin = new Padding(6);
@@ -563,6 +603,14 @@
             ((System.ComponentModel.ISupportInitialize)pictureBoxLogo).EndInit();
             ((System.ComponentModel.ISupportInitialize)numericUpDownInterval).EndInit();
             ((System.ComponentModel.ISupportInitialize)trackBarQuality).EndInit();
+            groupBox2.ResumeLayout(false);
+            groupBox2.PerformLayout();
+            panel5.ResumeLayout(false);
+            groupBox3.ResumeLayout(false);
+            groupBox3.PerformLayout();
+            panel3.ResumeLayout(false);
+            groupBox1.ResumeLayout(false);
+            groupBox1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -583,7 +631,6 @@
         private Panel panelHeader;
         private PictureBox pictureBoxLogo;
         private Label labelTitle;
-        private Label labelSubtitle;
         private LinkLabel linkLabelAbout;
 
         private Label labelEnableScreenshots;
@@ -598,10 +645,6 @@
         private Label labelCaptureMode;
         private ComboBox comboBoxCaptureMode;
 
-        private Label labelSaveFolder;
-        private TextBox textBoxFolder;
-        private Button buttonBrowse;
-
         private Label labelInterval;
         private NumericUpDown numericUpDownInterval;
 
@@ -611,15 +654,21 @@
         private Label labelQuality;
         private TrackBar trackBarQuality;
         private Label labelQualityValue;
-
-        private Button buttonOpenFolder;
         private Button buttonSave;
-        private Panel panel1;
-        private Panel panel2;
         private Label labelStartWithWindows;
         private Label labelStatus;
         private Button buttonWatermark;
         private Button buttonAnnotation;
+        private CheckBox checkBoxIncludeCapillume;
+        private GroupBox groupBox2;
+        private Panel panel5;
+        private Panel panel6;
+        private Button buttonOpenFolder;
+        private Button buttonBrowse;
+        private TextBox textBoxFolder;
+        private GroupBox groupBox3;
         private Panel panel3;
+        private Panel panel4;
+        private GroupBox groupBox1;
     }
 }

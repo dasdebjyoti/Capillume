@@ -35,6 +35,7 @@ namespace Capillume
         public bool StartWithWindows { get; set; } = false;
         public int IntervalMinutes { get; set; } = 10;
         public bool CaptureFullScreen { get; set; } = true;
+        public bool IncludeCapillume { get; set; } = false;
         public string SaveFolder { get; set; } = string.Empty;
         public string ImageFormat { get; set; } = "JPG";
         public int ImageQuality { get; set; } = Constants.ScreenshotImageQualityDefault; // 70;

@@ -5,6 +5,7 @@ Capillume is a lightweight Windows screenshot automation tool. Capture your enti
 ## Features
 
 - Capture all connected displays or the active window.
+- Exclude the Capillume window from screenshots by default, or include it when needed.
 - Capture a screenshot immediately when scheduled capture starts.
 - Configure the capture interval in minutes.
 - Save screenshots to a custom folder.
@@ -53,11 +54,19 @@ Use the main window to configure:
 1. Whether scheduled screenshots are enabled.
 2. The capture interval.
 3. Full-screen or active-window capture mode.
-4. The destination folder.
-5. The image format and, for JPG/WebP, image quality.
-6. Watermark settings.
-7. Annotation settings.
-8. Notifications and Windows startup behavior.
+4. Whether the Capillume window is included in screenshots.
+5. The destination folder.
+6. The image format and, for JPG/WebP, image quality.
+7. Watermark settings.
+8. Annotation settings.
+9. Notifications and Windows startup behavior.
+
+### Capture scope
+
+By default, Capillume does not include its own window in screenshots. Enable
+**Include Capillume in screenshots** to include it in both full-screen and
+active-window captures. For active-window capture, screenshots are not saved
+when the Capillume window is the active window while this option is disabled.
 
 ### Annotations
 
