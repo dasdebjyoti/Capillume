@@ -77,8 +77,8 @@ Include Capillume in screenshots
 
 Capture Now
     Click the Capture Now button in the main window to take an immediate
-    screenshot. You can also press Alt+C when the main window is active. This
-    action is available even when scheduled screenshots are disabled.
+    screenshot. This action is available even when scheduled screenshots are
+    disabled.
 
     To take an immediate screenshot while the application is minimized, right-
     click the Capillume icon in the Windows system tray and select Capture Now.
@@ -99,7 +99,7 @@ files.
 WATERMARKS
 ----------
 
-Click Watermark in the main window to configure text and image watermarks.
+You can configure text and image watermarks from the Watermark tab in the Advanced Settings window.
 
 Text watermarks support:
 
@@ -124,9 +124,12 @@ Watermarks are applied before screenshots are saved.
 ANNOTATIONS
 -----------
 
-Click Annotation in the main window to add dynamic information to captured
-screenshots. Annotations appear at the bottom center of the image and support
-custom formats, font settings, text color, optional highlighting, and opacity.
+You can configure text annotations from the Annotation tab in the Advanced
+Settings window. Annotations lets you add dynamic information to captured
+screenshots. They appear at the bottom center of the image and support
+custom formats, font family, font size, font style, text color, optional
+background highlighting, and opacity. Use the annotation field menu to insert
+supported fields into the format.
 
 Insert one or more of these fields into the annotation format:
 

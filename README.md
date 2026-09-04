@@ -70,10 +70,11 @@ when the Capillume window is the active window while this option is disabled.
 
 ### Annotations
 
-Open **Annotation** from the main window to add dynamic information to each
-captured screenshot. Annotations are rendered at the bottom center and support
-custom text formats, font settings, text color, optional highlighting, and
-opacity.
+Go to **Annotation** tab in the Advanced Settings window to add dynamic information
+to each captured screenshot. Annotations are rendered at the bottom center and
+support custom text formats, font family, font size, font style, text color,
+optional background highlighting, and opacity. Use the annotation field menu to
+insert supported placeholders into the format.
 
 Use these fields in an annotation format:
 
@@ -97,11 +98,12 @@ The default annotation format is `{{OS}} | {{DATETIME}}`.
 
 ### Watermarks
 
-Open **Watermark** from the main window to configure watermarking. Text and
-image watermarks can be used independently or together. Text watermarks support
-a custom font and style, while image watermarks support scaling from 1% to 100%.
-Both watermark types support opacity from 1% to 100%, nine placement options,
-and 0°, 90°, 180°, or 270° rotation.
+Go to **Watermark** tab in the Advanced Settings window to configure
+watermarking. Text and image watermarks can be used independently or
+together. Text watermarks support a custom font and style, while image
+watermarks support scaling from 1% to 100%. Both watermark types support
+opacity from 1% to 100%, nine placement options, and 0°, 90°, 180°, or 270°
+rotation.
 
 Watermark settings are applied to each captured screenshot before it is saved.
 If a watermark image is enabled, the selected image file must exist when the
