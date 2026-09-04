@@ -286,8 +286,7 @@ namespace Capillume
             trackBarQuality.Enabled = toggleSwitchEnabled.Checked;
             textBoxFolder.Enabled = toggleSwitchEnabled.Checked;
             buttonBrowse.Enabled = toggleSwitchEnabled.Checked;
-            buttonAnnotation.Enabled = toggleSwitchEnabled.Checked;
-            buttonWatermark.Enabled = toggleSwitchEnabled.Checked;
+            buttonSettings.Enabled = toggleSwitchEnabled.Checked;
         }
 
         private void ToggleSwitchEnabled_CheckedChanged(object? sender, EventArgs e)
@@ -374,34 +373,21 @@ namespace Capillume
             }
         }
 
-        private void ButtonWatermark_Click(object? sender, EventArgs e)
+        private void ButtonSettings_Click(object sender, EventArgs e)
         {
-            using var watermarkForm = new FormWatermark(_settings.Watermark);
-            if (watermarkForm.ShowDialog(this) != DialogResult.OK)
+            using var settingsForm = new FormSettings(_settings.Watermark, _settings.Annotation);
+            if (settingsForm.ShowDialog(this) != DialogResult.OK)
             {
                 return;
             }
 
-            _settings.Watermark = watermarkForm._settings;
-            WatermarkSettingsChanged = true;
+            _settings.Watermark = settingsForm.WatermarkSettings;
+            _settings.Annotation = settingsForm.AnnotationSettings;
+            WatermarkSettingsChanged = WatermarkSettingsChanged || settingsForm.WatermarkSettingsChanged;
+            AnnotationSettingsChanged = AnnotationSettingsChanged || settingsForm.AnnotationSettingsChanged;
             UpdateSaveButtonState();
         }
 
-        private void ButtonAnnotation_Click(object sender, EventArgs e)
-        {
-            using var annotationForm = new FormAnnotation(_settings.Annotation);
-            if (annotationForm.ShowDialog(this) != DialogResult.OK)
-            {
-                return;
-            }
-
-            _settings.Annotation = annotationForm._settings;
-            AnnotationSettingsChanged = true;
-            //SettingsManager.SaveSettings(_settings);
-            //_screenshotService?.UpdateSettings(_settings);
-            //labelStatus.Text = "Watermark settings saved.";
-            UpdateSaveButtonState();
-        }
         private void UpdateQualityControlsVisibility()
         {
             string? format = comboBoxFormat.SelectedItem?.ToString();

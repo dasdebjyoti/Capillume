@@ -46,7 +46,6 @@ namespace Capillume
 
     public class WatermarkSettings
     {
-        public bool Enabled { get; set; }
         public bool UseText { get; set; } = false;
         public bool UseImage { get; set; } = false;
         public string WatermarkText { get; set; } = "Capillume"; // string.Empty;

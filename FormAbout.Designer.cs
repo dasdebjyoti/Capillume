@@ -79,7 +79,7 @@ namespace Capillume
             // labelCopyright
             // 
             labelCopyright.AutoSize = true;
-            labelCopyright.Font = new Font("Segoe UI", 9F);
+            labelCopyright.Font = new Font("Segoe UI", 10F);
             labelCopyright.ForeColor = Color.Gray;
             labelCopyright.Location = new Point(60, 560);
             labelCopyright.Margin = new Padding(6, 0, 6, 0);

@@ -8,7 +8,7 @@ namespace Capillume
     {
         public static void Apply(Bitmap screenshot, WatermarkSettings watermarkSettings, AnnotationSettings annotationSettings)
         {
-            bool drawWatermark = watermarkSettings.Enabled && (watermarkSettings.UseText || watermarkSettings.UseImage);
+            bool drawWatermark = watermarkSettings.UseText || watermarkSettings.UseImage;
             bool drawAnnotation = /*annotationSettings.Enabled &&*/ annotationSettings.UseAnnotation;
             if (!drawWatermark && !drawAnnotation)
             {
