@@ -11,6 +11,8 @@ Capillume is a lightweight Windows screenshot automation tool. Capture your enti
 - Save screenshots to a custom folder.
 - Save as PNG, JPG, BMP, or WebP.
 - Configure JPG and WebP image quality.
+- Downscale screenshots before saving using target height, resize percentage, max width, or bounding box modes.
+- Choose downscale quality and optional processing controls such as sharpen, skip smaller images, full-screen only, and lossy-formats only.
 - Add text and/or image watermarks to captured screenshots.
 - Customize watermark text, font family, font size, and font style.
 - Select a watermark image from a PNG, JPG, JPEG, BMP, or GIF file.
@@ -59,7 +61,38 @@ Use the main window to configure:
 6. The image format and, for JPG/WebP, image quality.
 7. Watermark settings.
 8. Annotation settings.
-9. Notifications and Windows startup behavior.
+9. Downscale settings.
+10. Notifications and Windows startup behavior.
+
+### Watermarks
+
+Go to **Watermark** tab in the Advanced Settings window to configure
+watermarking. Text and image watermarks can be used independently or
+together. Text watermarks support a custom font and style, while image
+watermarks support scaling from 1% to 100%. Both watermark types support
+opacity from 1% to 100%, nine placement options, and 0°, 90°, 180°, or 270°
+rotation.
+
+Watermark settings are applied to each captured screenshot before it is saved.
+If a watermark image is enabled, the selected image file must exist when the
+settings are saved.
+
+Capture automatically pauses during screen lock and system sleep. These lifecycle
+behaviors are enabled by default and do not require a separate dialog. The
+**Exit** command closes Capillume completely; closing the main window normally
+minimizes the application to the system tray.
+
+Capillume does not capture while the Windows session is locked or the computer
+is suspended. When capture resumes after unlock or wake, one screenshot is
+taken immediately and the configured schedule continues.
+
+Settings are stored in:
+
+```text
+%APPDATA%\Capillume\settings.json
+```
+
+The default destination is the `Capillume Screenshots` folder under the current user's Pictures directory.
 
 ### Capture scope
 
@@ -96,35 +129,19 @@ Use these fields in an annotation format:
 
 The default annotation format is `{{OS}} | {{DATETIME}}`.
 
-### Watermarks
+### Downscaling
 
-Go to **Watermark** tab in the Advanced Settings window to configure
-watermarking. Text and image watermarks can be used independently or
-together. Text watermarks support a custom font and style, while image
-watermarks support scaling from 1% to 100%. Both watermark types support
-opacity from 1% to 100%, nine placement options, and 0°, 90°, 180°, or 270°
-rotation.
+Go to **Downscale** tab in the Advanced Settings window to reduce screenshot
+size before saving. Enable downscaling and choose one mode:
 
-Watermark settings are applied to each captured screenshot before it is saved.
-If a watermark image is enabled, the selected image file must exist when the
-settings are saved.
+- **Target Height**: resizes using a fixed height.
+- **Percentage**: resizes to a percentage of the original capture.
+- **Max Width**: reduces width to a maximum value.
+- **Fit Within Bounding Box**: fits the image inside a width/height box.
 
-Capture automatically pauses during screen lock and system sleep. These lifecycle
-behaviors are enabled by default and do not require a separate dialog. The
-**Exit** command closes Capillume completely; closing the main window normally
-minimizes the application to the system tray.
-
-Capillume does not capture while the Windows session is locked or the computer
-is suspended. When capture resumes after unlock or wake, one screenshot is
-taken immediately and the configured schedule continues.
-
-Settings are stored in:
-
-```text
-%APPDATA%\Capillume\settings.json
-```
-
-The default destination is the `Capillume Screenshots` folder under the current user's Pictures directory.
+You can also choose resize quality (**High Quality/Bicubic**, **Balanced/Bilinear**,
+or **Fast/Nearest Neighbor**) and optionally enable sharpen-after-resize, skip
+smaller images, full-screen-only downscaling, or lossy-formats-only downscaling.
 
 ## Technology
 

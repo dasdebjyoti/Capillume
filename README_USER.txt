@@ -52,9 +52,11 @@ GETTING STARTED
 6. Choose whether to include the Capillume window in screenshots.
 7. Select the folder where screenshots should be saved.
 8. Select the image format.
-9. Configure annotations if needed.
-10. Click Save.
-11. Use Capture Now at any time to save an immediate screenshot.
+9. Configure watermarks if needed.
+10. Configure annotations if needed.
+11. Configure downscaling if needed.
+12. Click Save.
+13. Use Capture Now at any time to save an immediate screenshot.
 
 The default screenshot folder is:
 
@@ -150,6 +152,27 @@ Insert one or more of these fields into the annotation format:
 The default annotation format is:
 
     {{OS}} | {{DATETIME}}
+
+DOWNSCALING
+-----------
+
+You can configure screenshot downscaling from the Downscale tab in the Advanced
+Settings window.
+
+Downscale modes:
+
+- Target Height: Resize using a fixed output height.
+- Percentage: Resize to a percentage of the original capture size.
+- Max Width: Reduce to a maximum width.
+- Fit Within Bounding Box: Fit inside a configured width and height.
+
+Downscale options:
+
+- Quality: High Quality (Bicubic), Balanced (Bilinear), or Fast (Nearest Neighbor)
+- Sharpen after resize
+- Skip smaller images
+- Full-screen only
+- Lossy formats only (JPG/WEBP)
 
 SYSTEM TRAY
 -----------
