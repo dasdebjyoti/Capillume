@@ -9,6 +9,7 @@ namespace Capillume
         private AppSettings _settings;
         private bool WatermarkSettingsChanged = false;
         private bool AnnotationSettingsChanged = false;
+        private bool DownscaleSettingsChanged = false;
         private Icon? _appIcon;
         private bool _isStartedWithWindows;
         private bool _isSessionLocked;
@@ -375,7 +376,7 @@ namespace Capillume
 
         private void ButtonSettings_Click(object sender, EventArgs e)
         {
-            using var settingsForm = new FormSettings(_settings.Watermark, _settings.Annotation);
+            using var settingsForm = new FormSettings(_settings.Watermark, _settings.Annotation, _settings.Downscale);
             if (settingsForm.ShowDialog(this) != DialogResult.OK)
             {
                 return;
@@ -383,8 +384,10 @@ namespace Capillume
 
             _settings.Watermark = settingsForm.WatermarkSettings;
             _settings.Annotation = settingsForm.AnnotationSettings;
+            _settings.Downscale = settingsForm.DownscaleSettings;
             WatermarkSettingsChanged = WatermarkSettingsChanged || settingsForm.WatermarkSettingsChanged;
             AnnotationSettingsChanged = AnnotationSettingsChanged || settingsForm.AnnotationSettingsChanged;
+            DownscaleSettingsChanged = DownscaleSettingsChanged || settingsForm.DownscaleSettingsChanged;
             UpdateSaveButtonState();
         }
 
@@ -466,7 +469,8 @@ namespace Capillume
                 || !string.Equals(comboBoxFormat.SelectedItem?.ToString(), _settings.ImageFormat, StringComparison.OrdinalIgnoreCase)
                 || trackBarQuality.Value != _settings.ImageQuality
                 || WatermarkSettingsChanged == true
-                || AnnotationSettingsChanged == true;
+                || AnnotationSettingsChanged == true
+                || DownscaleSettingsChanged == true;
         }
 
         /// <summary>
@@ -517,6 +521,9 @@ namespace Capillume
                 labelQualityValue.Text = $"{_settings.ImageQuality}%";
                 UpdateEnabledStatus();
                 UpdateQualityControlsVisibility();
+                WatermarkSettingsChanged = false;
+                AnnotationSettingsChanged = false;
+                DownscaleSettingsChanged = false;
             }
             finally
             {
@@ -553,6 +560,7 @@ namespace Capillume
             SettingsManager.SetAutoStart(_settings.StartWithWindows);
             WatermarkSettingsChanged = false;
             AnnotationSettingsChanged = false;
+            DownscaleSettingsChanged = false;
 
             _screenshotService?.UpdateSettings(_settings);
 

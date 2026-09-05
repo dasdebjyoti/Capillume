@@ -26,6 +26,32 @@ namespace Capillume
         public const int AnnotationOpacityMax = 100;
         public const int AnnotationOpacityDefault = 80;
         public const string AnnotationFormatDefault = "{{OS}} | {{DATETIME}}";
+        public const int DownscaleTargetHeightMin = 100;
+        public const int DownscaleTargetHeightMax = 10000;
+        public const int DownscaleTargetHeightDefault = 1080;
+        public const int DownscalePercentageMin = 1;
+        public const int DownscalePercentageMax = 100;
+        public const int DownscalePercentageDefault = 75;
+        public const int DownscaleMaxWidthMin = 100;
+        public const int DownscaleMaxWidthMax = 10000;
+        public const int DownscaleMaxWidthDefault = 1920;
+        public const int DownscaleBoundingWidthDefault = 1920;
+        public const int DownscaleBoundingHeightDefault = 1080;
+    }
+
+    public enum DownscaleMode
+    {
+        TargetHeight,
+        Percentage,
+        MaxWidth,
+        BoundingBox
+    }
+
+    public enum DownscaleQuality
+    {
+        HighQuality,
+        Balanced,
+        Fast
     }
 
     public class AppSettings
@@ -42,6 +68,23 @@ namespace Capillume
         public bool AutoStartWithWindows { get; set; } = false;
         public WatermarkSettings Watermark { get; set; } = new();
         public AnnotationSettings Annotation { get; set; } = new();
+        public DownscaleSettings Downscale { get; set; } = new();
+    }
+
+    public class DownscaleSettings
+    {
+        public bool Enabled { get; set; } = false;
+        public DownscaleMode Mode { get; set; } = DownscaleMode.TargetHeight;
+        public int TargetHeight { get; set; } = Constants.DownscaleTargetHeightDefault;
+        public int ResizePercentage { get; set; } = Constants.DownscalePercentageDefault;
+        public int MaxWidth { get; set; } = Constants.DownscaleMaxWidthDefault;
+        public int BoundingBoxWidth { get; set; } = Constants.DownscaleBoundingWidthDefault;
+        public int BoundingBoxHeight { get; set; } = Constants.DownscaleBoundingHeightDefault;
+        public DownscaleQuality Quality { get; set; } = DownscaleQuality.HighQuality;
+        public bool SharpenAfterResize { get; set; } = false;
+        public bool SkipSmallerImages { get; set; } = true;
+        public bool FullScreenOnly { get; set; } = false;
+        public bool LossyFormatsOnly { get; set; } = false;
     }
 
     public class WatermarkSettings
@@ -181,6 +224,38 @@ namespace Capillume
             settings.Annotation.AnnotationFontSize = Math.Clamp(settings.Annotation.AnnotationFontSize, 6, 200);
             settings.Annotation.AnnotationFormat ??= string.Empty;
             settings.Annotation.AnnotationOpacity = Math.Clamp(settings.Annotation.AnnotationOpacity, Constants.AnnotationOpacityMin, Constants.AnnotationOpacityMax);
+
+            settings.Downscale ??= new DownscaleSettings();
+            if (!Enum.IsDefined(settings.Downscale.Mode))
+            {
+                settings.Downscale.Mode = DownscaleMode.TargetHeight;
+            }
+
+            settings.Downscale.TargetHeight = Math.Clamp(
+                settings.Downscale.TargetHeight,
+                Constants.DownscaleTargetHeightMin,
+                Constants.DownscaleTargetHeightMax);
+            settings.Downscale.ResizePercentage = Math.Clamp(
+                settings.Downscale.ResizePercentage,
+                Constants.DownscalePercentageMin,
+                Constants.DownscalePercentageMax);
+            settings.Downscale.MaxWidth = Math.Clamp(
+                settings.Downscale.MaxWidth,
+                Constants.DownscaleMaxWidthMin,
+                Constants.DownscaleMaxWidthMax);
+            settings.Downscale.BoundingBoxWidth = Math.Clamp(
+                settings.Downscale.BoundingBoxWidth,
+                Constants.DownscaleMaxWidthMin,
+                Constants.DownscaleMaxWidthMax);
+            settings.Downscale.BoundingBoxHeight = Math.Clamp(
+                settings.Downscale.BoundingBoxHeight,
+                Constants.DownscaleTargetHeightMin,
+                Constants.DownscaleTargetHeightMax);
+
+            if (!Enum.IsDefined(settings.Downscale.Quality))
+            {
+                settings.Downscale.Quality = DownscaleQuality.HighQuality;
+            }
         }
 
         public static void SetAutoStart(bool enable)

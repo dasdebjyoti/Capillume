@@ -16,9 +16,9 @@
     <PackageTags>productivity, productivity-tools; proof-of-work; screen-capture; screenshot; screenshot-annotation; screenshot-application; screenshot-automation; screenshot-utility</PackageTags>
     <PackageIcon>icon.png</PackageIcon>
     <Title>Capillume Screenshot Automation</Title>
-    <AssemblyVersion>1.7.1.0</AssemblyVersion>
-    <FileVersion>1.7.1.0</FileVersion>
-    <Version>1.7.1</Version>
+    <AssemblyVersion>1.8.0.0</AssemblyVersion>
+    <FileVersion>1.8.0.0</FileVersion>
+    <Version>1.8.0</Version>
 
     <!-- Uncomment to force SkiaSharp to be bundled inside the published application exe -->
     <!-- Added DjD.20260823 -->

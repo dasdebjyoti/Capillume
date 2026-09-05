@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using SkiaSharp;
@@ -185,7 +186,17 @@ namespace Capillume
 
                     string filePath = Path.Combine(_settings.SaveFolder, GenerateFileName());
 
-                    SaveScreenshot(screenshot, filePath);
+                    Bitmap? processedScreenshot = null;
+                    try
+                    {
+                        processedScreenshot = CreateDownscaledBitmapIfNeeded(screenshot, _settings.CaptureFullScreen);
+                        SaveScreenshot(processedScreenshot ?? screenshot, filePath);
+                    }
+                    finally
+                    {
+                        processedScreenshot?.Dispose();
+                    }
+
                     sw.Stop();
                     long elapsedMs = sw.ElapsedMilliseconds;
                     ScreenshotCaptured?.Invoke(this, new ScreenshotCapturedEventArgs(filePath, sw.ElapsedMilliseconds));
@@ -363,6 +374,180 @@ namespace Capillume
             {
                 ShowWindow(window, SW_SHOWNOACTIVATE);
             }
+        }
+
+        private Bitmap? CreateDownscaledBitmapIfNeeded(Bitmap bitmap, bool isFullScreenCapture)
+        {
+            DownscaleSettings settings = _settings.Downscale;
+            if (!settings.Enabled)
+            {
+                return null;
+            }
+
+            if (settings.FullScreenOnly && !isFullScreenCapture)
+            {
+                return null;
+            }
+
+            if (settings.LossyFormatsOnly && !IsLossyImageFormat(_settings.ImageFormat))
+            {
+                return null;
+            }
+
+            Size targetSize = CalculateTargetSize(bitmap.Size, settings);
+            if (targetSize.Width <= 0 || targetSize.Height <= 0)
+            {
+                return null;
+            }
+
+            bool wouldUpscale = targetSize.Width > bitmap.Width || targetSize.Height > bitmap.Height;
+            if (settings.SkipSmallerImages && wouldUpscale)
+            {
+                return null;
+            }
+
+            if (targetSize.Width == bitmap.Width && targetSize.Height == bitmap.Height)
+            {
+                return null;
+            }
+
+            Bitmap resized = ResizeBitmap(bitmap, targetSize, settings.Quality);
+            if (settings.SharpenAfterResize && (targetSize.Width < bitmap.Width || targetSize.Height < bitmap.Height))
+            {
+                Bitmap sharpened = ApplySlightSharpen(resized);
+                resized.Dispose();
+                return sharpened;
+            }
+
+            return resized;
+        }
+
+        private static Size CalculateTargetSize(Size sourceSize, DownscaleSettings settings)
+        {
+            double scale = settings.Mode switch
+            {
+                DownscaleMode.TargetHeight => settings.TargetHeight / (double)sourceSize.Height,
+                DownscaleMode.Percentage => settings.ResizePercentage / 100.0,
+                DownscaleMode.MaxWidth => settings.MaxWidth / (double)sourceSize.Width,
+                DownscaleMode.BoundingBox => Math.Min(
+                    settings.BoundingBoxWidth / (double)sourceSize.Width,
+                    settings.BoundingBoxHeight / (double)sourceSize.Height),
+                _ => 1.0
+            };
+
+            int width = Math.Max(1, (int)Math.Round(sourceSize.Width * scale));
+            int height = Math.Max(1, (int)Math.Round(sourceSize.Height * scale));
+            return new Size(width, height);
+        }
+
+        private static Bitmap ResizeBitmap(Bitmap source, Size targetSize, DownscaleQuality quality)
+        {
+            var resized = new Bitmap(targetSize.Width, targetSize.Height, PixelFormat.Format32bppArgb);
+            resized.SetResolution(source.HorizontalResolution, source.VerticalResolution);
+
+            using var graphics = Graphics.FromImage(resized);
+            graphics.CompositingMode = CompositingMode.SourceCopy;
+            graphics.CompositingQuality = quality == DownscaleQuality.Fast
+                ? CompositingQuality.HighSpeed
+                : CompositingQuality.HighQuality;
+            graphics.SmoothingMode = quality == DownscaleQuality.Fast
+                ? SmoothingMode.None
+                : SmoothingMode.HighQuality;
+            graphics.PixelOffsetMode = quality == DownscaleQuality.Fast
+                ? PixelOffsetMode.Half
+                : PixelOffsetMode.HighQuality;
+            graphics.InterpolationMode = quality switch
+            {
+                DownscaleQuality.HighQuality => InterpolationMode.HighQualityBicubic,
+                DownscaleQuality.Balanced => InterpolationMode.HighQualityBilinear,
+                _ => InterpolationMode.NearestNeighbor
+            };
+
+            using var attributes = new ImageAttributes();
+            attributes.SetWrapMode(WrapMode.TileFlipXY);
+            graphics.DrawImage(
+                source,
+                new Rectangle(Point.Empty, targetSize),
+                0,
+                0,
+                source.Width,
+                source.Height,
+                GraphicsUnit.Pixel,
+                attributes);
+
+            return resized;
+        }
+
+        private static Bitmap ApplySlightSharpen(Bitmap source)
+        {
+            Rectangle rect = new(0, 0, source.Width, source.Height);
+            using var workingCopy = new Bitmap(source.Width, source.Height, PixelFormat.Format32bppArgb);
+            using (var graphics = Graphics.FromImage(workingCopy))
+            {
+                graphics.DrawImageUnscaled(source, 0, 0);
+            }
+
+            var sharpened = new Bitmap(source.Width, source.Height, PixelFormat.Format32bppArgb);
+            var kernel = new double[]
+            {
+                0, -0.5, 0,
+                -0.5, 3, -0.5,
+                0, -0.5, 0
+            };
+
+            BitmapData sourceData = workingCopy.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+            BitmapData destinationData = sharpened.LockBits(rect, ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+
+            try
+            {
+                int stride = sourceData.Stride;
+                int bytes = Math.Abs(stride) * source.Height;
+                byte[] sourceBuffer = new byte[bytes];
+                byte[] destinationBuffer = new byte[bytes];
+                Marshal.Copy(sourceData.Scan0, sourceBuffer, 0, bytes);
+                Buffer.BlockCopy(sourceBuffer, 0, destinationBuffer, 0, bytes);
+
+                for (int y = 1; y < source.Height - 1; y++)
+                {
+                    for (int x = 1; x < source.Width - 1; x++)
+                    {
+                        int pixelIndex = y * stride + x * 4;
+                        for (int channel = 0; channel < 3; channel++)
+                        {
+                            double value = 0;
+                            int kernelIndex = 0;
+                            for (int ky = -1; ky <= 1; ky++)
+                            {
+                                for (int kx = -1; kx <= 1; kx++)
+                                {
+                                    int sampleIndex = (y + ky) * stride + (x + kx) * 4 + channel;
+                                    value += sourceBuffer[sampleIndex] * kernel[kernelIndex++];
+                                }
+                            }
+
+                            destinationBuffer[pixelIndex + channel] = (byte)Math.Clamp((int)Math.Round(value), 0, 255);
+                        }
+
+                        destinationBuffer[pixelIndex + 3] = sourceBuffer[pixelIndex + 3];
+                    }
+                }
+
+                Marshal.Copy(destinationBuffer, 0, destinationData.Scan0, bytes);
+            }
+            finally
+            {
+                workingCopy.UnlockBits(sourceData);
+                sharpened.UnlockBits(destinationData);
+            }
+
+            return sharpened;
+        }
+
+        private static bool IsLossyImageFormat(string imageFormat)
+        {
+            return imageFormat.Equals("JPG", StringComparison.OrdinalIgnoreCase)
+                || imageFormat.Equals("JPEG", StringComparison.OrdinalIgnoreCase)
+                || imageFormat.Equals("WEBP", StringComparison.OrdinalIgnoreCase);
         }
 
         private void SaveScreenshot(Bitmap bitmap, string filePath)

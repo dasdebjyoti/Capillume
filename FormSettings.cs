@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+//using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 
 namespace Capillume
 {
@@ -93,11 +94,30 @@ namespace Capillume
             ("OldLace", Color.OldLace)                 // elegant warm tone
         ];
 
+        private static readonly (string Label, int Value)[] DownscaleHeightPresets =
+        [
+            ("2160p (4K)", 2160),
+            ("1440p (QHD)", 1440),
+            ("1080p (Full HD)", 1080),
+            ("720p (HD)", 720)
+        ];
+
+        private static readonly int[] DownscalePercentagePresets = [75, 50, 25];
+        private static readonly int[] DownscaleWidthPresets = [1920, 1600, 1366, 1280, 1024];
+        private static readonly (string Label, int Width, int Height)[] DownscaleBoundingBoxPresets =
+        [
+            ("1920 × 1080", 1920, 1080),
+            ("1280 × 720", 1280, 720),
+            ("800 × 600", 800, 600)
+        ];
+
         private readonly WatermarkSettings _originalWatermarkSettings;
         private readonly AnnotationSettings _originalAnnotationSettings;
+        private readonly DownscaleSettings _originalDownscaleSettings;
 
         private readonly WatermarkSettings _watermarkSettings;
         private readonly AnnotationSettings _annotationSettings;
+        private readonly DownscaleSettings _downscaleSettings;
 
         private Icon? _appIcon;
         private Font _watermarkFont = new("Segoe UI", 24);
@@ -106,25 +126,40 @@ namespace Capillume
         private Color? _annotationBackgroundColor;
         private int _annotationSelectionStart;
         private int _annotationSelectionLength;
+        private bool _isUpdatingDownscaleUi;
 
+        private readonly Label dsLabelDefaultSize1 = new();
         public WatermarkSettings WatermarkSettings => _watermarkSettings;
         public AnnotationSettings AnnotationSettings => _annotationSettings;
+        public DownscaleSettings DownscaleSettings => _downscaleSettings;
 
         public bool WatermarkSettingsChanged => !AreEqual(_originalWatermarkSettings, _watermarkSettings);
         public bool AnnotationSettingsChanged => !AreEqual(_originalAnnotationSettings, _annotationSettings);
+        public bool DownscaleSettingsChanged => !AreEqual(_originalDownscaleSettings, _downscaleSettings);
 
-        public FormSettings(WatermarkSettings watermarkSettings, AnnotationSettings annotationSettings)
+        public FormSettings(
+            WatermarkSettings watermarkSettings,
+            AnnotationSettings annotationSettings,
+            DownscaleSettings downscaleSettings)
         {
             InitializeComponent();
 
             _originalWatermarkSettings = Clone(watermarkSettings);
             _originalAnnotationSettings = Clone(annotationSettings);
+            _originalDownscaleSettings = Clone(downscaleSettings);
             _watermarkSettings = Clone(watermarkSettings);
             _annotationSettings = Clone(annotationSettings);
+            _downscaleSettings = Clone(downscaleSettings);
+
+            ToolTip toolTip = new ToolTip();
+            toolTip.SetToolTip(dsLabelQuality1, "Controls how the image is resized.\nHigher‑quality methods produce smoother results.");
+            toolTip.SetToolTip(dsCheckBoxSharpen1, "Adds a light sharpening pass to improve clarity after resizing.");
+            toolTip.SetToolTip(dsCheckBoxSkipSmaller1, "Avoids resizing when the screenshot is already smaller than the target size.");
 
             InitializeIcon();
-            InitializeWatermarkTab();
-            InitializeAnnotationTab();
+            InitializeTabWatermark();
+            InitializeTabAnnotation();
+            InitializeTabDownscale();
         }
 
         private void InitializeIcon()
@@ -150,7 +185,7 @@ namespace Capillume
             Icon = _appIcon;
         }
 
-        private void InitializeWatermarkTab()
+        private void InitializeTabWatermark()
         {
             // Load settings into UI
             _watermarkFont.Dispose();
@@ -191,7 +226,7 @@ namespace Capillume
             UpdateWatermarkControlState();
         }
 
-        private void InitializeAnnotationTab()
+        private void InitializeTabAnnotation()
         {
             // Load settings into UI
             _annotationFont.Dispose();
@@ -229,6 +264,78 @@ namespace Capillume
             UpdateAnnotationControlState();
         }
 
+        private void InitializeTabDownscale()
+        {
+            tabPageDownscale.SuspendLayout();
+            //tabPageDownscale.Controls.Clear();
+            tabPageDownscale.AutoScroll = true;
+
+            dsLabelDefaultSize.Text = GetDefaultCaptureSizeDescription();
+
+            //dsToggleEnable.AutoSize = true;
+            //dsToggleEnable.Location = new Point(16, 72);
+            //dsToggleEnable.Name = nameof(dsToggleEnable);
+            //dsToggleEnable.Text = "Enable screenshot downscale";
+            //dsToggleEnable.CheckedChanged += DownscaleSettingChanged;
+
+            int radioLeft = 24;
+            int presetLabelLeft = 560;
+            int presetComboLeft = 670;
+            int valueLabelLeft = 920;
+            int valueControlLeft = 1035;
+            int rowTop = 44;
+            int rowSpacing = 64;
+
+            dsComboBoxTargetHeight1.Items.AddRange(DownscaleHeightPresets.Select(p => p.Label).Append("Custom").ToArray());
+            dsNumericTargetHeight1.Minimum = Constants.DownscaleTargetHeightMin;
+            dsNumericTargetHeight1.Maximum = Constants.DownscaleTargetHeightMax;
+            dsComboBoxPercentage1.Items.AddRange(DownscalePercentagePresets.Select(p => $"{p}%").Append("Custom").ToArray());
+            dsNumericPercentage1.Maximum = Constants.DownscalePercentageMax;
+            dsNumericPercentage1.Minimum = Constants.DownscalePercentageMin;
+            dsComboBoxMaxWidth1.Items.AddRange(DownscaleWidthPresets.Select(p => p.ToString()).Append("Custom").ToArray());
+            dsNumericMaxWidth1.Maximum = Constants.DownscaleMaxWidthMax;
+            dsNumericMaxWidth1.Minimum = Constants.DownscaleMaxWidthMin;
+            dsComboBoxBoundingBox1.Items.AddRange(DownscaleBoundingBoxPresets.Select(p => p.Label).Append("Custom").ToArray());
+            dsNumericBoundingWidth1.Maximum = Constants.DownscaleMaxWidthMax;
+            dsNumericBoundingWidth1.Minimum = Constants.DownscaleMaxWidthMin;
+            dsNumericBoundingHeight1.Maximum = Constants.DownscaleTargetHeightMax;
+            dsNumericBoundingHeight1.Minimum = Constants.DownscaleTargetHeightMin;
+
+            dsComboBoxQuality1.Items.AddRange(
+            [
+                "High Quality (Bicubic)",
+                "Balanced (Bilinear)",
+                "Fast (Nearest Neighbor)"
+            ]);
+
+            dsComboBoxQuality1.SelectedIndexChanged += (_, _) => UpdateDownscaleSummary();
+
+            dsCheckBoxSharpen1.CheckedChanged += (_, _) => UpdateDownscaleSummary();
+            dsCheckBoxSkipSmaller1.CheckedChanged += (_, _) => UpdateDownscaleSummary();
+            dsCheckBoxFullScreenOnly1.CheckedChanged += (_, _) => UpdateDownscaleSummary();
+            dsCheckBoxLossyOnly1.CheckedChanged += (_, _) => UpdateDownscaleSummary();
+
+            _isUpdatingDownscaleUi = true;
+            dsToggleEnable1.Checked = _downscaleSettings.Enabled;
+            dsNumericTargetHeight1.Value = _downscaleSettings.TargetHeight;
+            dsNumericPercentage1.Value = _downscaleSettings.ResizePercentage;
+            dsNumericMaxWidth1.Value = _downscaleSettings.MaxWidth;
+            dsNumericBoundingWidth1.Value = _downscaleSettings.BoundingBoxWidth;
+            dsNumericBoundingHeight1.Value = _downscaleSettings.BoundingBoxHeight;
+            dsComboBoxQuality1.SelectedIndex = (int)_downscaleSettings.Quality;
+            dsCheckBoxSharpen1.Checked = _downscaleSettings.SharpenAfterResize;
+            dsCheckBoxSkipSmaller1.Checked = _downscaleSettings.SkipSmallerImages;
+            dsCheckBoxFullScreenOnly1.Checked = _downscaleSettings.FullScreenOnly;
+            dsCheckBoxLossyOnly1.Checked = _downscaleSettings.LossyFormatsOnly;
+            SelectDownscaleMode(_downscaleSettings.Mode);
+            SyncDownscalePresetSelections();
+            _isUpdatingDownscaleUi = false;
+
+            UpdateDownscaleControlState();
+            UpdateDownscaleSummary();
+            tabPageDownscale.ResumeLayout(false);
+        }
+
         private void ButtonOk_Click(object sender, EventArgs e)
         {
             tabControlSettings.SelectedTab = tabPageWatermark;
@@ -239,6 +346,12 @@ namespace Capillume
 
             tabControlSettings.SelectedTab = tabPageAnnotation;
             if (!TryApplyAnnotationSettings())
+            {
+                return;
+            }
+
+            tabControlSettings.SelectedTab = tabPageDownscale;
+            if (!TryApplyDownscaleSettings())
             {
                 return;
             }
@@ -303,6 +416,294 @@ namespace Capillume
             _annotationSettings.AnnotationOpacity = anTrackBarOpacity.Value;
 
             return true;
+        }
+
+        private bool TryApplyDownscaleSettings()
+        {
+            _downscaleSettings.Enabled = dsToggleEnable1.Checked;
+            _downscaleSettings.Mode = GetSelectedDownscaleMode();
+            _downscaleSettings.TargetHeight = (int)dsNumericTargetHeight1.Value;
+            _downscaleSettings.ResizePercentage = (int)dsNumericPercentage1.Value;
+            _downscaleSettings.MaxWidth = (int)dsNumericMaxWidth1.Value;
+            _downscaleSettings.BoundingBoxWidth = (int)dsNumericBoundingWidth1.Value;
+            _downscaleSettings.BoundingBoxHeight = (int)dsNumericBoundingHeight1.Value;
+            _downscaleSettings.Quality = (DownscaleQuality)dsComboBoxQuality1.SelectedIndex;
+            _downscaleSettings.SharpenAfterResize = dsCheckBoxSharpen1.Checked;
+            _downscaleSettings.SkipSmallerImages = dsCheckBoxSkipSmaller1.Checked;
+            _downscaleSettings.FullScreenOnly = dsCheckBoxFullScreenOnly1.Checked;
+            _downscaleSettings.LossyFormatsOnly = dsCheckBoxLossyOnly1.Checked;
+            return true;
+        }
+
+        private void DownscaleModeChanged(object? sender, EventArgs e)
+        {
+            if (_isUpdatingDownscaleUi)
+            {
+                return;
+            }
+
+            DownscaleSettingChanged(sender, e);
+            UpdateDownscaleControlState();
+        }
+
+        private void DownscaleSettingChanged(object? sender, EventArgs e)
+        {
+            if (_isUpdatingDownscaleUi)
+            {
+                return;
+            }
+
+            UpdateDownscaleControlState();
+            UpdateDownscaleSummary();
+        }
+
+        private void DsComboBoxTargetHeight_SelectedIndexChanged(object? sender, EventArgs e)
+        {
+            if (_isUpdatingDownscaleUi)
+            {
+                return;
+            }
+
+            if (dsComboBoxTargetHeight1.SelectedIndex >= 0 && dsComboBoxTargetHeight1.SelectedIndex < DownscaleHeightPresets.Length)
+            {
+                dsNumericTargetHeight1.Value = DownscaleHeightPresets[dsComboBoxTargetHeight1.SelectedIndex].Value;
+            }
+
+            UpdateDownscaleSummary();
+        }
+
+        private void DsNumericTargetHeight_ValueChanged(object? sender, EventArgs e)
+        {
+            if (_isUpdatingDownscaleUi)
+            {
+                return;
+            }
+
+            SyncTargetHeightPresetSelection();
+        }
+
+        private void DsComboBoxPercentage_SelectedIndexChanged(object? sender, EventArgs e)
+        {
+            if (_isUpdatingDownscaleUi)
+            {
+                return;
+            }
+
+            if (dsComboBoxPercentage1.SelectedIndex >= 0 && dsComboBoxPercentage1.SelectedIndex < DownscalePercentagePresets.Length)
+            {
+                dsNumericPercentage1.Value = DownscalePercentagePresets[dsComboBoxPercentage1.SelectedIndex];
+            }
+
+            UpdateDownscaleSummary();
+        }
+
+        private void DsNumericPercentage_ValueChanged(object? sender, EventArgs e)
+        {
+            if (_isUpdatingDownscaleUi)
+            {
+                return;
+            }
+
+            SyncPercentagePresetSelection();
+        }
+
+        private void DsComboBoxMaxWidth_SelectedIndexChanged(object? sender, EventArgs e)
+        {
+            if (_isUpdatingDownscaleUi)
+            {
+                return;
+            }
+
+            if (dsComboBoxMaxWidth1.SelectedIndex >= 0 && dsComboBoxMaxWidth1.SelectedIndex < DownscaleWidthPresets.Length)
+            {
+                dsNumericMaxWidth1.Value = DownscaleWidthPresets[dsComboBoxMaxWidth1.SelectedIndex];
+            }
+
+            UpdateDownscaleSummary();
+        }
+
+        private void DsNumericMaxWidth_ValueChanged(object? sender, EventArgs e)
+        {
+            if (_isUpdatingDownscaleUi)
+            {
+                return;
+            }
+
+            SyncMaxWidthPresetSelection();
+        }
+
+        private void DsComboBoxBoundingBox_SelectedIndexChanged(object? sender, EventArgs e)
+        {
+            if (_isUpdatingDownscaleUi)
+            {
+                return;
+            }
+
+            if (dsComboBoxBoundingBox1.SelectedIndex >= 0 && dsComboBoxBoundingBox1.SelectedIndex < DownscaleBoundingBoxPresets.Length)
+            {
+                var preset = DownscaleBoundingBoxPresets[dsComboBoxBoundingBox1.SelectedIndex];
+                dsNumericBoundingWidth1.Value = preset.Width;
+                dsNumericBoundingHeight1.Value = preset.Height;
+            }
+
+            UpdateDownscaleSummary();
+        }
+
+        private void DsNumericBoundingBox_ValueChanged(object? sender, EventArgs e)
+        {
+            if (_isUpdatingDownscaleUi)
+            {
+                return;
+            }
+
+            SyncBoundingBoxPresetSelection();
+        }
+
+        private void SyncDownscalePresetSelections()
+        {
+            SyncTargetHeightPresetSelection();
+            SyncPercentagePresetSelection();
+            SyncMaxWidthPresetSelection();
+            SyncBoundingBoxPresetSelection();
+        }
+
+        private void SyncTargetHeightPresetSelection()
+        {
+            SetComboSelection(
+                dsComboBoxTargetHeight1,
+                Array.FindIndex(DownscaleHeightPresets, preset => preset.Value == (int)dsNumericTargetHeight1.Value),
+                DownscaleHeightPresets.Length);
+        }
+
+        private void SyncPercentagePresetSelection()
+        {
+            SetComboSelection(
+                dsComboBoxPercentage1,
+                Array.FindIndex(DownscalePercentagePresets, preset => preset == (int)dsNumericPercentage1.Value),
+                DownscalePercentagePresets.Length);
+        }
+
+        private void SyncMaxWidthPresetSelection()
+        {
+            SetComboSelection(
+                dsComboBoxMaxWidth1,
+                Array.FindIndex(DownscaleWidthPresets, preset => preset == (int)dsNumericMaxWidth1.Value),
+                DownscaleWidthPresets.Length);
+        }
+
+        private void SyncBoundingBoxPresetSelection()
+        {
+            SetComboSelection(
+                dsComboBoxBoundingBox1,
+                Array.FindIndex(
+                    DownscaleBoundingBoxPresets,
+                    preset => preset.Width == (int)dsNumericBoundingWidth1.Value && preset.Height == (int)dsNumericBoundingHeight1.Value),
+                DownscaleBoundingBoxPresets.Length);
+        }
+
+        private void SetComboSelection(ComboBox comboBox, int presetIndex, int customIndex)
+        {
+            bool previousState = _isUpdatingDownscaleUi;
+            _isUpdatingDownscaleUi = true;
+            comboBox.SelectedIndex = presetIndex >= 0 ? presetIndex : customIndex;
+            _isUpdatingDownscaleUi = previousState;
+        }
+
+        private void SelectDownscaleMode(DownscaleMode mode)
+        {
+            bool previousState = _isUpdatingDownscaleUi;
+            _isUpdatingDownscaleUi = true;
+            dsRadioTargetHeight1.Checked = mode == DownscaleMode.TargetHeight;
+            dsRadioPercentage1.Checked = mode == DownscaleMode.Percentage;
+            dsRadioMaxWidth1.Checked = mode == DownscaleMode.MaxWidth;
+            dsRadioBoundingBox1.Checked = mode == DownscaleMode.BoundingBox;
+            _isUpdatingDownscaleUi = previousState;
+        }
+
+        private DownscaleMode GetSelectedDownscaleMode()
+        {
+            if (dsRadioPercentage1.Checked)
+            {
+                return DownscaleMode.Percentage;
+            }
+
+            if (dsRadioMaxWidth1.Checked)
+            {
+                return DownscaleMode.MaxWidth;
+            }
+
+            if (dsRadioBoundingBox1.Checked)
+            {
+                return DownscaleMode.BoundingBox;
+            }
+
+            return DownscaleMode.TargetHeight;
+        }
+
+        private void UpdateDownscaleControlState()
+        {
+            bool enabled = dsToggleEnable1.Checked;
+            dsGroupBoxModes1.Enabled = enabled;
+            dsGroupBoxProcessing1.Enabled = enabled;
+
+            DownscaleMode selectedMode = GetSelectedDownscaleMode();
+            dsComboBoxTargetHeight1.Enabled = enabled && selectedMode == DownscaleMode.TargetHeight;
+            dsNumericTargetHeight1.Enabled = enabled && selectedMode == DownscaleMode.TargetHeight;
+            dsComboBoxPercentage1.Enabled = enabled && selectedMode == DownscaleMode.Percentage;
+            dsNumericPercentage1.Enabled = enabled && selectedMode == DownscaleMode.Percentage;
+            dsComboBoxMaxWidth1.Enabled = enabled && selectedMode == DownscaleMode.MaxWidth;
+            dsNumericMaxWidth1.Enabled = enabled && selectedMode == DownscaleMode.MaxWidth;
+            dsComboBoxBoundingBox1.Enabled = enabled && selectedMode == DownscaleMode.BoundingBox;
+            dsNumericBoundingWidth1.Enabled = enabled && selectedMode == DownscaleMode.BoundingBox;
+            dsNumericBoundingHeight1.Enabled = enabled && selectedMode == DownscaleMode.BoundingBox;
+        }
+
+        private void UpdateDownscaleSummary()
+        {
+            if (!dsToggleEnable1.Checked)
+            {
+                dsLabelSummary1.Text = "Downscaling is currently off. Screenshots will be saved at their original size.";
+                return;
+            }
+
+            string resizeDescription = GetSelectedDownscaleMode() switch
+            {
+                DownscaleMode.TargetHeight => $"Resize to {dsNumericTargetHeight1.Value:N0}px height.",
+                DownscaleMode.Percentage => $"Resize to {dsNumericPercentage1.Value}% of the captured size.",
+                DownscaleMode.MaxWidth => $"Reduce to {dsNumericMaxWidth1.Value:N0}px width.",
+                DownscaleMode.BoundingBox => $"Fit within {dsNumericBoundingWidth1.Value:N0} × {dsNumericBoundingHeight1.Value:N0}.",
+                _ => string.Empty
+            };
+
+            string scopeDescription = dsCheckBoxFullScreenOnly1.Checked
+                ? "Applies only to full-screen captures."
+                : "Applies to full-screen and active-window captures.";
+
+            string formatDescription = dsCheckBoxLossyOnly1.Checked
+                ? "Only JPG and WEBP saves will be downscaled."
+                : "All save formats can be downscaled.";
+
+            string skipDescription = dsCheckBoxSkipSmaller1.Checked
+                ? "Smaller images are not upscaled."
+                : "Smaller images may still be resized if the chosen target is larger.";
+
+            string sharpenDescription = dsCheckBoxSharpen1.Checked
+                ? "A light sharpen pass runs after resize."
+                : "No sharpen pass is applied.";
+
+            dsLabelSummary1.Text = $"{resizeDescription} Quality: {dsComboBoxQuality1.SelectedItem}. {scopeDescription} {formatDescription} {skipDescription} {sharpenDescription}";
+        }
+
+        private static string GetDefaultCaptureSizeDescription()
+        {
+            int minX = Screen.AllScreens.Min(screen => screen.Bounds.Left);
+            int minY = Screen.AllScreens.Min(screen => screen.Bounds.Top);
+            int maxX = Screen.AllScreens.Max(screen => screen.Bounds.Right);
+            int maxY = Screen.AllScreens.Max(screen => screen.Bounds.Bottom);
+            int width = maxX - minX;
+            int height = maxY - minY;
+
+            return $"Detected default size: full-screen captures ({width:N0}×{height:N0}); active-window captures keep the original window size.";
         }
 
         private void WmToggleUseText_CheckedChanged(object sender, EventArgs e)
@@ -635,6 +1036,25 @@ namespace Capillume
             };
         }
 
+        private static DownscaleSettings Clone(DownscaleSettings settings)
+        {
+            return new DownscaleSettings
+            {
+                Enabled = settings.Enabled,
+                Mode = settings.Mode,
+                TargetHeight = settings.TargetHeight,
+                ResizePercentage = settings.ResizePercentage,
+                MaxWidth = settings.MaxWidth,
+                BoundingBoxWidth = settings.BoundingBoxWidth,
+                BoundingBoxHeight = settings.BoundingBoxHeight,
+                Quality = settings.Quality,
+                SharpenAfterResize = settings.SharpenAfterResize,
+                SkipSmallerImages = settings.SkipSmallerImages,
+                FullScreenOnly = settings.FullScreenOnly,
+                LossyFormatsOnly = settings.LossyFormatsOnly
+            };
+        }
+
         private static bool AreEqual(WatermarkSettings left, WatermarkSettings right)
         {
             return left.UseText == right.UseText
@@ -660,6 +1080,22 @@ namespace Capillume
                 && left.AnnotationFontColorArgb == right.AnnotationFontColorArgb
                 && left.AnnotationBackgroundColorArgb == right.AnnotationBackgroundColorArgb
                 && left.AnnotationOpacity == right.AnnotationOpacity;
+        }
+
+        private static bool AreEqual(DownscaleSettings left, DownscaleSettings right)
+        {
+            return left.Enabled == right.Enabled
+                && left.Mode == right.Mode
+                && left.TargetHeight == right.TargetHeight
+                && left.ResizePercentage == right.ResizePercentage
+                && left.MaxWidth == right.MaxWidth
+                && left.BoundingBoxWidth == right.BoundingBoxWidth
+                && left.BoundingBoxHeight == right.BoundingBoxHeight
+                && left.Quality == right.Quality
+                && left.SharpenAfterResize == right.SharpenAfterResize
+                && left.SkipSmallerImages == right.SkipSmallerImages
+                && left.FullScreenOnly == right.FullScreenOnly
+                && left.LossyFormatsOnly == right.LossyFormatsOnly;
         }
     }
 }
