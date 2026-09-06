@@ -13,6 +13,7 @@ Capillume is a lightweight Windows screenshot automation tool. Capture your enti
 - Configure JPG and WebP image quality.
 - Downscale screenshots before saving using target height, resize percentage, max width, or bounding box modes.
 - Choose downscale quality and optional processing controls such as sharpen, skip smaller images, full-screen only, and lossy-formats only.
+- Process screenshots before saving with color modes, high contrast, noise reduction, and color temperature adjustments.
 - Add text and/or image watermarks to captured screenshots.
 - Customize watermark text, font family, font size, and font style.
 - Select a watermark image from a PNG, JPG, JPEG, BMP, or GIF file.
@@ -62,7 +63,8 @@ Use the main window to configure:
 7. Watermark settings.
 8. Annotation settings.
 9. Downscale settings.
-10. Notifications and Windows startup behavior.
+10. Image Processing settings.
+11. Notifications and Windows startup behavior.
 
 ### Watermarks
 
@@ -142,6 +144,28 @@ size before saving. Enable downscaling and choose one mode:
 You can also choose resize quality (**High Quality/Bicubic**, **Balanced/Bilinear**,
 or **Fast/Nearest Neighbor**) and optionally enable sharpen-after-resize, skip
 smaller images, full-screen-only downscaling, or lossy-formats-only downscaling.
+
+### Image Processing
+
+Go to the **Image Processing** tab in the Advanced Settings window to adjust the
+appearance and color depth of captured screenshots. Choose one color mode:
+
+- **Full color**: preserves the original colors.
+- **Grayscale mode**: converts the image to shades of gray.
+- **Monochrome (1-bit)**: converts the image to black and white.
+- **16-color**: reduces the image to a 16-color palette.
+- **256-color**: reduces the image to a 256-color palette.
+- **Adaptive palette (quantization)**: creates a palette of up to 256 colors
+  based on the captured image.
+
+The Advanced Processing options are:
+
+- **High contrast**: increases tonal contrast.
+- **Noise reduction**: applies a light blur to reduce small image variations.
+- **Color temperature**: applies a **Neutral**, **Warm**, or **Cool** color tone.
+
+Image processing is applied after downscaling and before the screenshot is saved.
+All image processing options are disabled by default.
 
 ## Technology
 

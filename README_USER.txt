@@ -55,8 +55,9 @@ GETTING STARTED
 9. Configure watermarks if needed.
 10. Configure annotations if needed.
 11. Configure downscaling if needed.
-12. Click Save.
-13. Use Capture Now at any time to save an immediate screenshot.
+12. Configure image processing if needed.
+13. Click Save.
+14. Use Capture Now at any time to save an immediate screenshot.
 
 The default screenshot folder is:
 
@@ -173,6 +174,30 @@ Downscale options:
 - Skip smaller images
 - Full-screen only
 - Lossy formats only (JPG/WEBP)
+
+IMAGE PROCESSING
+----------------
+
+You can configure screenshot image processing from the Image Processing tab in
+the Advanced Settings window. Image processing is applied after downscaling and
+before the screenshot is saved. All image processing options are disabled by
+default.
+
+Choose one color mode:
+
+- Full color: Preserve the original colors.
+- Grayscale mode: Convert the image to shades of gray.
+- Monochrome (1-bit): Convert the image to black and white.
+- 16-color: Reduce the image to a 16-color palette.
+- 256-color: Reduce the image to a 256-color palette.
+- Adaptive palette (quantization): Create a palette of up to 256 colors based
+  on the captured image.
+
+Advanced Processing options:
+
+- High contrast: Increase tonal contrast.
+- Noise reduction: Apply a light blur to reduce small image variations.
+- Color temperature: Choose Neutral, Warm, or Cool.
 
 SYSTEM TRAY
 -----------

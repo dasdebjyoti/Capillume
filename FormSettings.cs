@@ -114,10 +114,12 @@ namespace Capillume
         private readonly WatermarkSettings _originalWatermarkSettings;
         private readonly AnnotationSettings _originalAnnotationSettings;
         private readonly DownscaleSettings _originalDownscaleSettings;
+        private readonly ImageProcessingSettings _originalImageProcessingSettings;
 
         private readonly WatermarkSettings _watermarkSettings;
         private readonly AnnotationSettings _annotationSettings;
         private readonly DownscaleSettings _downscaleSettings;
+        private readonly ImageProcessingSettings _imageProcessingSettings;
 
         private Icon? _appIcon;
         private Font _watermarkFont = new("Segoe UI", 24);
@@ -132,24 +134,29 @@ namespace Capillume
         public WatermarkSettings WatermarkSettings => _watermarkSettings;
         public AnnotationSettings AnnotationSettings => _annotationSettings;
         public DownscaleSettings DownscaleSettings => _downscaleSettings;
+        public ImageProcessingSettings ImageProcessingSettings => _imageProcessingSettings;
 
         public bool WatermarkSettingsChanged => !AreEqual(_originalWatermarkSettings, _watermarkSettings);
         public bool AnnotationSettingsChanged => !AreEqual(_originalAnnotationSettings, _annotationSettings);
         public bool DownscaleSettingsChanged => !AreEqual(_originalDownscaleSettings, _downscaleSettings);
+        public bool ImageProcessingSettingsChanged => !AreEqual(_originalImageProcessingSettings, _imageProcessingSettings);
 
         public FormSettings(
             WatermarkSettings watermarkSettings,
             AnnotationSettings annotationSettings,
-            DownscaleSettings downscaleSettings)
+            DownscaleSettings downscaleSettings,
+            ImageProcessingSettings imageProcessingSettings)
         {
             InitializeComponent();
 
             _originalWatermarkSettings = Clone(watermarkSettings);
             _originalAnnotationSettings = Clone(annotationSettings);
             _originalDownscaleSettings = Clone(downscaleSettings);
+            _originalImageProcessingSettings = Clone(imageProcessingSettings);
             _watermarkSettings = Clone(watermarkSettings);
             _annotationSettings = Clone(annotationSettings);
             _downscaleSettings = Clone(downscaleSettings);
+            _imageProcessingSettings = Clone(imageProcessingSettings);
 
             ToolTip toolTip = new ToolTip();
             toolTip.SetToolTip(dsLabelQuality1, "Controls how the image is resized.\nHigher‑quality methods produce smoother results.");
@@ -160,6 +167,7 @@ namespace Capillume
             InitializeTabWatermark();
             InitializeTabAnnotation();
             InitializeTabDownscale();
+            InitializeTabImageProcessing();
         }
 
         private void InitializeIcon()
@@ -336,6 +344,19 @@ namespace Capillume
             tabPageDownscale.ResumeLayout(false);
         }
 
+        private void InitializeTabImageProcessing()
+        {
+            SelectImageColorMode(_imageProcessingSettings.ColorMode);
+            ipCheckBoxHighContrast.Checked = _imageProcessingSettings.HighContrast;
+            ipCheckBoxNoiseReduction.Checked = _imageProcessingSettings.NoiseReduction;
+            ipComboBoxColorTemperature.SelectedIndex = (int)_imageProcessingSettings.ColorTemperature;
+
+            if (ipComboBoxColorTemperature.SelectedIndex < 0)
+            {
+                ipComboBoxColorTemperature.SelectedIndex = (int)ColorTemperatureMode.Neutral;
+            }
+        }
+
         private void ButtonOk_Click(object sender, EventArgs e)
         {
             tabControlSettings.SelectedTab = tabPageWatermark;
@@ -352,6 +373,12 @@ namespace Capillume
 
             tabControlSettings.SelectedTab = tabPageDownscale;
             if (!TryApplyDownscaleSettings())
+            {
+                return;
+            }
+
+            tabControlSettings.SelectedTab = tabPageImageProcessing;
+            if (!TryApplyImageProcessingSettings())
             {
                 return;
             }
@@ -433,6 +460,66 @@ namespace Capillume
             _downscaleSettings.FullScreenOnly = dsCheckBoxFullScreenOnly1.Checked;
             _downscaleSettings.LossyFormatsOnly = dsCheckBoxLossyOnly1.Checked;
             return true;
+        }
+
+        private bool TryApplyImageProcessingSettings()
+        {
+            _imageProcessingSettings.ColorMode = GetSelectedImageColorMode();
+            _imageProcessingSettings.HighContrast = ipCheckBoxHighContrast.Checked;
+            _imageProcessingSettings.NoiseReduction = ipCheckBoxNoiseReduction.Checked;
+            _imageProcessingSettings.ColorTemperature = (ColorTemperatureMode)Math.Clamp(
+                ipComboBoxColorTemperature.SelectedIndex,
+                (int)ColorTemperatureMode.Neutral,
+                (int)ColorTemperatureMode.Cool);
+            return true;
+        }
+
+        private void SelectImageColorMode(ImageColorMode mode)
+        {
+            ipRadioFullColor.Checked = mode == ImageColorMode.FullColor;
+            ipRadioGrayscale.Checked = mode == ImageColorMode.Grayscale;
+            ipRadioMonochrome1Bit.Checked = mode == ImageColorMode.Monochrome1Bit;
+            ipRadioColor16.Checked = mode == ImageColorMode.Color16;
+            ipRadioColor256.Checked = mode == ImageColorMode.Color256;
+            ipRadioAdaptivePalette.Checked = mode == ImageColorMode.AdaptivePalette;
+        }
+
+        private ImageColorMode GetSelectedImageColorMode()
+        {
+            if (ipRadioGrayscale.Checked)
+            {
+                return ImageColorMode.Grayscale;
+            }
+
+            if (ipRadioMonochrome1Bit.Checked)
+            {
+                return ImageColorMode.Monochrome1Bit;
+            }
+
+            if (ipRadioColor16.Checked)
+            {
+                return ImageColorMode.Color16;
+            }
+
+            if (ipRadioColor256.Checked)
+            {
+                return ImageColorMode.Color256;
+            }
+
+            if (ipRadioAdaptivePalette.Checked)
+            {
+                return ImageColorMode.AdaptivePalette;
+            }
+
+            return ImageColorMode.FullColor;
+        }
+
+        private void ImageProcessingColorModeChanged(object? sender, EventArgs e)
+        {
+        }
+
+        private void ImageProcessingSettingChanged(object? sender, EventArgs e)
+        {
         }
 
         private void DownscaleModeChanged(object? sender, EventArgs e)
@@ -1055,6 +1142,17 @@ namespace Capillume
             };
         }
 
+        private static ImageProcessingSettings Clone(ImageProcessingSettings settings)
+        {
+            return new ImageProcessingSettings
+            {
+                ColorMode = settings.ColorMode,
+                HighContrast = settings.HighContrast,
+                NoiseReduction = settings.NoiseReduction,
+                ColorTemperature = settings.ColorTemperature
+            };
+        }
+
         private static bool AreEqual(WatermarkSettings left, WatermarkSettings right)
         {
             return left.UseText == right.UseText
@@ -1096,6 +1194,14 @@ namespace Capillume
                 && left.SkipSmallerImages == right.SkipSmallerImages
                 && left.FullScreenOnly == right.FullScreenOnly
                 && left.LossyFormatsOnly == right.LossyFormatsOnly;
+        }
+
+        private static bool AreEqual(ImageProcessingSettings left, ImageProcessingSettings right)
+        {
+            return left.ColorMode == right.ColorMode
+                && left.HighContrast == right.HighContrast
+                && left.NoiseReduction == right.NoiseReduction
+                && left.ColorTemperature == right.ColorTemperature;
         }
     }
 }

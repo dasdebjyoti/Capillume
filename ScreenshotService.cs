@@ -187,13 +187,16 @@ namespace Capillume
                     string filePath = Path.Combine(_settings.SaveFolder, GenerateFileName());
 
                     Bitmap? processedScreenshot = null;
+                    Bitmap? imageProcessedScreenshot = null;
                     try
                     {
                         processedScreenshot = CreateDownscaledBitmapIfNeeded(screenshot, _settings.CaptureFullScreen);
-                        SaveScreenshot(processedScreenshot ?? screenshot, filePath);
+                        imageProcessedScreenshot = ApplyImageProcessingIfNeeded(processedScreenshot ?? screenshot);
+                        SaveScreenshot(imageProcessedScreenshot ?? processedScreenshot ?? screenshot, filePath);
                     }
                     finally
                     {
+                        imageProcessedScreenshot?.Dispose();
                         processedScreenshot?.Dispose();
                     }
 
@@ -541,6 +544,409 @@ namespace Capillume
             }
 
             return sharpened;
+        }
+
+        private Bitmap? ApplyImageProcessingIfNeeded(Bitmap source)
+        {
+            ImageProcessingSettings settings = _settings.ImageProcessing ?? new ImageProcessingSettings();
+            bool hasTransform = settings.ColorMode != ImageColorMode.FullColor
+                || settings.HighContrast
+                || settings.NoiseReduction
+                || settings.ColorTemperature != ColorTemperatureMode.Neutral;
+
+            if (!hasTransform)
+            {
+                return null;
+            }
+
+            Bitmap processed = CreateArgbCopy(source);
+
+            if (settings.NoiseReduction)
+            {
+                ApplyBoxBlur3x3InPlace(processed);
+            }
+
+            if (settings.HighContrast)
+            {
+                ApplyHighContrastInPlace(processed);
+            }
+
+            if (settings.ColorTemperature != ColorTemperatureMode.Neutral)
+            {
+                ApplyColorTemperatureInPlace(processed, settings.ColorTemperature);
+            }
+
+            ApplyColorModeInPlace(processed, settings.ColorMode);
+            return processed;
+        }
+
+        private static Bitmap CreateArgbCopy(Bitmap source)
+        {
+            var copy = new Bitmap(source.Width, source.Height, PixelFormat.Format32bppArgb);
+            copy.SetResolution(source.HorizontalResolution, source.VerticalResolution);
+            using var graphics = Graphics.FromImage(copy);
+            graphics.DrawImageUnscaled(source, 0, 0);
+            return copy;
+        }
+
+        private static void ApplyColorModeInPlace(Bitmap bitmap, ImageColorMode mode)
+        {
+            switch (mode)
+            {
+                case ImageColorMode.Grayscale:
+                    ApplyGrayscaleInPlace(bitmap);
+                    break;
+                case ImageColorMode.Monochrome1Bit:
+                    ApplyMonochromeInPlace(bitmap);
+                    break;
+                case ImageColorMode.Color16:
+                    ApplyFixedPaletteQuantizationInPlace(bitmap, 2, 2, 4);
+                    break;
+                case ImageColorMode.Color256:
+                    ApplyFixedPaletteQuantizationInPlace(bitmap, 8, 8, 4);
+                    break;
+                case ImageColorMode.AdaptivePalette:
+                    ApplyAdaptivePaletteQuantizationInPlace(bitmap, 256);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private static void ApplyGrayscaleInPlace(Bitmap bitmap)
+        {
+            Rectangle rect = new(0, 0, bitmap.Width, bitmap.Height);
+            BitmapData bitmapData = bitmap.LockBits(rect, ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
+
+            try
+            {
+                int stride = bitmapData.Stride;
+                int bytes = Math.Abs(stride) * bitmap.Height;
+                byte[] buffer = new byte[bytes];
+                Marshal.Copy(bitmapData.Scan0, buffer, 0, bytes);
+
+                for (int y = 0; y < bitmap.Height; y++)
+                {
+                    for (int x = 0; x < bitmap.Width; x++)
+                    {
+                        int pixelIndex = y * stride + x * 4;
+                        byte b = buffer[pixelIndex];
+                        byte g = buffer[pixelIndex + 1];
+                        byte r = buffer[pixelIndex + 2];
+                        byte gray = (byte)Math.Clamp((int)Math.Round(0.299 * r + 0.587 * g + 0.114 * b), 0, 255);
+
+                        buffer[pixelIndex] = gray;
+                        buffer[pixelIndex + 1] = gray;
+                        buffer[pixelIndex + 2] = gray;
+                    }
+                }
+
+                Marshal.Copy(buffer, 0, bitmapData.Scan0, bytes);
+            }
+            finally
+            {
+                bitmap.UnlockBits(bitmapData);
+            }
+        }
+
+        private static void ApplyMonochromeInPlace(Bitmap bitmap)
+        {
+            Rectangle rect = new(0, 0, bitmap.Width, bitmap.Height);
+            BitmapData bitmapData = bitmap.LockBits(rect, ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
+
+            try
+            {
+                int stride = bitmapData.Stride;
+                int bytes = Math.Abs(stride) * bitmap.Height;
+                byte[] buffer = new byte[bytes];
+                Marshal.Copy(bitmapData.Scan0, buffer, 0, bytes);
+
+                for (int y = 0; y < bitmap.Height; y++)
+                {
+                    for (int x = 0; x < bitmap.Width; x++)
+                    {
+                        int pixelIndex = y * stride + x * 4;
+                        byte b = buffer[pixelIndex];
+                        byte g = buffer[pixelIndex + 1];
+                        byte r = buffer[pixelIndex + 2];
+                        byte gray = (byte)Math.Clamp((int)Math.Round(0.299 * r + 0.587 * g + 0.114 * b), 0, 255);
+                        byte mono = gray >= 128 ? (byte)255 : (byte)0;
+
+                        buffer[pixelIndex] = mono;
+                        buffer[pixelIndex + 1] = mono;
+                        buffer[pixelIndex + 2] = mono;
+                    }
+                }
+
+                Marshal.Copy(buffer, 0, bitmapData.Scan0, bytes);
+            }
+            finally
+            {
+                bitmap.UnlockBits(bitmapData);
+            }
+        }
+
+        private static void ApplyFixedPaletteQuantizationInPlace(Bitmap bitmap, int redLevels, int greenLevels, int blueLevels)
+        {
+            Rectangle rect = new(0, 0, bitmap.Width, bitmap.Height);
+            BitmapData bitmapData = bitmap.LockBits(rect, ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
+
+            try
+            {
+                int stride = bitmapData.Stride;
+                int bytes = Math.Abs(stride) * bitmap.Height;
+                byte[] buffer = new byte[bytes];
+                Marshal.Copy(bitmapData.Scan0, buffer, 0, bytes);
+
+                for (int y = 0; y < bitmap.Height; y++)
+                {
+                    for (int x = 0; x < bitmap.Width; x++)
+                    {
+                        int pixelIndex = y * stride + x * 4;
+                        buffer[pixelIndex + 2] = QuantizeChannel(buffer[pixelIndex + 2], redLevels);
+                        buffer[pixelIndex + 1] = QuantizeChannel(buffer[pixelIndex + 1], greenLevels);
+                        buffer[pixelIndex] = QuantizeChannel(buffer[pixelIndex], blueLevels);
+                    }
+                }
+
+                Marshal.Copy(buffer, 0, bitmapData.Scan0, bytes);
+            }
+            finally
+            {
+                bitmap.UnlockBits(bitmapData);
+            }
+        }
+
+        private static byte QuantizeChannel(byte value, int levels)
+        {
+            if (levels <= 1)
+            {
+                return 0;
+            }
+
+            int bucket = (int)Math.Round(value * (levels - 1) / 255.0);
+            int quantized = (int)Math.Round(bucket * 255.0 / (levels - 1));
+            return (byte)Math.Clamp(quantized, 0, 255);
+        }
+
+        private static void ApplyAdaptivePaletteQuantizationInPlace(Bitmap bitmap, int maxColors)
+        {
+            Rectangle rect = new(0, 0, bitmap.Width, bitmap.Height);
+            BitmapData bitmapData = bitmap.LockBits(rect, ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
+
+            try
+            {
+                int stride = bitmapData.Stride;
+                int bytes = Math.Abs(stride) * bitmap.Height;
+                byte[] buffer = new byte[bytes];
+                Marshal.Copy(bitmapData.Scan0, buffer, 0, bytes);
+
+                int[] counts = new int[32768];
+                int[] redSums = new int[32768];
+                int[] greenSums = new int[32768];
+                int[] blueSums = new int[32768];
+
+                for (int y = 0; y < bitmap.Height; y++)
+                {
+                    for (int x = 0; x < bitmap.Width; x++)
+                    {
+                        int pixelIndex = y * stride + x * 4;
+                        byte b = buffer[pixelIndex];
+                        byte g = buffer[pixelIndex + 1];
+                        byte r = buffer[pixelIndex + 2];
+                        int key = ((r >> 3) << 10) | ((g >> 3) << 5) | (b >> 3);
+
+                        counts[key]++;
+                        redSums[key] += r;
+                        greenSums[key] += g;
+                        blueSums[key] += b;
+                    }
+                }
+
+                int[] selectedKeys = Enumerable.Range(0, counts.Length)
+                    .Where(i => counts[i] > 0)
+                    .OrderByDescending(i => counts[i])
+                    .Take(Math.Clamp(maxColors, 2, 256))
+                    .ToArray();
+
+                if (selectedKeys.Length == 0)
+                {
+                    return;
+                }
+
+                var palette = new (byte R, byte G, byte B)[selectedKeys.Length];
+                for (int i = 0; i < selectedKeys.Length; i++)
+                {
+                    int key = selectedKeys[i];
+                    int count = counts[key];
+                    palette[i] = (
+                        (byte)(redSums[key] / count),
+                        (byte)(greenSums[key] / count),
+                        (byte)(blueSums[key] / count));
+                }
+
+                for (int y = 0; y < bitmap.Height; y++)
+                {
+                    for (int x = 0; x < bitmap.Width; x++)
+                    {
+                        int pixelIndex = y * stride + x * 4;
+                        byte b = buffer[pixelIndex];
+                        byte g = buffer[pixelIndex + 1];
+                        byte r = buffer[pixelIndex + 2];
+
+                        int bestIndex = 0;
+                        int bestDistance = int.MaxValue;
+
+                        for (int i = 0; i < palette.Length; i++)
+                        {
+                            int dr = r - palette[i].R;
+                            int dg = g - palette[i].G;
+                            int db = b - palette[i].B;
+                            int distance = dr * dr + dg * dg + db * db;
+                            if (distance < bestDistance)
+                            {
+                                bestDistance = distance;
+                                bestIndex = i;
+                            }
+                        }
+
+                        buffer[pixelIndex + 2] = palette[bestIndex].R;
+                        buffer[pixelIndex + 1] = palette[bestIndex].G;
+                        buffer[pixelIndex] = palette[bestIndex].B;
+                    }
+                }
+
+                Marshal.Copy(buffer, 0, bitmapData.Scan0, bytes);
+            }
+            finally
+            {
+                bitmap.UnlockBits(bitmapData);
+            }
+        }
+
+        private static void ApplyHighContrastInPlace(Bitmap bitmap)
+        {
+            Rectangle rect = new(0, 0, bitmap.Width, bitmap.Height);
+            BitmapData bitmapData = bitmap.LockBits(rect, ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
+
+            try
+            {
+                int stride = bitmapData.Stride;
+                int bytes = Math.Abs(stride) * bitmap.Height;
+                byte[] buffer = new byte[bytes];
+                Marshal.Copy(bitmapData.Scan0, buffer, 0, bytes);
+
+                const double contrast = 1.25;
+                const double midpoint = 128.0;
+
+                for (int y = 0; y < bitmap.Height; y++)
+                {
+                    for (int x = 0; x < bitmap.Width; x++)
+                    {
+                        int pixelIndex = y * stride + x * 4;
+                        buffer[pixelIndex + 2] = AdjustContrast(buffer[pixelIndex + 2], contrast, midpoint);
+                        buffer[pixelIndex + 1] = AdjustContrast(buffer[pixelIndex + 1], contrast, midpoint);
+                        buffer[pixelIndex] = AdjustContrast(buffer[pixelIndex], contrast, midpoint);
+                    }
+                }
+
+                Marshal.Copy(buffer, 0, bitmapData.Scan0, bytes);
+            }
+            finally
+            {
+                bitmap.UnlockBits(bitmapData);
+            }
+        }
+
+        private static byte AdjustContrast(byte channel, double contrast, double midpoint)
+        {
+            int value = (int)Math.Round((channel - midpoint) * contrast + midpoint);
+            return (byte)Math.Clamp(value, 0, 255);
+        }
+
+        private static void ApplyColorTemperatureInPlace(Bitmap bitmap, ColorTemperatureMode mode)
+        {
+            (double redMultiplier, double greenMultiplier, double blueMultiplier) = mode switch
+            {
+                ColorTemperatureMode.Warm => (1.08, 1.0, 0.92),
+                ColorTemperatureMode.Cool => (0.92, 1.0, 1.08),
+                _ => (1.0, 1.0, 1.0)
+            };
+
+            Rectangle rect = new(0, 0, bitmap.Width, bitmap.Height);
+            BitmapData bitmapData = bitmap.LockBits(rect, ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
+
+            try
+            {
+                int stride = bitmapData.Stride;
+                int bytes = Math.Abs(stride) * bitmap.Height;
+                byte[] buffer = new byte[bytes];
+                Marshal.Copy(bitmapData.Scan0, buffer, 0, bytes);
+
+                for (int y = 0; y < bitmap.Height; y++)
+                {
+                    for (int x = 0; x < bitmap.Width; x++)
+                    {
+                        int pixelIndex = y * stride + x * 4;
+                        buffer[pixelIndex + 2] = (byte)Math.Clamp((int)Math.Round(buffer[pixelIndex + 2] * redMultiplier), 0, 255);
+                        buffer[pixelIndex + 1] = (byte)Math.Clamp((int)Math.Round(buffer[pixelIndex + 1] * greenMultiplier), 0, 255);
+                        buffer[pixelIndex] = (byte)Math.Clamp((int)Math.Round(buffer[pixelIndex] * blueMultiplier), 0, 255);
+                    }
+                }
+
+                Marshal.Copy(buffer, 0, bitmapData.Scan0, bytes);
+            }
+            finally
+            {
+                bitmap.UnlockBits(bitmapData);
+            }
+        }
+
+        private static void ApplyBoxBlur3x3InPlace(Bitmap bitmap)
+        {
+            Rectangle rect = new(0, 0, bitmap.Width, bitmap.Height);
+            BitmapData bitmapData = bitmap.LockBits(rect, ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
+
+            try
+            {
+                int stride = bitmapData.Stride;
+                int bytes = Math.Abs(stride) * bitmap.Height;
+                byte[] source = new byte[bytes];
+                byte[] destination = new byte[bytes];
+                Marshal.Copy(bitmapData.Scan0, source, 0, bytes);
+                Buffer.BlockCopy(source, 0, destination, 0, bytes);
+
+                for (int y = 1; y < bitmap.Height - 1; y++)
+                {
+                    for (int x = 1; x < bitmap.Width - 1; x++)
+                    {
+                        int pixelIndex = y * stride + x * 4;
+
+                        for (int channel = 0; channel < 3; channel++)
+                        {
+                            int sum = 0;
+                            for (int ky = -1; ky <= 1; ky++)
+                            {
+                                for (int kx = -1; kx <= 1; kx++)
+                                {
+                                    int sampleIndex = (y + ky) * stride + (x + kx) * 4 + channel;
+                                    sum += source[sampleIndex];
+                                }
+                            }
+
+                            destination[pixelIndex + channel] = (byte)(sum / 9);
+                        }
+
+                        destination[pixelIndex + 3] = source[pixelIndex + 3];
+                    }
+                }
+
+                Marshal.Copy(destination, 0, bitmapData.Scan0, bytes);
+            }
+            finally
+            {
+                bitmap.UnlockBits(bitmapData);
+            }
         }
 
         private static bool IsLossyImageFormat(string imageFormat)

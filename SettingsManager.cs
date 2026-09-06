@@ -54,6 +54,23 @@ namespace Capillume
         Fast
     }
 
+    public enum ImageColorMode
+    {
+        FullColor,
+        Grayscale,
+        Monochrome1Bit,
+        Color16,
+        Color256,
+        AdaptivePalette
+    }
+
+    public enum ColorTemperatureMode
+    {
+        Neutral,
+        Warm,
+        Cool
+    }
+
     public class AppSettings
     {
         public bool IsScreenshotEnabled { get; set; } = false;
@@ -69,22 +86,7 @@ namespace Capillume
         public WatermarkSettings Watermark { get; set; } = new();
         public AnnotationSettings Annotation { get; set; } = new();
         public DownscaleSettings Downscale { get; set; } = new();
-    }
-
-    public class DownscaleSettings
-    {
-        public bool Enabled { get; set; } = false;
-        public DownscaleMode Mode { get; set; } = DownscaleMode.TargetHeight;
-        public int TargetHeight { get; set; } = Constants.DownscaleTargetHeightDefault;
-        public int ResizePercentage { get; set; } = Constants.DownscalePercentageDefault;
-        public int MaxWidth { get; set; } = Constants.DownscaleMaxWidthDefault;
-        public int BoundingBoxWidth { get; set; } = Constants.DownscaleBoundingWidthDefault;
-        public int BoundingBoxHeight { get; set; } = Constants.DownscaleBoundingHeightDefault;
-        public DownscaleQuality Quality { get; set; } = DownscaleQuality.HighQuality;
-        public bool SharpenAfterResize { get; set; } = false;
-        public bool SkipSmallerImages { get; set; } = true;
-        public bool FullScreenOnly { get; set; } = false;
-        public bool LossyFormatsOnly { get; set; } = false;
+        public ImageProcessingSettings ImageProcessing { get; set; } = new();
     }
 
     public class WatermarkSettings
@@ -113,6 +115,30 @@ namespace Capillume
         public int AnnotationFontColorArgb { get; set; } = Color.Black.ToArgb();
         public int? AnnotationBackgroundColorArgb { get; set; } = Color.White.ToArgb();
         public int AnnotationOpacity { get; set; } = Constants.AnnotationOpacityDefault; // 80
+    }
+
+    public class DownscaleSettings
+    {
+        public bool Enabled { get; set; } = false;
+        public DownscaleMode Mode { get; set; } = DownscaleMode.TargetHeight;
+        public int TargetHeight { get; set; } = Constants.DownscaleTargetHeightDefault;
+        public int ResizePercentage { get; set; } = Constants.DownscalePercentageDefault;
+        public int MaxWidth { get; set; } = Constants.DownscaleMaxWidthDefault;
+        public int BoundingBoxWidth { get; set; } = Constants.DownscaleBoundingWidthDefault;
+        public int BoundingBoxHeight { get; set; } = Constants.DownscaleBoundingHeightDefault;
+        public DownscaleQuality Quality { get; set; } = DownscaleQuality.HighQuality;
+        public bool SharpenAfterResize { get; set; } = false;
+        public bool SkipSmallerImages { get; set; } = true;
+        public bool FullScreenOnly { get; set; } = false;
+        public bool LossyFormatsOnly { get; set; } = false;
+    }
+
+    public class ImageProcessingSettings
+    {
+        public ImageColorMode ColorMode { get; set; } = ImageColorMode.FullColor;
+        public bool HighContrast { get; set; } = false;
+        public bool NoiseReduction { get; set; } = false;
+        public ColorTemperatureMode ColorTemperature { get; set; } = ColorTemperatureMode.Neutral;
     }
 
     public static class SettingsManager

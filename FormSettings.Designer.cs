@@ -96,6 +96,19 @@
             dsRadioMaxWidth1 = new RadioButton();
             dsRadioPercentage1 = new RadioButton();
             dsRadioTargetHeight1 = new RadioButton();
+            tabPageImageProcessing = new TabPage();
+            ipGroupBoxAdvanced = new GroupBox();
+            ipComboBoxColorTemperature = new ComboBox();
+            ipLabelColorTemperature = new Label();
+            ipCheckBoxNoiseReduction = new CheckBox();
+            ipCheckBoxHighContrast = new CheckBox();
+            ipGroupBoxColorMode = new GroupBox();
+            ipRadioAdaptivePalette = new RadioButton();
+            ipRadioColor256 = new RadioButton();
+            ipRadioColor16 = new RadioButton();
+            ipRadioMonochrome1Bit = new RadioButton();
+            ipRadioGrayscale = new RadioButton();
+            ipRadioFullColor = new RadioButton();
             buttonCancel = new Button();
             buttonOk = new Button();
             tabControlSettings.SuspendLayout();
@@ -117,6 +130,9 @@
             ((System.ComponentModel.ISupportInitialize)dsNumericMaxWidth1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dsNumericPercentage1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dsNumericTargetHeight1).BeginInit();
+            tabPageImageProcessing.SuspendLayout();
+            ipGroupBoxAdvanced.SuspendLayout();
+            ipGroupBoxColorMode.SuspendLayout();
             SuspendLayout();
             // 
             // tabControlSettings
@@ -124,8 +140,9 @@
             tabControlSettings.Controls.Add(tabPageWatermark);
             tabControlSettings.Controls.Add(tabPageAnnotation);
             tabControlSettings.Controls.Add(tabPageDownscale);
+            tabControlSettings.Controls.Add(tabPageImageProcessing);
             tabControlSettings.Font = new Font("Segoe UI", 10F);
-            tabControlSettings.Location = new Point(24, 22);
+            tabControlSettings.Location = new Point(24, 29);
             tabControlSettings.Name = "tabControlSettings";
             tabControlSettings.SelectedIndex = 0;
             tabControlSettings.Size = new Size(1456, 760);
@@ -720,7 +737,7 @@
             // dsLabelBoundingWidth1
             // 
             dsLabelBoundingWidth1.AutoSize = true;
-            dsLabelBoundingWidth1.Location = new Point(706, 215);
+            dsLabelBoundingWidth1.Location = new Point(807, 217);
             dsLabelBoundingWidth1.Name = "dsLabelBoundingWidth1";
             dsLabelBoundingWidth1.Size = new Size(89, 37);
             dsLabelBoundingWidth1.TabIndex = 3;
@@ -729,7 +746,7 @@
             // dsLabelMaxWidth1
             // 
             dsLabelMaxWidth1.AutoSize = true;
-            dsLabelMaxWidth1.Location = new Point(706, 169);
+            dsLabelMaxWidth1.Location = new Point(807, 171);
             dsLabelMaxWidth1.Name = "dsLabelMaxWidth1";
             dsLabelMaxWidth1.Size = new Size(89, 37);
             dsLabelMaxWidth1.TabIndex = 3;
@@ -738,7 +755,7 @@
             // dsLabelBoundingHeight1
             // 
             dsLabelBoundingHeight1.AutoSize = true;
-            dsLabelBoundingHeight1.Location = new Point(1001, 217);
+            dsLabelBoundingHeight1.Location = new Point(1133, 217);
             dsLabelBoundingHeight1.Name = "dsLabelBoundingHeight1";
             dsLabelBoundingHeight1.Size = new Size(97, 37);
             dsLabelBoundingHeight1.TabIndex = 3;
@@ -747,7 +764,7 @@
             // dsLabelPercentageValue1
             // 
             dsLabelPercentageValue1.AutoSize = true;
-            dsLabelPercentageValue1.Location = new Point(706, 121);
+            dsLabelPercentageValue1.Location = new Point(807, 123);
             dsLabelPercentageValue1.Name = "dsLabelPercentageValue1";
             dsLabelPercentageValue1.Size = new Size(104, 37);
             dsLabelPercentageValue1.TabIndex = 3;
@@ -756,7 +773,7 @@
             // dsLabelTargetHeight
             // 
             dsLabelTargetHeight.AutoSize = true;
-            dsLabelTargetHeight.Location = new Point(706, 75);
+            dsLabelTargetHeight.Location = new Point(807, 77);
             dsLabelTargetHeight.Name = "dsLabelTargetHeight";
             dsLabelTargetHeight.Size = new Size(97, 37);
             dsLabelTargetHeight.TabIndex = 3;
@@ -764,7 +781,7 @@
             // 
             // dsNumericBoundingHeight1
             // 
-            dsNumericBoundingHeight1.Location = new Point(1122, 213);
+            dsNumericBoundingHeight1.Location = new Point(1254, 213);
             dsNumericBoundingHeight1.Name = "dsNumericBoundingHeight1";
             dsNumericBoundingHeight1.Size = new Size(148, 43);
             dsNumericBoundingHeight1.TabIndex = 2;
@@ -773,7 +790,7 @@
             // 
             // dsNumericBoundingWidth1
             // 
-            dsNumericBoundingWidth1.Location = new Point(821, 215);
+            dsNumericBoundingWidth1.Location = new Point(922, 217);
             dsNumericBoundingWidth1.Name = "dsNumericBoundingWidth1";
             dsNumericBoundingWidth1.Size = new Size(148, 43);
             dsNumericBoundingWidth1.TabIndex = 2;
@@ -782,7 +799,7 @@
             // 
             // dsNumericMaxWidth1
             // 
-            dsNumericMaxWidth1.Location = new Point(821, 166);
+            dsNumericMaxWidth1.Location = new Point(922, 168);
             dsNumericMaxWidth1.Name = "dsNumericMaxWidth1";
             dsNumericMaxWidth1.Size = new Size(148, 43);
             dsNumericMaxWidth1.TabIndex = 2;
@@ -791,7 +808,7 @@
             // 
             // dsNumericPercentage1
             // 
-            dsNumericPercentage1.Location = new Point(821, 119);
+            dsNumericPercentage1.Location = new Point(922, 121);
             dsNumericPercentage1.Name = "dsNumericPercentage1";
             dsNumericPercentage1.Size = new Size(148, 43);
             dsNumericPercentage1.TabIndex = 2;
@@ -799,7 +816,7 @@
             // 
             // dsNumericTargetHeight1
             // 
-            dsNumericTargetHeight1.Location = new Point(821, 72);
+            dsNumericTargetHeight1.Location = new Point(922, 74);
             dsNumericTargetHeight1.Name = "dsNumericTargetHeight1";
             dsNumericTargetHeight1.Size = new Size(148, 43);
             dsNumericTargetHeight1.TabIndex = 2;
@@ -810,9 +827,9 @@
             // 
             dsComboBoxBoundingBox1.DropDownStyle = ComboBoxStyle.DropDownList;
             dsComboBoxBoundingBox1.FormattingEnabled = true;
-            dsComboBoxBoundingBox1.Location = new Point(471, 213);
+            dsComboBoxBoundingBox1.Location = new Point(487, 213);
             dsComboBoxBoundingBox1.Name = "dsComboBoxBoundingBox1";
-            dsComboBoxBoundingBox1.Size = new Size(210, 45);
+            dsComboBoxBoundingBox1.Size = new Size(286, 45);
             dsComboBoxBoundingBox1.TabIndex = 1;
             dsComboBoxBoundingBox1.SelectedIndexChanged += DsComboBoxBoundingBox_SelectedIndexChanged;
             // 
@@ -820,9 +837,9 @@
             // 
             dsComboBoxMaxWidth1.DropDownStyle = ComboBoxStyle.DropDownList;
             dsComboBoxMaxWidth1.FormattingEnabled = true;
-            dsComboBoxMaxWidth1.Location = new Point(471, 166);
+            dsComboBoxMaxWidth1.Location = new Point(487, 166);
             dsComboBoxMaxWidth1.Name = "dsComboBoxMaxWidth1";
-            dsComboBoxMaxWidth1.Size = new Size(210, 45);
+            dsComboBoxMaxWidth1.Size = new Size(286, 45);
             dsComboBoxMaxWidth1.TabIndex = 1;
             dsComboBoxMaxWidth1.SelectedIndexChanged += DsComboBoxMaxWidth_SelectedIndexChanged;
             // 
@@ -830,9 +847,9 @@
             // 
             dsComboBoxPercentage1.DropDownStyle = ComboBoxStyle.DropDownList;
             dsComboBoxPercentage1.FormattingEnabled = true;
-            dsComboBoxPercentage1.Location = new Point(471, 119);
+            dsComboBoxPercentage1.Location = new Point(487, 119);
             dsComboBoxPercentage1.Name = "dsComboBoxPercentage1";
-            dsComboBoxPercentage1.Size = new Size(210, 45);
+            dsComboBoxPercentage1.Size = new Size(286, 45);
             dsComboBoxPercentage1.TabIndex = 1;
             dsComboBoxPercentage1.SelectedIndexChanged += DsComboBoxPercentage_SelectedIndexChanged;
             // 
@@ -840,9 +857,9 @@
             // 
             dsComboBoxTargetHeight1.DropDownStyle = ComboBoxStyle.DropDownList;
             dsComboBoxTargetHeight1.FormattingEnabled = true;
-            dsComboBoxTargetHeight1.Location = new Point(471, 72);
+            dsComboBoxTargetHeight1.Location = new Point(487, 72);
             dsComboBoxTargetHeight1.Name = "dsComboBoxTargetHeight1";
-            dsComboBoxTargetHeight1.Size = new Size(210, 45);
+            dsComboBoxTargetHeight1.Size = new Size(286, 45);
             dsComboBoxTargetHeight1.TabIndex = 1;
             dsComboBoxTargetHeight1.SelectedIndexChanged += DsComboBoxTargetHeight_SelectedIndexChanged;
             // 
@@ -893,6 +910,162 @@
             dsRadioTargetHeight1.Text = "Resize to Maximum Height";
             dsRadioTargetHeight1.UseVisualStyleBackColor = true;
             dsRadioTargetHeight1.CheckedChanged += DownscaleModeChanged;
+            // 
+            // tabPageImageProcessing
+            // 
+            tabPageImageProcessing.BackColor = Color.White;
+            tabPageImageProcessing.Controls.Add(ipGroupBoxAdvanced);
+            tabPageImageProcessing.Controls.Add(ipGroupBoxColorMode);
+            tabPageImageProcessing.Location = new Point(8, 51);
+            tabPageImageProcessing.Name = "tabPageImageProcessing";
+            tabPageImageProcessing.Padding = new Padding(3);
+            tabPageImageProcessing.Size = new Size(1440, 701);
+            tabPageImageProcessing.TabIndex = 3;
+            tabPageImageProcessing.Text = "Image Processing";
+            // 
+            // ipGroupBoxAdvanced
+            // 
+            ipGroupBoxAdvanced.Controls.Add(ipComboBoxColorTemperature);
+            ipGroupBoxAdvanced.Controls.Add(ipLabelColorTemperature);
+            ipGroupBoxAdvanced.Controls.Add(ipCheckBoxNoiseReduction);
+            ipGroupBoxAdvanced.Controls.Add(ipCheckBoxHighContrast);
+            ipGroupBoxAdvanced.Font = new Font("Segoe UI", 10F);
+            ipGroupBoxAdvanced.Location = new Point(732, 24);
+            ipGroupBoxAdvanced.Name = "ipGroupBoxAdvanced";
+            ipGroupBoxAdvanced.Size = new Size(692, 360);
+            ipGroupBoxAdvanced.TabIndex = 1;
+            ipGroupBoxAdvanced.TabStop = false;
+            ipGroupBoxAdvanced.Text = "Advanced Processing";
+            // 
+            // ipComboBoxColorTemperature
+            // 
+            ipComboBoxColorTemperature.DropDownStyle = ComboBoxStyle.DropDownList;
+            ipComboBoxColorTemperature.FormattingEnabled = true;
+            ipComboBoxColorTemperature.Items.AddRange(new object[] { "Neutral", "Warm", "Cool" });
+            ipComboBoxColorTemperature.Location = new Point(328, 205);
+            ipComboBoxColorTemperature.Name = "ipComboBoxColorTemperature";
+            ipComboBoxColorTemperature.Size = new Size(336, 45);
+            ipComboBoxColorTemperature.TabIndex = 3;
+            ipComboBoxColorTemperature.SelectedIndexChanged += ImageProcessingSettingChanged;
+            // 
+            // ipLabelColorTemperature
+            // 
+            ipLabelColorTemperature.AutoSize = true;
+            ipLabelColorTemperature.Location = new Point(52, 208);
+            ipLabelColorTemperature.Name = "ipLabelColorTemperature";
+            ipLabelColorTemperature.Size = new Size(235, 37);
+            ipLabelColorTemperature.TabIndex = 2;
+            ipLabelColorTemperature.Text = "Color temperature";
+            // 
+            // ipCheckBoxNoiseReduction
+            // 
+            ipCheckBoxNoiseReduction.AutoSize = true;
+            ipCheckBoxNoiseReduction.Location = new Point(52, 110);
+            ipCheckBoxNoiseReduction.Name = "ipCheckBoxNoiseReduction";
+            ipCheckBoxNoiseReduction.Size = new Size(237, 41);
+            ipCheckBoxNoiseReduction.TabIndex = 1;
+            ipCheckBoxNoiseReduction.Text = "Noise reduction";
+            ipCheckBoxNoiseReduction.UseVisualStyleBackColor = true;
+            ipCheckBoxNoiseReduction.CheckedChanged += ImageProcessingSettingChanged;
+            // 
+            // ipCheckBoxHighContrast
+            // 
+            ipCheckBoxHighContrast.AutoSize = true;
+            ipCheckBoxHighContrast.Location = new Point(52, 63);
+            ipCheckBoxHighContrast.Name = "ipCheckBoxHighContrast";
+            ipCheckBoxHighContrast.Size = new Size(208, 41);
+            ipCheckBoxHighContrast.TabIndex = 0;
+            ipCheckBoxHighContrast.Text = "High contrast";
+            ipCheckBoxHighContrast.UseVisualStyleBackColor = true;
+            ipCheckBoxHighContrast.CheckedChanged += ImageProcessingSettingChanged;
+            // 
+            // ipGroupBoxColorMode
+            // 
+            ipGroupBoxColorMode.Controls.Add(ipRadioAdaptivePalette);
+            ipGroupBoxColorMode.Controls.Add(ipRadioColor256);
+            ipGroupBoxColorMode.Controls.Add(ipRadioColor16);
+            ipGroupBoxColorMode.Controls.Add(ipRadioMonochrome1Bit);
+            ipGroupBoxColorMode.Controls.Add(ipRadioGrayscale);
+            ipGroupBoxColorMode.Controls.Add(ipRadioFullColor);
+            ipGroupBoxColorMode.Font = new Font("Segoe UI", 10F);
+            ipGroupBoxColorMode.Location = new Point(16, 24);
+            ipGroupBoxColorMode.Name = "ipGroupBoxColorMode";
+            ipGroupBoxColorMode.Size = new Size(692, 360);
+            ipGroupBoxColorMode.TabIndex = 0;
+            ipGroupBoxColorMode.TabStop = false;
+            ipGroupBoxColorMode.Text = "Color Mode";
+            // 
+            // ipRadioAdaptivePalette
+            // 
+            ipRadioAdaptivePalette.AutoSize = true;
+            ipRadioAdaptivePalette.Location = new Point(52, 298);
+            ipRadioAdaptivePalette.Name = "ipRadioAdaptivePalette";
+            ipRadioAdaptivePalette.Size = new Size(416, 41);
+            ipRadioAdaptivePalette.TabIndex = 5;
+            ipRadioAdaptivePalette.TabStop = true;
+            ipRadioAdaptivePalette.Text = "Adaptive palette (quantization)";
+            ipRadioAdaptivePalette.UseVisualStyleBackColor = true;
+            ipRadioAdaptivePalette.CheckedChanged += ImageProcessingColorModeChanged;
+            // 
+            // ipRadioColor256
+            // 
+            ipRadioColor256.AutoSize = true;
+            ipRadioColor256.Location = new Point(52, 251);
+            ipRadioColor256.Name = "ipRadioColor256";
+            ipRadioColor256.Size = new Size(164, 41);
+            ipRadioColor256.TabIndex = 4;
+            ipRadioColor256.TabStop = true;
+            ipRadioColor256.Text = "256-color";
+            ipRadioColor256.UseVisualStyleBackColor = true;
+            ipRadioColor256.CheckedChanged += ImageProcessingColorModeChanged;
+            // 
+            // ipRadioColor16
+            // 
+            ipRadioColor16.AutoSize = true;
+            ipRadioColor16.Location = new Point(52, 204);
+            ipRadioColor16.Name = "ipRadioColor16";
+            ipRadioColor16.Size = new Size(149, 41);
+            ipRadioColor16.TabIndex = 3;
+            ipRadioColor16.TabStop = true;
+            ipRadioColor16.Text = "16-color";
+            ipRadioColor16.UseVisualStyleBackColor = true;
+            ipRadioColor16.CheckedChanged += ImageProcessingColorModeChanged;
+            // 
+            // ipRadioMonochrome1Bit
+            // 
+            ipRadioMonochrome1Bit.AutoSize = true;
+            ipRadioMonochrome1Bit.Location = new Point(52, 110);
+            ipRadioMonochrome1Bit.Name = "ipRadioMonochrome1Bit";
+            ipRadioMonochrome1Bit.Size = new Size(289, 41);
+            ipRadioMonochrome1Bit.TabIndex = 2;
+            ipRadioMonochrome1Bit.TabStop = true;
+            ipRadioMonochrome1Bit.Text = "Monochrome (1-bit)";
+            ipRadioMonochrome1Bit.UseVisualStyleBackColor = true;
+            ipRadioMonochrome1Bit.CheckedChanged += ImageProcessingColorModeChanged;
+            // 
+            // ipRadioGrayscale
+            // 
+            ipRadioGrayscale.AutoSize = true;
+            ipRadioGrayscale.Location = new Point(52, 157);
+            ipRadioGrayscale.Name = "ipRadioGrayscale";
+            ipRadioGrayscale.Size = new Size(237, 41);
+            ipRadioGrayscale.TabIndex = 1;
+            ipRadioGrayscale.TabStop = true;
+            ipRadioGrayscale.Text = "Grayscale mode";
+            ipRadioGrayscale.UseVisualStyleBackColor = true;
+            ipRadioGrayscale.CheckedChanged += ImageProcessingColorModeChanged;
+            // 
+            // ipRadioFullColor
+            // 
+            ipRadioFullColor.AutoSize = true;
+            ipRadioFullColor.Location = new Point(52, 63);
+            ipRadioFullColor.Name = "ipRadioFullColor";
+            ipRadioFullColor.Size = new Size(157, 41);
+            ipRadioFullColor.TabIndex = 0;
+            ipRadioFullColor.TabStop = true;
+            ipRadioFullColor.Text = "Full color";
+            ipRadioFullColor.UseVisualStyleBackColor = true;
+            ipRadioFullColor.CheckedChanged += ImageProcessingColorModeChanged;
             // 
             // buttonCancel
             // 
@@ -965,6 +1138,11 @@
             ((System.ComponentModel.ISupportInitialize)dsNumericMaxWidth1).EndInit();
             ((System.ComponentModel.ISupportInitialize)dsNumericPercentage1).EndInit();
             ((System.ComponentModel.ISupportInitialize)dsNumericTargetHeight1).EndInit();
+            tabPageImageProcessing.ResumeLayout(false);
+            ipGroupBoxAdvanced.ResumeLayout(false);
+            ipGroupBoxAdvanced.PerformLayout();
+            ipGroupBoxColorMode.ResumeLayout(false);
+            ipGroupBoxColorMode.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -1040,5 +1218,20 @@
         private Label dsLabelEnable;
         private Label dsLabelSummary1;
         private Label dsLabelDefaultSize;
+        private TabPage tabPageImageProcessing;
+        private GroupBox ipGroupBoxColorMode;
+        private RadioButton ipRadioAdaptivePalette;
+        private RadioButton ipRadioColor256;
+        private RadioButton ipRadioColor16;
+        private RadioButton ipRadioMonochrome1Bit;
+        private RadioButton ipRadioGrayscale;
+        private RadioButton ipRadioFullColor;
+        private GroupBox ipGroupBoxAdvanced;
+        private ComboBox ipComboBoxColorTemperature;
+        private Label ipLabelColorTemperature;
+        private CheckBox ipCheckBoxNoiseReduction;
+        private CheckBox ipCheckBoxHighContrast;
+        private Label label1;
+        private Label labelColorExFull;
     }
 }
