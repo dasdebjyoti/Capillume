@@ -11,6 +11,7 @@ namespace Capillume
         private bool AnnotationSettingsChanged = false;
         private bool DownscaleSettingsChanged = false;
         private bool ImageProcessingSettingsChanged = false;
+        private bool RetentionSettingsChanged = false;
         private Icon? _appIcon;
         private bool _isStartedWithWindows;
         private bool _isSessionLocked;
@@ -377,7 +378,13 @@ namespace Capillume
 
         private void ButtonSettings_Click(object sender, EventArgs e)
         {
-            using var settingsForm = new FormSettings(_settings.Watermark, _settings.Annotation, _settings.Downscale, _settings.ImageProcessing);
+            using var settingsForm = new FormSettings(
+                _settings.Watermark,
+                _settings.Annotation,
+                _settings.Downscale,
+                _settings.ImageProcessing,
+                _settings.Retention,
+                textBoxFolder.Text.Trim());
             if (settingsForm.ShowDialog(this) != DialogResult.OK)
             {
                 return;
@@ -387,10 +394,12 @@ namespace Capillume
             _settings.Annotation = settingsForm.AnnotationSettings;
             _settings.Downscale = settingsForm.DownscaleSettings;
             _settings.ImageProcessing = settingsForm.ImageProcessingSettings;
+            _settings.Retention = settingsForm.RetentionSettings;
             WatermarkSettingsChanged = WatermarkSettingsChanged || settingsForm.WatermarkSettingsChanged;
             AnnotationSettingsChanged = AnnotationSettingsChanged || settingsForm.AnnotationSettingsChanged;
             DownscaleSettingsChanged = DownscaleSettingsChanged || settingsForm.DownscaleSettingsChanged;
             ImageProcessingSettingsChanged = ImageProcessingSettingsChanged || settingsForm.ImageProcessingSettingsChanged;
+            RetentionSettingsChanged = RetentionSettingsChanged || settingsForm.RetentionSettingsChanged;
             UpdateSaveButtonState();
         }
 
@@ -474,7 +483,8 @@ namespace Capillume
                 || WatermarkSettingsChanged == true
                 || AnnotationSettingsChanged == true
                 || DownscaleSettingsChanged == true
-                || ImageProcessingSettingsChanged == true;
+                || ImageProcessingSettingsChanged == true
+                || RetentionSettingsChanged == true;
         }
 
         /// <summary>
@@ -529,6 +539,7 @@ namespace Capillume
                 AnnotationSettingsChanged = false;
                 DownscaleSettingsChanged = false;
                 ImageProcessingSettingsChanged = false;
+                RetentionSettingsChanged = false;
             }
             finally
             {
@@ -567,6 +578,7 @@ namespace Capillume
             AnnotationSettingsChanged = false;
             DownscaleSettingsChanged = false;
             ImageProcessingSettingsChanged = false;
+            RetentionSettingsChanged = false;
 
             _screenshotService?.UpdateSettings(_settings);
 
@@ -588,6 +600,5 @@ namespace Capillume
 
             return true;
         }
-
     }
 }

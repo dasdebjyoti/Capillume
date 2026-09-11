@@ -67,35 +67,35 @@
             anLabelOpacityValue = new Label();
             tabPageDownscale = new TabPage();
             dsLabelDefaultSize = new Label();
-            dsLabelSummary1 = new Label();
+            dsLabelSummary = new Label();
             dsLabelEnable = new Label();
-            dsToggleEnable1 = new ToggleSwitch();
-            dsGroupBoxProcessing1 = new GroupBox();
-            dsLabelQuality1 = new Label();
-            dsCheckBoxLossyOnly1 = new CheckBox();
-            dsCheckBoxFullScreenOnly1 = new CheckBox();
-            dsCheckBoxSkipSmaller1 = new CheckBox();
-            dsCheckBoxSharpen1 = new CheckBox();
-            dsComboBoxQuality1 = new ComboBox();
-            dsGroupBoxModes1 = new GroupBox();
-            dsLabelBoundingWidth1 = new Label();
-            dsLabelMaxWidth1 = new Label();
-            dsLabelBoundingHeight1 = new Label();
-            dsLabelPercentageValue1 = new Label();
+            dsToggleEnable = new ToggleSwitch();
+            dsGroupBoxProcessing = new GroupBox();
+            dsLabelQuality = new Label();
+            dsCheckBoxLossyOnly = new CheckBox();
+            dsCheckBoxFullScreenOnly = new CheckBox();
+            dsCheckBoxSkipSmaller = new CheckBox();
+            dsCheckBoxSharpen = new CheckBox();
+            dsComboBoxQuality = new ComboBox();
+            dsGroupBoxModes = new GroupBox();
+            dsLabelBoundingWidth = new Label();
+            dsLabelMaxWidth = new Label();
+            dsLabelBoundingHeight = new Label();
+            dsLabelPercentageValue = new Label();
             dsLabelTargetHeight = new Label();
-            dsNumericBoundingHeight1 = new NumericUpDown();
-            dsNumericBoundingWidth1 = new NumericUpDown();
-            dsNumericMaxWidth1 = new NumericUpDown();
-            dsNumericPercentage1 = new NumericUpDown();
-            dsNumericTargetHeight1 = new NumericUpDown();
-            dsComboBoxBoundingBox1 = new ComboBox();
-            dsComboBoxMaxWidth1 = new ComboBox();
-            dsComboBoxPercentage1 = new ComboBox();
-            dsComboBoxTargetHeight1 = new ComboBox();
-            dsRadioBoundingBox1 = new RadioButton();
-            dsRadioMaxWidth1 = new RadioButton();
-            dsRadioPercentage1 = new RadioButton();
-            dsRadioTargetHeight1 = new RadioButton();
+            dsNumericBoundingHeight = new NumericUpDown();
+            dsNumericBoundingWidth = new NumericUpDown();
+            dsNumericMaxWidth = new NumericUpDown();
+            dsNumericPercentage = new NumericUpDown();
+            dsNumericTargetHeight = new NumericUpDown();
+            dsComboBoxBoundingBox = new ComboBox();
+            dsComboBoxMaxWidth = new ComboBox();
+            dsComboBoxPercentage = new ComboBox();
+            dsComboBoxTargetHeight = new ComboBox();
+            dsRadioBoundingBox = new RadioButton();
+            dsRadioMaxWidth = new RadioButton();
+            dsRadioPercentage = new RadioButton();
+            dsRadioTargetHeight = new RadioButton();
             tabPageImageProcessing = new TabPage();
             ipGroupBoxAdvanced = new GroupBox();
             ipComboBoxColorTemperature = new ComboBox();
@@ -109,6 +109,30 @@
             ipRadioMonochrome1Bit = new RadioButton();
             ipRadioGrayscale = new RadioButton();
             ipRadioFullColor = new RadioButton();
+            tabPageRetention = new TabPage();
+            rtLabelAutoCleanup = new Label();
+            rtToggleSwitchAutoCleanup = new ToggleSwitch();
+            rtGroupBoxAction = new GroupBox();
+            rtComboBoxAction = new ComboBox();
+            rtLabelAction = new Label();
+            rtLabelBackupFolder = new Label();
+            rtTextBoxBackupFolder = new TextBox();
+            rtButtonBrowseBackupFolder = new Button();
+            rtCheckBoxPerSessionSubfolder = new CheckBox();
+            rtButtonCleanupNow = new Button();
+            rtGroupBoxSelection = new GroupBox();
+            rtNumericMaxFiles = new NumericUpDown();
+            rtCheckBoxMaxDays = new CheckBox();
+            rtNumericMaxDays = new NumericUpDown();
+            rtLabelDaysSuffix = new Label();
+            rtCheckBoxMaxFiles = new CheckBox();
+            rtLabelFilesSuffix = new Label();
+            rtCheckBoxIncludeSubfolders = new CheckBox();
+            rtCheckBoxDryRun = new CheckBox();
+            rtTextBoxCleanupResult = new TextBox();
+            rtLabelCleanupResultTitle = new Label();
+            rtLabelPreviewSummary = new Label();
+            rtLabelPreviewSummaryTitle = new Label();
             buttonCancel = new Button();
             buttonOk = new Button();
             tabControlSettings.SuspendLayout();
@@ -123,16 +147,21 @@
             anGroupBoxAnnotation.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)anTrackBarOpacity).BeginInit();
             tabPageDownscale.SuspendLayout();
-            dsGroupBoxProcessing1.SuspendLayout();
-            dsGroupBoxModes1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)dsNumericBoundingHeight1).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)dsNumericBoundingWidth1).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)dsNumericMaxWidth1).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)dsNumericPercentage1).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)dsNumericTargetHeight1).BeginInit();
+            dsGroupBoxProcessing.SuspendLayout();
+            dsGroupBoxModes.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dsNumericBoundingHeight).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)dsNumericBoundingWidth).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)dsNumericMaxWidth).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)dsNumericPercentage).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)dsNumericTargetHeight).BeginInit();
             tabPageImageProcessing.SuspendLayout();
             ipGroupBoxAdvanced.SuspendLayout();
             ipGroupBoxColorMode.SuspendLayout();
+            tabPageRetention.SuspendLayout();
+            rtGroupBoxAction.SuspendLayout();
+            rtGroupBoxSelection.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)rtNumericMaxFiles).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)rtNumericMaxDays).BeginInit();
             SuspendLayout();
             // 
             // tabControlSettings
@@ -141,6 +170,7 @@
             tabControlSettings.Controls.Add(tabPageAnnotation);
             tabControlSettings.Controls.Add(tabPageDownscale);
             tabControlSettings.Controls.Add(tabPageImageProcessing);
+            tabControlSettings.Controls.Add(tabPageRetention);
             tabControlSettings.Font = new Font("Segoe UI", 10F);
             tabControlSettings.Location = new Point(24, 29);
             tabControlSettings.Name = "tabControlSettings";
@@ -150,7 +180,6 @@
             // 
             // tabPageWatermark
             // 
-            tabPageWatermark.BackColor = Color.White;
             tabPageWatermark.Controls.Add(wmGroupBoxCommon);
             tabPageWatermark.Controls.Add(wmGroupBoxUseImage);
             tabPageWatermark.Controls.Add(wmGroupBoxUseText);
@@ -160,6 +189,7 @@
             tabPageWatermark.Size = new Size(1440, 701);
             tabPageWatermark.TabIndex = 1;
             tabPageWatermark.Text = "Watermark";
+            tabPageWatermark.UseVisualStyleBackColor = true;
             // 
             // wmGroupBoxCommon
             // 
@@ -223,8 +253,7 @@
             // wmTrackBarOpacity
             // 
             wmTrackBarOpacity.AutoSize = false;
-            wmTrackBarOpacity.BackColor = Color.White;
-            wmTrackBarOpacity.Location = new Point(149, 49);
+            wmTrackBarOpacity.Location = new Point(149, 54);
             wmTrackBarOpacity.Margin = new Padding(6);
             wmTrackBarOpacity.Maximum = 100;
             wmTrackBarOpacity.Minimum = 1;
@@ -313,7 +342,7 @@
             wmButtonBrowseWatermarkImage.Name = "wmButtonBrowseWatermarkImage";
             wmButtonBrowseWatermarkImage.Size = new Size(150, 46);
             wmButtonBrowseWatermarkImage.TabIndex = 3;
-            wmButtonBrowseWatermarkImage.Text = "&Browse";
+            wmButtonBrowseWatermarkImage.Text = "&Browse...";
             wmButtonBrowseWatermarkImage.UseVisualStyleBackColor = true;
             wmButtonBrowseWatermarkImage.Click += WmButtonBrowseWatermarkImage_Click;
             // 
@@ -329,7 +358,6 @@
             // wmTrackBarWatermarkImageScale
             // 
             wmTrackBarWatermarkImageScale.AutoSize = false;
-            wmTrackBarWatermarkImageScale.BackColor = Color.White;
             wmTrackBarWatermarkImageScale.Location = new Point(149, 156);
             wmTrackBarWatermarkImageScale.Margin = new Padding(6);
             wmTrackBarWatermarkImageScale.Maximum = 100;
@@ -414,7 +442,7 @@
             wmButtonChooseFont.Name = "wmButtonChooseFont";
             wmButtonChooseFont.Size = new Size(150, 46);
             wmButtonChooseFont.TabIndex = 2;
-            wmButtonChooseFont.Text = "&Font";
+            wmButtonChooseFont.Text = "&Font...";
             wmButtonChooseFont.UseVisualStyleBackColor = true;
             wmButtonChooseFont.Click += WmButtonChooseFont_Click;
             // 
@@ -430,7 +458,6 @@
             // 
             // tabPageAnnotation
             // 
-            tabPageAnnotation.BackColor = Color.White;
             tabPageAnnotation.Controls.Add(anGroupBoxAnnotation);
             tabPageAnnotation.Location = new Point(8, 51);
             tabPageAnnotation.Name = "tabPageAnnotation";
@@ -438,6 +465,7 @@
             tabPageAnnotation.Size = new Size(1440, 701);
             tabPageAnnotation.TabIndex = 1;
             tabPageAnnotation.Text = "Annotation";
+            tabPageAnnotation.UseVisualStyleBackColor = true;
             // 
             // anGroupBoxAnnotation
             // 
@@ -498,7 +526,7 @@
             anButtonAnnotationFields.Name = "anButtonAnnotationFields";
             anButtonAnnotationFields.Size = new Size(150, 46);
             anButtonAnnotationFields.TabIndex = 3;
-            anButtonAnnotationFields.Text = "Fiel&ds";
+            anButtonAnnotationFields.Text = "Fiel&ds >";
             anButtonAnnotationFields.UseVisualStyleBackColor = true;
             anButtonAnnotationFields.Click += AnButtonAnnotationFields_Click;
             // 
@@ -509,7 +537,7 @@
             anButtonAnnotationFont.Name = "anButtonAnnotationFont";
             anButtonAnnotationFont.Size = new Size(150, 46);
             anButtonAnnotationFont.TabIndex = 4;
-            anButtonAnnotationFont.Text = "&Font";
+            anButtonAnnotationFont.Text = "&Font...";
             anButtonAnnotationFont.UseVisualStyleBackColor = true;
             anButtonAnnotationFont.Click += AnButtonAnnotationFont_Click;
             // 
@@ -519,7 +547,7 @@
             anButtonAnnotationBackgroundColor.Name = "anButtonAnnotationBackgroundColor";
             anButtonAnnotationBackgroundColor.Size = new Size(150, 46);
             anButtonAnnotationBackgroundColor.TabIndex = 5;
-            anButtonAnnotationBackgroundColor.Text = "&Highlight";
+            anButtonAnnotationBackgroundColor.Text = "&Highlight...";
             anButtonAnnotationBackgroundColor.UseVisualStyleBackColor = true;
             anButtonAnnotationBackgroundColor.Click += AnButtonAnnotationBackgroundColor_Click;
             // 
@@ -572,19 +600,19 @@
             // 
             // tabPageDownscale
             // 
-            tabPageDownscale.BackColor = Color.White;
             tabPageDownscale.Controls.Add(dsLabelDefaultSize);
-            tabPageDownscale.Controls.Add(dsLabelSummary1);
+            tabPageDownscale.Controls.Add(dsLabelSummary);
             tabPageDownscale.Controls.Add(dsLabelEnable);
-            tabPageDownscale.Controls.Add(dsToggleEnable1);
-            tabPageDownscale.Controls.Add(dsGroupBoxProcessing1);
-            tabPageDownscale.Controls.Add(dsGroupBoxModes1);
+            tabPageDownscale.Controls.Add(dsToggleEnable);
+            tabPageDownscale.Controls.Add(dsGroupBoxProcessing);
+            tabPageDownscale.Controls.Add(dsGroupBoxModes);
             tabPageDownscale.Location = new Point(8, 51);
             tabPageDownscale.Name = "tabPageDownscale";
             tabPageDownscale.Padding = new Padding(3);
             tabPageDownscale.Size = new Size(1440, 701);
             tabPageDownscale.TabIndex = 2;
             tabPageDownscale.Text = "Downscale";
+            tabPageDownscale.UseVisualStyleBackColor = true;
             // 
             // dsLabelDefaultSize
             // 
@@ -592,17 +620,17 @@
             dsLabelDefaultSize.Location = new Point(615, 11);
             dsLabelDefaultSize.Name = "dsLabelDefaultSize";
             dsLabelDefaultSize.Size = new Size(809, 80);
-            dsLabelDefaultSize.TabIndex = 4;
+            dsLabelDefaultSize.TabIndex = 2;
             dsLabelDefaultSize.Text = "Detected default size: full-screen captures 3,840×2,160; active-window captures keep the original window size.";
             // 
-            // dsLabelSummary1
+            // dsLabelSummary
             // 
-            dsLabelSummary1.BorderStyle = BorderStyle.FixedSingle;
-            dsLabelSummary1.Location = new Point(16, 591);
-            dsLabelSummary1.Name = "dsLabelSummary1";
-            dsLabelSummary1.Size = new Size(1408, 99);
-            dsLabelSummary1.TabIndex = 3;
-            dsLabelSummary1.Text = "Downscaling is currently off. Screenshots will be saved at their original size.";
+            dsLabelSummary.BorderStyle = BorderStyle.FixedSingle;
+            dsLabelSummary.Location = new Point(16, 591);
+            dsLabelSummary.Name = "dsLabelSummary";
+            dsLabelSummary.Size = new Size(1408, 99);
+            dsLabelSummary.TabIndex = 5;
+            dsLabelSummary.Text = "Downscaling is currently off. Screenshots will be saved at their original size.";
             // 
             // dsLabelEnable
             // 
@@ -610,165 +638,165 @@
             dsLabelEnable.Location = new Point(129, 27);
             dsLabelEnable.Name = "dsLabelEnable";
             dsLabelEnable.Size = new Size(256, 37);
-            dsLabelEnable.TabIndex = 2;
+            dsLabelEnable.TabIndex = 0;
             dsLabelEnable.Text = "Enable Downscaling";
             // 
-            // dsToggleEnable1
+            // dsToggleEnable
             // 
-            dsToggleEnable1.Checked = false;
-            dsToggleEnable1.Location = new Point(33, 29);
-            dsToggleEnable1.Margin = new Padding(6);
-            dsToggleEnable1.Name = "dsToggleEnable1";
-            dsToggleEnable1.OffColor = Color.FromArgb(200, 200, 200);
-            dsToggleEnable1.OnColor = Color.FromArgb(0, 120, 212);
-            dsToggleEnable1.Size = new Size(75, 30);
-            dsToggleEnable1.TabIndex = 0;
-            dsToggleEnable1.Text = "Enable screenshot downscale";
-            dsToggleEnable1.ThumbColor = Color.White;
-            dsToggleEnable1.CheckedChanged += DownscaleSettingChanged;
+            dsToggleEnable.Checked = false;
+            dsToggleEnable.Location = new Point(33, 29);
+            dsToggleEnable.Margin = new Padding(6);
+            dsToggleEnable.Name = "dsToggleEnable";
+            dsToggleEnable.OffColor = Color.FromArgb(200, 200, 200);
+            dsToggleEnable.OnColor = Color.FromArgb(0, 120, 212);
+            dsToggleEnable.Size = new Size(75, 30);
+            dsToggleEnable.TabIndex = 1;
+            dsToggleEnable.Text = "Enable screenshot downscale";
+            dsToggleEnable.ThumbColor = Color.White;
+            dsToggleEnable.CheckedChanged += DownscaleSettingChanged;
             // 
-            // dsGroupBoxProcessing1
+            // dsGroupBoxProcessing
             // 
-            dsGroupBoxProcessing1.Controls.Add(dsLabelQuality1);
-            dsGroupBoxProcessing1.Controls.Add(dsCheckBoxLossyOnly1);
-            dsGroupBoxProcessing1.Controls.Add(dsCheckBoxFullScreenOnly1);
-            dsGroupBoxProcessing1.Controls.Add(dsCheckBoxSkipSmaller1);
-            dsGroupBoxProcessing1.Controls.Add(dsCheckBoxSharpen1);
-            dsGroupBoxProcessing1.Controls.Add(dsComboBoxQuality1);
-            dsGroupBoxProcessing1.Font = new Font("Segoe UI", 10F);
-            dsGroupBoxProcessing1.Location = new Point(16, 362);
-            dsGroupBoxProcessing1.Name = "dsGroupBoxProcessing1";
-            dsGroupBoxProcessing1.Size = new Size(1408, 220);
-            dsGroupBoxProcessing1.TabIndex = 1;
-            dsGroupBoxProcessing1.TabStop = false;
-            dsGroupBoxProcessing1.Text = "Processing";
+            dsGroupBoxProcessing.Controls.Add(dsLabelQuality);
+            dsGroupBoxProcessing.Controls.Add(dsCheckBoxLossyOnly);
+            dsGroupBoxProcessing.Controls.Add(dsCheckBoxFullScreenOnly);
+            dsGroupBoxProcessing.Controls.Add(dsCheckBoxSkipSmaller);
+            dsGroupBoxProcessing.Controls.Add(dsCheckBoxSharpen);
+            dsGroupBoxProcessing.Controls.Add(dsComboBoxQuality);
+            dsGroupBoxProcessing.Font = new Font("Segoe UI", 10F);
+            dsGroupBoxProcessing.Location = new Point(16, 362);
+            dsGroupBoxProcessing.Name = "dsGroupBoxProcessing";
+            dsGroupBoxProcessing.Size = new Size(1408, 220);
+            dsGroupBoxProcessing.TabIndex = 4;
+            dsGroupBoxProcessing.TabStop = false;
+            dsGroupBoxProcessing.Text = "Processing";
             // 
-            // dsLabelQuality1
+            // dsLabelQuality
             // 
-            dsLabelQuality1.AutoSize = true;
-            dsLabelQuality1.Location = new Point(46, 62);
-            dsLabelQuality1.Name = "dsLabelQuality1";
-            dsLabelQuality1.Size = new Size(247, 37);
-            dsLabelQuality1.TabIndex = 3;
-            dsLabelQuality1.Text = "Resampling Quality";
+            dsLabelQuality.AutoSize = true;
+            dsLabelQuality.Location = new Point(46, 62);
+            dsLabelQuality.Name = "dsLabelQuality";
+            dsLabelQuality.Size = new Size(247, 37);
+            dsLabelQuality.TabIndex = 0;
+            dsLabelQuality.Text = "Resampling Quality";
             // 
-            // dsCheckBoxLossyOnly1
+            // dsCheckBoxLossyOnly
             // 
-            dsCheckBoxLossyOnly1.AutoSize = true;
-            dsCheckBoxLossyOnly1.Location = new Point(706, 166);
-            dsCheckBoxLossyOnly1.Name = "dsCheckBoxLossyOnly1";
-            dsCheckBoxLossyOnly1.Size = new Size(544, 41);
-            dsCheckBoxLossyOnly1.TabIndex = 2;
-            dsCheckBoxLossyOnly1.Text = "Downscale lossy formats only (JPG/WEBP)";
-            dsCheckBoxLossyOnly1.UseVisualStyleBackColor = true;
-            dsCheckBoxLossyOnly1.CheckedChanged += DownscaleSettingChanged;
+            dsCheckBoxLossyOnly.AutoSize = true;
+            dsCheckBoxLossyOnly.Location = new Point(706, 166);
+            dsCheckBoxLossyOnly.Name = "dsCheckBoxLossyOnly";
+            dsCheckBoxLossyOnly.Size = new Size(544, 41);
+            dsCheckBoxLossyOnly.TabIndex = 5;
+            dsCheckBoxLossyOnly.Text = "Downscale lossy formats only (JPG/WEBP)";
+            dsCheckBoxLossyOnly.UseVisualStyleBackColor = true;
+            dsCheckBoxLossyOnly.CheckedChanged += DownscaleSettingChanged;
             // 
-            // dsCheckBoxFullScreenOnly1
+            // dsCheckBoxFullScreenOnly
             // 
-            dsCheckBoxFullScreenOnly1.AutoSize = true;
-            dsCheckBoxFullScreenOnly1.Location = new Point(706, 119);
-            dsCheckBoxFullScreenOnly1.Name = "dsCheckBoxFullScreenOnly1";
-            dsCheckBoxFullScreenOnly1.Size = new Size(472, 41);
-            dsCheckBoxFullScreenOnly1.TabIndex = 2;
-            dsCheckBoxFullScreenOnly1.Text = "Downscale full-screen captures only";
-            dsCheckBoxFullScreenOnly1.UseVisualStyleBackColor = true;
-            dsCheckBoxFullScreenOnly1.CheckedChanged += DownscaleSettingChanged;
+            dsCheckBoxFullScreenOnly.AutoSize = true;
+            dsCheckBoxFullScreenOnly.Location = new Point(706, 119);
+            dsCheckBoxFullScreenOnly.Name = "dsCheckBoxFullScreenOnly";
+            dsCheckBoxFullScreenOnly.Size = new Size(472, 41);
+            dsCheckBoxFullScreenOnly.TabIndex = 3;
+            dsCheckBoxFullScreenOnly.Text = "Downscale full-screen captures only";
+            dsCheckBoxFullScreenOnly.UseVisualStyleBackColor = true;
+            dsCheckBoxFullScreenOnly.CheckedChanged += DownscaleSettingChanged;
             // 
-            // dsCheckBoxSkipSmaller1
+            // dsCheckBoxSkipSmaller
             // 
-            dsCheckBoxSkipSmaller1.AutoSize = true;
-            dsCheckBoxSkipSmaller1.Location = new Point(46, 166);
-            dsCheckBoxSkipSmaller1.Name = "dsCheckBoxSkipSmaller1";
-            dsCheckBoxSkipSmaller1.Size = new Size(389, 41);
-            dsCheckBoxSkipSmaller1.TabIndex = 2;
-            dsCheckBoxSkipSmaller1.Text = "Do not resize smaller images";
-            dsCheckBoxSkipSmaller1.UseVisualStyleBackColor = true;
-            dsCheckBoxSkipSmaller1.CheckedChanged += DownscaleSettingChanged;
+            dsCheckBoxSkipSmaller.AutoSize = true;
+            dsCheckBoxSkipSmaller.Location = new Point(46, 166);
+            dsCheckBoxSkipSmaller.Name = "dsCheckBoxSkipSmaller";
+            dsCheckBoxSkipSmaller.Size = new Size(389, 41);
+            dsCheckBoxSkipSmaller.TabIndex = 4;
+            dsCheckBoxSkipSmaller.Text = "Do not resize smaller images";
+            dsCheckBoxSkipSmaller.UseVisualStyleBackColor = true;
+            dsCheckBoxSkipSmaller.CheckedChanged += DownscaleSettingChanged;
             // 
-            // dsCheckBoxSharpen1
+            // dsCheckBoxSharpen
             // 
-            dsCheckBoxSharpen1.AutoSize = true;
-            dsCheckBoxSharpen1.Location = new Point(46, 119);
-            dsCheckBoxSharpen1.Name = "dsCheckBoxSharpen1";
-            dsCheckBoxSharpen1.Size = new Size(339, 41);
-            dsCheckBoxSharpen1.TabIndex = 2;
-            dsCheckBoxSharpen1.Text = "Sharpen after downscale";
-            dsCheckBoxSharpen1.UseVisualStyleBackColor = true;
-            dsCheckBoxSharpen1.CheckedChanged += DownscaleSettingChanged;
+            dsCheckBoxSharpen.AutoSize = true;
+            dsCheckBoxSharpen.Location = new Point(46, 119);
+            dsCheckBoxSharpen.Name = "dsCheckBoxSharpen";
+            dsCheckBoxSharpen.Size = new Size(339, 41);
+            dsCheckBoxSharpen.TabIndex = 2;
+            dsCheckBoxSharpen.Text = "Sharpen after downscale";
+            dsCheckBoxSharpen.UseVisualStyleBackColor = true;
+            dsCheckBoxSharpen.CheckedChanged += DownscaleSettingChanged;
             // 
-            // dsComboBoxQuality1
+            // dsComboBoxQuality
             // 
-            dsComboBoxQuality1.DropDownStyle = ComboBoxStyle.DropDownList;
-            dsComboBoxQuality1.FormattingEnabled = true;
-            dsComboBoxQuality1.Location = new Point(336, 59);
-            dsComboBoxQuality1.Name = "dsComboBoxQuality1";
-            dsComboBoxQuality1.Size = new Size(345, 45);
-            dsComboBoxQuality1.TabIndex = 1;
-            dsComboBoxQuality1.SelectedIndexChanged += DownscaleSettingChanged;
+            dsComboBoxQuality.DropDownStyle = ComboBoxStyle.DropDownList;
+            dsComboBoxQuality.FormattingEnabled = true;
+            dsComboBoxQuality.Location = new Point(336, 59);
+            dsComboBoxQuality.Name = "dsComboBoxQuality";
+            dsComboBoxQuality.Size = new Size(345, 45);
+            dsComboBoxQuality.TabIndex = 1;
+            dsComboBoxQuality.SelectedIndexChanged += DownscaleSettingChanged;
             // 
-            // dsGroupBoxModes1
+            // dsGroupBoxModes
             // 
-            dsGroupBoxModes1.Controls.Add(dsLabelBoundingWidth1);
-            dsGroupBoxModes1.Controls.Add(dsLabelMaxWidth1);
-            dsGroupBoxModes1.Controls.Add(dsLabelBoundingHeight1);
-            dsGroupBoxModes1.Controls.Add(dsLabelPercentageValue1);
-            dsGroupBoxModes1.Controls.Add(dsLabelTargetHeight);
-            dsGroupBoxModes1.Controls.Add(dsNumericBoundingHeight1);
-            dsGroupBoxModes1.Controls.Add(dsNumericBoundingWidth1);
-            dsGroupBoxModes1.Controls.Add(dsNumericMaxWidth1);
-            dsGroupBoxModes1.Controls.Add(dsNumericPercentage1);
-            dsGroupBoxModes1.Controls.Add(dsNumericTargetHeight1);
-            dsGroupBoxModes1.Controls.Add(dsComboBoxBoundingBox1);
-            dsGroupBoxModes1.Controls.Add(dsComboBoxMaxWidth1);
-            dsGroupBoxModes1.Controls.Add(dsComboBoxPercentage1);
-            dsGroupBoxModes1.Controls.Add(dsComboBoxTargetHeight1);
-            dsGroupBoxModes1.Controls.Add(dsRadioBoundingBox1);
-            dsGroupBoxModes1.Controls.Add(dsRadioMaxWidth1);
-            dsGroupBoxModes1.Controls.Add(dsRadioPercentage1);
-            dsGroupBoxModes1.Controls.Add(dsRadioTargetHeight1);
-            dsGroupBoxModes1.Font = new Font("Segoe UI", 10F);
-            dsGroupBoxModes1.Location = new Point(16, 81);
-            dsGroupBoxModes1.Name = "dsGroupBoxModes1";
-            dsGroupBoxModes1.Size = new Size(1408, 271);
-            dsGroupBoxModes1.TabIndex = 0;
-            dsGroupBoxModes1.TabStop = false;
-            dsGroupBoxModes1.Text = "Resize Mode";
+            dsGroupBoxModes.Controls.Add(dsLabelBoundingWidth);
+            dsGroupBoxModes.Controls.Add(dsLabelMaxWidth);
+            dsGroupBoxModes.Controls.Add(dsLabelBoundingHeight);
+            dsGroupBoxModes.Controls.Add(dsLabelPercentageValue);
+            dsGroupBoxModes.Controls.Add(dsLabelTargetHeight);
+            dsGroupBoxModes.Controls.Add(dsNumericBoundingHeight);
+            dsGroupBoxModes.Controls.Add(dsNumericBoundingWidth);
+            dsGroupBoxModes.Controls.Add(dsNumericMaxWidth);
+            dsGroupBoxModes.Controls.Add(dsNumericPercentage);
+            dsGroupBoxModes.Controls.Add(dsNumericTargetHeight);
+            dsGroupBoxModes.Controls.Add(dsComboBoxBoundingBox);
+            dsGroupBoxModes.Controls.Add(dsComboBoxMaxWidth);
+            dsGroupBoxModes.Controls.Add(dsComboBoxPercentage);
+            dsGroupBoxModes.Controls.Add(dsComboBoxTargetHeight);
+            dsGroupBoxModes.Controls.Add(dsRadioBoundingBox);
+            dsGroupBoxModes.Controls.Add(dsRadioMaxWidth);
+            dsGroupBoxModes.Controls.Add(dsRadioPercentage);
+            dsGroupBoxModes.Controls.Add(dsRadioTargetHeight);
+            dsGroupBoxModes.Font = new Font("Segoe UI", 10F);
+            dsGroupBoxModes.Location = new Point(16, 81);
+            dsGroupBoxModes.Name = "dsGroupBoxModes";
+            dsGroupBoxModes.Size = new Size(1408, 271);
+            dsGroupBoxModes.TabIndex = 3;
+            dsGroupBoxModes.TabStop = false;
+            dsGroupBoxModes.Text = "Resize Mode";
             // 
-            // dsLabelBoundingWidth1
+            // dsLabelBoundingWidth
             // 
-            dsLabelBoundingWidth1.AutoSize = true;
-            dsLabelBoundingWidth1.Location = new Point(807, 217);
-            dsLabelBoundingWidth1.Name = "dsLabelBoundingWidth1";
-            dsLabelBoundingWidth1.Size = new Size(89, 37);
-            dsLabelBoundingWidth1.TabIndex = 3;
-            dsLabelBoundingWidth1.Text = "Width";
+            dsLabelBoundingWidth.AutoSize = true;
+            dsLabelBoundingWidth.Location = new Point(807, 217);
+            dsLabelBoundingWidth.Name = "dsLabelBoundingWidth";
+            dsLabelBoundingWidth.Size = new Size(89, 37);
+            dsLabelBoundingWidth.TabIndex = 14;
+            dsLabelBoundingWidth.Text = "Width";
             // 
-            // dsLabelMaxWidth1
+            // dsLabelMaxWidth
             // 
-            dsLabelMaxWidth1.AutoSize = true;
-            dsLabelMaxWidth1.Location = new Point(807, 171);
-            dsLabelMaxWidth1.Name = "dsLabelMaxWidth1";
-            dsLabelMaxWidth1.Size = new Size(89, 37);
-            dsLabelMaxWidth1.TabIndex = 3;
-            dsLabelMaxWidth1.Text = "Width";
+            dsLabelMaxWidth.AutoSize = true;
+            dsLabelMaxWidth.Location = new Point(807, 171);
+            dsLabelMaxWidth.Name = "dsLabelMaxWidth";
+            dsLabelMaxWidth.Size = new Size(89, 37);
+            dsLabelMaxWidth.TabIndex = 10;
+            dsLabelMaxWidth.Text = "Width";
             // 
-            // dsLabelBoundingHeight1
+            // dsLabelBoundingHeight
             // 
-            dsLabelBoundingHeight1.AutoSize = true;
-            dsLabelBoundingHeight1.Location = new Point(1133, 217);
-            dsLabelBoundingHeight1.Name = "dsLabelBoundingHeight1";
-            dsLabelBoundingHeight1.Size = new Size(97, 37);
-            dsLabelBoundingHeight1.TabIndex = 3;
-            dsLabelBoundingHeight1.Text = "Height";
+            dsLabelBoundingHeight.AutoSize = true;
+            dsLabelBoundingHeight.Location = new Point(1133, 217);
+            dsLabelBoundingHeight.Name = "dsLabelBoundingHeight";
+            dsLabelBoundingHeight.Size = new Size(97, 37);
+            dsLabelBoundingHeight.TabIndex = 16;
+            dsLabelBoundingHeight.Text = "Height";
             // 
-            // dsLabelPercentageValue1
+            // dsLabelPercentageValue
             // 
-            dsLabelPercentageValue1.AutoSize = true;
-            dsLabelPercentageValue1.Location = new Point(807, 123);
-            dsLabelPercentageValue1.Name = "dsLabelPercentageValue1";
-            dsLabelPercentageValue1.Size = new Size(104, 37);
-            dsLabelPercentageValue1.TabIndex = 3;
-            dsLabelPercentageValue1.Text = "Percent";
+            dsLabelPercentageValue.AutoSize = true;
+            dsLabelPercentageValue.Location = new Point(807, 123);
+            dsLabelPercentageValue.Name = "dsLabelPercentageValue";
+            dsLabelPercentageValue.Size = new Size(104, 37);
+            dsLabelPercentageValue.TabIndex = 6;
+            dsLabelPercentageValue.Text = "Percent";
             // 
             // dsLabelTargetHeight
             // 
@@ -776,144 +804,143 @@
             dsLabelTargetHeight.Location = new Point(807, 77);
             dsLabelTargetHeight.Name = "dsLabelTargetHeight";
             dsLabelTargetHeight.Size = new Size(97, 37);
-            dsLabelTargetHeight.TabIndex = 3;
+            dsLabelTargetHeight.TabIndex = 2;
             dsLabelTargetHeight.Text = "Height";
             // 
-            // dsNumericBoundingHeight1
+            // dsNumericBoundingHeight
             // 
-            dsNumericBoundingHeight1.Location = new Point(1254, 213);
-            dsNumericBoundingHeight1.Name = "dsNumericBoundingHeight1";
-            dsNumericBoundingHeight1.Size = new Size(148, 43);
-            dsNumericBoundingHeight1.TabIndex = 2;
-            dsNumericBoundingHeight1.ThousandsSeparator = true;
-            dsNumericBoundingHeight1.ValueChanged += DsNumericBoundingBox_ValueChanged;
+            dsNumericBoundingHeight.Location = new Point(1254, 213);
+            dsNumericBoundingHeight.Name = "dsNumericBoundingHeight";
+            dsNumericBoundingHeight.Size = new Size(148, 43);
+            dsNumericBoundingHeight.TabIndex = 17;
+            dsNumericBoundingHeight.ThousandsSeparator = true;
+            dsNumericBoundingHeight.ValueChanged += DsNumericBoundingBox_ValueChanged;
             // 
-            // dsNumericBoundingWidth1
+            // dsNumericBoundingWidth
             // 
-            dsNumericBoundingWidth1.Location = new Point(922, 217);
-            dsNumericBoundingWidth1.Name = "dsNumericBoundingWidth1";
-            dsNumericBoundingWidth1.Size = new Size(148, 43);
-            dsNumericBoundingWidth1.TabIndex = 2;
-            dsNumericBoundingWidth1.ThousandsSeparator = true;
-            dsNumericBoundingWidth1.ValueChanged += DsNumericBoundingBox_ValueChanged;
+            dsNumericBoundingWidth.Location = new Point(922, 217);
+            dsNumericBoundingWidth.Name = "dsNumericBoundingWidth";
+            dsNumericBoundingWidth.Size = new Size(148, 43);
+            dsNumericBoundingWidth.TabIndex = 15;
+            dsNumericBoundingWidth.ThousandsSeparator = true;
+            dsNumericBoundingWidth.ValueChanged += DsNumericBoundingBox_ValueChanged;
             // 
-            // dsNumericMaxWidth1
+            // dsNumericMaxWidth
             // 
-            dsNumericMaxWidth1.Location = new Point(922, 168);
-            dsNumericMaxWidth1.Name = "dsNumericMaxWidth1";
-            dsNumericMaxWidth1.Size = new Size(148, 43);
-            dsNumericMaxWidth1.TabIndex = 2;
-            dsNumericMaxWidth1.ThousandsSeparator = true;
-            dsNumericMaxWidth1.ValueChanged += DsNumericMaxWidth_ValueChanged;
+            dsNumericMaxWidth.Location = new Point(922, 168);
+            dsNumericMaxWidth.Name = "dsNumericMaxWidth";
+            dsNumericMaxWidth.Size = new Size(148, 43);
+            dsNumericMaxWidth.TabIndex = 11;
+            dsNumericMaxWidth.ThousandsSeparator = true;
+            dsNumericMaxWidth.ValueChanged += DsNumericMaxWidth_ValueChanged;
             // 
-            // dsNumericPercentage1
+            // dsNumericPercentage
             // 
-            dsNumericPercentage1.Location = new Point(922, 121);
-            dsNumericPercentage1.Name = "dsNumericPercentage1";
-            dsNumericPercentage1.Size = new Size(148, 43);
-            dsNumericPercentage1.TabIndex = 2;
-            dsNumericPercentage1.ValueChanged += DsNumericPercentage_ValueChanged;
+            dsNumericPercentage.Location = new Point(922, 121);
+            dsNumericPercentage.Name = "dsNumericPercentage";
+            dsNumericPercentage.Size = new Size(148, 43);
+            dsNumericPercentage.TabIndex = 7;
+            dsNumericPercentage.ValueChanged += DsNumericPercentage_ValueChanged;
             // 
-            // dsNumericTargetHeight1
+            // dsNumericTargetHeight
             // 
-            dsNumericTargetHeight1.Location = new Point(922, 74);
-            dsNumericTargetHeight1.Name = "dsNumericTargetHeight1";
-            dsNumericTargetHeight1.Size = new Size(148, 43);
-            dsNumericTargetHeight1.TabIndex = 2;
-            dsNumericTargetHeight1.ThousandsSeparator = true;
-            dsNumericTargetHeight1.ValueChanged += DsNumericTargetHeight_ValueChanged;
+            dsNumericTargetHeight.Location = new Point(922, 74);
+            dsNumericTargetHeight.Name = "dsNumericTargetHeight";
+            dsNumericTargetHeight.Size = new Size(148, 43);
+            dsNumericTargetHeight.TabIndex = 3;
+            dsNumericTargetHeight.ThousandsSeparator = true;
+            dsNumericTargetHeight.ValueChanged += DsNumericTargetHeight_ValueChanged;
             // 
-            // dsComboBoxBoundingBox1
+            // dsComboBoxBoundingBox
             // 
-            dsComboBoxBoundingBox1.DropDownStyle = ComboBoxStyle.DropDownList;
-            dsComboBoxBoundingBox1.FormattingEnabled = true;
-            dsComboBoxBoundingBox1.Location = new Point(487, 213);
-            dsComboBoxBoundingBox1.Name = "dsComboBoxBoundingBox1";
-            dsComboBoxBoundingBox1.Size = new Size(286, 45);
-            dsComboBoxBoundingBox1.TabIndex = 1;
-            dsComboBoxBoundingBox1.SelectedIndexChanged += DsComboBoxBoundingBox_SelectedIndexChanged;
+            dsComboBoxBoundingBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            dsComboBoxBoundingBox.FormattingEnabled = true;
+            dsComboBoxBoundingBox.Location = new Point(487, 213);
+            dsComboBoxBoundingBox.Name = "dsComboBoxBoundingBox";
+            dsComboBoxBoundingBox.Size = new Size(286, 45);
+            dsComboBoxBoundingBox.TabIndex = 13;
+            dsComboBoxBoundingBox.SelectedIndexChanged += DsComboBoxBoundingBox_SelectedIndexChanged;
             // 
-            // dsComboBoxMaxWidth1
+            // dsComboBoxMaxWidth
             // 
-            dsComboBoxMaxWidth1.DropDownStyle = ComboBoxStyle.DropDownList;
-            dsComboBoxMaxWidth1.FormattingEnabled = true;
-            dsComboBoxMaxWidth1.Location = new Point(487, 166);
-            dsComboBoxMaxWidth1.Name = "dsComboBoxMaxWidth1";
-            dsComboBoxMaxWidth1.Size = new Size(286, 45);
-            dsComboBoxMaxWidth1.TabIndex = 1;
-            dsComboBoxMaxWidth1.SelectedIndexChanged += DsComboBoxMaxWidth_SelectedIndexChanged;
+            dsComboBoxMaxWidth.DropDownStyle = ComboBoxStyle.DropDownList;
+            dsComboBoxMaxWidth.FormattingEnabled = true;
+            dsComboBoxMaxWidth.Location = new Point(487, 166);
+            dsComboBoxMaxWidth.Name = "dsComboBoxMaxWidth";
+            dsComboBoxMaxWidth.Size = new Size(286, 45);
+            dsComboBoxMaxWidth.TabIndex = 9;
+            dsComboBoxMaxWidth.SelectedIndexChanged += DsComboBoxMaxWidth_SelectedIndexChanged;
             // 
-            // dsComboBoxPercentage1
+            // dsComboBoxPercentage
             // 
-            dsComboBoxPercentage1.DropDownStyle = ComboBoxStyle.DropDownList;
-            dsComboBoxPercentage1.FormattingEnabled = true;
-            dsComboBoxPercentage1.Location = new Point(487, 119);
-            dsComboBoxPercentage1.Name = "dsComboBoxPercentage1";
-            dsComboBoxPercentage1.Size = new Size(286, 45);
-            dsComboBoxPercentage1.TabIndex = 1;
-            dsComboBoxPercentage1.SelectedIndexChanged += DsComboBoxPercentage_SelectedIndexChanged;
+            dsComboBoxPercentage.DropDownStyle = ComboBoxStyle.DropDownList;
+            dsComboBoxPercentage.FormattingEnabled = true;
+            dsComboBoxPercentage.Location = new Point(487, 119);
+            dsComboBoxPercentage.Name = "dsComboBoxPercentage";
+            dsComboBoxPercentage.Size = new Size(286, 45);
+            dsComboBoxPercentage.TabIndex = 5;
+            dsComboBoxPercentage.SelectedIndexChanged += DsComboBoxPercentage_SelectedIndexChanged;
             // 
-            // dsComboBoxTargetHeight1
+            // dsComboBoxTargetHeight
             // 
-            dsComboBoxTargetHeight1.DropDownStyle = ComboBoxStyle.DropDownList;
-            dsComboBoxTargetHeight1.FormattingEnabled = true;
-            dsComboBoxTargetHeight1.Location = new Point(487, 72);
-            dsComboBoxTargetHeight1.Name = "dsComboBoxTargetHeight1";
-            dsComboBoxTargetHeight1.Size = new Size(286, 45);
-            dsComboBoxTargetHeight1.TabIndex = 1;
-            dsComboBoxTargetHeight1.SelectedIndexChanged += DsComboBoxTargetHeight_SelectedIndexChanged;
+            dsComboBoxTargetHeight.DropDownStyle = ComboBoxStyle.DropDownList;
+            dsComboBoxTargetHeight.FormattingEnabled = true;
+            dsComboBoxTargetHeight.Location = new Point(487, 72);
+            dsComboBoxTargetHeight.Name = "dsComboBoxTargetHeight";
+            dsComboBoxTargetHeight.Size = new Size(286, 45);
+            dsComboBoxTargetHeight.TabIndex = 1;
+            dsComboBoxTargetHeight.SelectedIndexChanged += DsComboBoxTargetHeight_SelectedIndexChanged;
             // 
-            // dsRadioBoundingBox1
+            // dsRadioBoundingBox
             // 
-            dsRadioBoundingBox1.AutoSize = true;
-            dsRadioBoundingBox1.Location = new Point(46, 215);
-            dsRadioBoundingBox1.Name = "dsRadioBoundingBox1";
-            dsRadioBoundingBox1.Size = new Size(334, 41);
-            dsRadioBoundingBox1.TabIndex = 0;
-            dsRadioBoundingBox1.TabStop = true;
-            dsRadioBoundingBox1.Text = "Fit Within Bounding Box";
-            dsRadioBoundingBox1.UseVisualStyleBackColor = true;
-            dsRadioBoundingBox1.CheckedChanged += DownscaleModeChanged;
+            dsRadioBoundingBox.AutoSize = true;
+            dsRadioBoundingBox.Location = new Point(46, 215);
+            dsRadioBoundingBox.Name = "dsRadioBoundingBox";
+            dsRadioBoundingBox.Size = new Size(334, 41);
+            dsRadioBoundingBox.TabIndex = 12;
+            dsRadioBoundingBox.TabStop = true;
+            dsRadioBoundingBox.Text = "Fit Within Bounding Box";
+            dsRadioBoundingBox.UseVisualStyleBackColor = true;
+            dsRadioBoundingBox.CheckedChanged += DownscaleModeChanged;
             // 
-            // dsRadioMaxWidth1
+            // dsRadioMaxWidth
             // 
-            dsRadioMaxWidth1.AutoSize = true;
-            dsRadioMaxWidth1.Location = new Point(46, 168);
-            dsRadioMaxWidth1.Name = "dsRadioMaxWidth1";
-            dsRadioMaxWidth1.Size = new Size(357, 41);
-            dsRadioMaxWidth1.TabIndex = 0;
-            dsRadioMaxWidth1.TabStop = true;
-            dsRadioMaxWidth1.Text = "Resize to Maximum Width";
-            dsRadioMaxWidth1.UseVisualStyleBackColor = true;
-            dsRadioMaxWidth1.CheckedChanged += DownscaleModeChanged;
+            dsRadioMaxWidth.AutoSize = true;
+            dsRadioMaxWidth.Location = new Point(46, 168);
+            dsRadioMaxWidth.Name = "dsRadioMaxWidth";
+            dsRadioMaxWidth.Size = new Size(357, 41);
+            dsRadioMaxWidth.TabIndex = 8;
+            dsRadioMaxWidth.TabStop = true;
+            dsRadioMaxWidth.Text = "Resize to Maximum Width";
+            dsRadioMaxWidth.UseVisualStyleBackColor = true;
+            dsRadioMaxWidth.CheckedChanged += DownscaleModeChanged;
             // 
-            // dsRadioPercentage1
+            // dsRadioPercentage
             // 
-            dsRadioPercentage1.AutoSize = true;
-            dsRadioPercentage1.Location = new Point(46, 121);
-            dsRadioPercentage1.Name = "dsRadioPercentage1";
-            dsRadioPercentage1.Size = new Size(295, 41);
-            dsRadioPercentage1.TabIndex = 0;
-            dsRadioPercentage1.TabStop = true;
-            dsRadioPercentage1.Text = "Resize by Percentage";
-            dsRadioPercentage1.UseVisualStyleBackColor = true;
-            dsRadioPercentage1.CheckedChanged += DownscaleModeChanged;
+            dsRadioPercentage.AutoSize = true;
+            dsRadioPercentage.Location = new Point(46, 121);
+            dsRadioPercentage.Name = "dsRadioPercentage";
+            dsRadioPercentage.Size = new Size(295, 41);
+            dsRadioPercentage.TabIndex = 4;
+            dsRadioPercentage.TabStop = true;
+            dsRadioPercentage.Text = "Resize by Percentage";
+            dsRadioPercentage.UseVisualStyleBackColor = true;
+            dsRadioPercentage.CheckedChanged += DownscaleModeChanged;
             // 
-            // dsRadioTargetHeight1
+            // dsRadioTargetHeight
             // 
-            dsRadioTargetHeight1.AutoSize = true;
-            dsRadioTargetHeight1.Location = new Point(46, 74);
-            dsRadioTargetHeight1.Name = "dsRadioTargetHeight1";
-            dsRadioTargetHeight1.Size = new Size(365, 41);
-            dsRadioTargetHeight1.TabIndex = 0;
-            dsRadioTargetHeight1.TabStop = true;
-            dsRadioTargetHeight1.Text = "Resize to Maximum Height";
-            dsRadioTargetHeight1.UseVisualStyleBackColor = true;
-            dsRadioTargetHeight1.CheckedChanged += DownscaleModeChanged;
+            dsRadioTargetHeight.AutoSize = true;
+            dsRadioTargetHeight.Location = new Point(46, 74);
+            dsRadioTargetHeight.Name = "dsRadioTargetHeight";
+            dsRadioTargetHeight.Size = new Size(365, 41);
+            dsRadioTargetHeight.TabIndex = 0;
+            dsRadioTargetHeight.TabStop = true;
+            dsRadioTargetHeight.Text = "Resize to Maximum Height";
+            dsRadioTargetHeight.UseVisualStyleBackColor = true;
+            dsRadioTargetHeight.CheckedChanged += DownscaleModeChanged;
             // 
             // tabPageImageProcessing
             // 
-            tabPageImageProcessing.BackColor = Color.White;
             tabPageImageProcessing.Controls.Add(ipGroupBoxAdvanced);
             tabPageImageProcessing.Controls.Add(ipGroupBoxColorMode);
             tabPageImageProcessing.Location = new Point(8, 51);
@@ -922,6 +949,7 @@
             tabPageImageProcessing.Size = new Size(1440, 701);
             tabPageImageProcessing.TabIndex = 3;
             tabPageImageProcessing.Text = "Image Processing";
+            tabPageImageProcessing.UseVisualStyleBackColor = true;
             // 
             // ipGroupBoxAdvanced
             // 
@@ -1037,7 +1065,7 @@
             ipRadioMonochrome1Bit.Location = new Point(52, 110);
             ipRadioMonochrome1Bit.Name = "ipRadioMonochrome1Bit";
             ipRadioMonochrome1Bit.Size = new Size(289, 41);
-            ipRadioMonochrome1Bit.TabIndex = 2;
+            ipRadioMonochrome1Bit.TabIndex = 1;
             ipRadioMonochrome1Bit.TabStop = true;
             ipRadioMonochrome1Bit.Text = "Monochrome (1-bit)";
             ipRadioMonochrome1Bit.UseVisualStyleBackColor = true;
@@ -1049,7 +1077,7 @@
             ipRadioGrayscale.Location = new Point(52, 157);
             ipRadioGrayscale.Name = "ipRadioGrayscale";
             ipRadioGrayscale.Size = new Size(237, 41);
-            ipRadioGrayscale.TabIndex = 1;
+            ipRadioGrayscale.TabIndex = 2;
             ipRadioGrayscale.TabStop = true;
             ipRadioGrayscale.Text = "Grayscale mode";
             ipRadioGrayscale.UseVisualStyleBackColor = true;
@@ -1067,13 +1095,288 @@
             ipRadioFullColor.UseVisualStyleBackColor = true;
             ipRadioFullColor.CheckedChanged += ImageProcessingColorModeChanged;
             // 
+            // tabPageRetention
+            // 
+            tabPageRetention.Controls.Add(rtLabelAutoCleanup);
+            tabPageRetention.Controls.Add(rtToggleSwitchAutoCleanup);
+            tabPageRetention.Controls.Add(rtGroupBoxAction);
+            tabPageRetention.Controls.Add(rtButtonCleanupNow);
+            tabPageRetention.Controls.Add(rtGroupBoxSelection);
+            tabPageRetention.Controls.Add(rtCheckBoxDryRun);
+            tabPageRetention.Controls.Add(rtTextBoxCleanupResult);
+            tabPageRetention.Controls.Add(rtLabelCleanupResultTitle);
+            tabPageRetention.Controls.Add(rtLabelPreviewSummary);
+            tabPageRetention.Controls.Add(rtLabelPreviewSummaryTitle);
+            tabPageRetention.Location = new Point(8, 51);
+            tabPageRetention.Name = "tabPageRetention";
+            tabPageRetention.Padding = new Padding(3);
+            tabPageRetention.Size = new Size(1440, 701);
+            tabPageRetention.TabIndex = 4;
+            tabPageRetention.Text = "Retention";
+            tabPageRetention.UseVisualStyleBackColor = true;
+            // 
+            // rtLabelAutoCleanup
+            // 
+            rtLabelAutoCleanup.AutoSize = true;
+            rtLabelAutoCleanup.Location = new Point(129, 27);
+            rtLabelAutoCleanup.Name = "rtLabelAutoCleanup";
+            rtLabelAutoCleanup.Size = new Size(313, 37);
+            rtLabelAutoCleanup.TabIndex = 0;
+            rtLabelAutoCleanup.Text = "Enable File Auto-cleanup";
+            // 
+            // rtToggleSwitchAutoCleanup
+            // 
+            rtToggleSwitchAutoCleanup.Checked = false;
+            rtToggleSwitchAutoCleanup.Location = new Point(33, 29);
+            rtToggleSwitchAutoCleanup.Margin = new Padding(6);
+            rtToggleSwitchAutoCleanup.Name = "rtToggleSwitchAutoCleanup";
+            rtToggleSwitchAutoCleanup.OffColor = Color.FromArgb(200, 200, 200);
+            rtToggleSwitchAutoCleanup.OnColor = Color.FromArgb(0, 120, 212);
+            rtToggleSwitchAutoCleanup.Size = new Size(75, 30);
+            rtToggleSwitchAutoCleanup.TabIndex = 1;
+            rtToggleSwitchAutoCleanup.ThumbColor = Color.White;
+            // 
+            // rtGroupBoxAction
+            // 
+            rtGroupBoxAction.Controls.Add(rtComboBoxAction);
+            rtGroupBoxAction.Controls.Add(rtLabelAction);
+            rtGroupBoxAction.Controls.Add(rtLabelBackupFolder);
+            rtGroupBoxAction.Controls.Add(rtTextBoxBackupFolder);
+            rtGroupBoxAction.Controls.Add(rtButtonBrowseBackupFolder);
+            rtGroupBoxAction.Controls.Add(rtCheckBoxPerSessionSubfolder);
+            rtGroupBoxAction.Location = new Point(36, 353);
+            rtGroupBoxAction.Name = "rtGroupBoxAction";
+            rtGroupBoxAction.Size = new Size(769, 240);
+            rtGroupBoxAction.TabIndex = 3;
+            rtGroupBoxAction.TabStop = false;
+            rtGroupBoxAction.Text = "Action";
+            // 
+            // rtComboBoxAction
+            // 
+            rtComboBoxAction.DropDownStyle = ComboBoxStyle.DropDownList;
+            rtComboBoxAction.Font = new Font("Segoe UI", 10F);
+            rtComboBoxAction.FormattingEnabled = true;
+            rtComboBoxAction.Items.AddRange(new object[] { "Move to Recycle Bin", "Delete permanently", "Backup to another folder before deleting" });
+            rtComboBoxAction.Location = new Point(144, 54);
+            rtComboBoxAction.Name = "rtComboBoxAction";
+            rtComboBoxAction.Size = new Size(597, 45);
+            rtComboBoxAction.TabIndex = 1;
+            // 
+            // rtLabelAction
+            // 
+            rtLabelAction.AutoSize = true;
+            rtLabelAction.Font = new Font("Segoe UI", 10F);
+            rtLabelAction.Location = new Point(29, 57);
+            rtLabelAction.Name = "rtLabelAction";
+            rtLabelAction.Size = new Size(93, 37);
+            rtLabelAction.TabIndex = 0;
+            rtLabelAction.Text = "Action";
+            // 
+            // rtLabelBackupFolder
+            // 
+            rtLabelBackupFolder.AutoSize = true;
+            rtLabelBackupFolder.Font = new Font("Segoe UI", 10F);
+            rtLabelBackupFolder.Location = new Point(29, 121);
+            rtLabelBackupFolder.Name = "rtLabelBackupFolder";
+            rtLabelBackupFolder.Size = new Size(179, 37);
+            rtLabelBackupFolder.TabIndex = 2;
+            rtLabelBackupFolder.Text = "Backup folder";
+            // 
+            // rtTextBoxBackupFolder
+            // 
+            rtTextBoxBackupFolder.Font = new Font("Segoe UI", 10F);
+            rtTextBoxBackupFolder.Location = new Point(214, 118);
+            rtTextBoxBackupFolder.Name = "rtTextBoxBackupFolder";
+            rtTextBoxBackupFolder.ReadOnly = true;
+            rtTextBoxBackupFolder.Size = new Size(332, 43);
+            rtTextBoxBackupFolder.TabIndex = 3;
+            // 
+            // rtButtonBrowseBackupFolder
+            // 
+            rtButtonBrowseBackupFolder.Font = new Font("Segoe UI", 10F);
+            rtButtonBrowseBackupFolder.Location = new Point(561, 113);
+            rtButtonBrowseBackupFolder.Name = "rtButtonBrowseBackupFolder";
+            rtButtonBrowseBackupFolder.Size = new Size(180, 52);
+            rtButtonBrowseBackupFolder.TabIndex = 4;
+            rtButtonBrowseBackupFolder.Text = "&Browse...";
+            rtButtonBrowseBackupFolder.UseVisualStyleBackColor = true;
+            rtButtonBrowseBackupFolder.Click += RtButtonBrowseBackupFolder_Click;
+            // 
+            // rtCheckBoxPerSessionSubfolder
+            // 
+            rtCheckBoxPerSessionSubfolder.AutoSize = true;
+            rtCheckBoxPerSessionSubfolder.Font = new Font("Segoe UI", 10F);
+            rtCheckBoxPerSessionSubfolder.Location = new Point(29, 180);
+            rtCheckBoxPerSessionSubfolder.Name = "rtCheckBoxPerSessionSubfolder";
+            rtCheckBoxPerSessionSubfolder.Size = new Size(560, 41);
+            rtCheckBoxPerSessionSubfolder.TabIndex = 5;
+            rtCheckBoxPerSessionSubfolder.Text = "Create a subfolder for each cleanup session";
+            rtCheckBoxPerSessionSubfolder.UseVisualStyleBackColor = true;
+            // 
+            // rtButtonCleanupNow
+            // 
+            rtButtonCleanupNow.Font = new Font("Segoe UI", 10F);
+            rtButtonCleanupNow.Location = new Point(597, 626);
+            rtButtonCleanupNow.Name = "rtButtonCleanupNow";
+            rtButtonCleanupNow.Size = new Size(208, 58);
+            rtButtonCleanupNow.TabIndex = 5;
+            rtButtonCleanupNow.Text = "Cleanup Now";
+            rtButtonCleanupNow.UseVisualStyleBackColor = false;
+            rtButtonCleanupNow.Click += RtButtonCleanupNow_Click;
+            // 
+            // rtGroupBoxSelection
+            // 
+            rtGroupBoxSelection.Controls.Add(rtNumericMaxFiles);
+            rtGroupBoxSelection.Controls.Add(rtCheckBoxMaxDays);
+            rtGroupBoxSelection.Controls.Add(rtNumericMaxDays);
+            rtGroupBoxSelection.Controls.Add(rtLabelDaysSuffix);
+            rtGroupBoxSelection.Controls.Add(rtCheckBoxMaxFiles);
+            rtGroupBoxSelection.Controls.Add(rtLabelFilesSuffix);
+            rtGroupBoxSelection.Controls.Add(rtCheckBoxIncludeSubfolders);
+            rtGroupBoxSelection.Location = new Point(36, 90);
+            rtGroupBoxSelection.Name = "rtGroupBoxSelection";
+            rtGroupBoxSelection.Size = new Size(769, 240);
+            rtGroupBoxSelection.TabIndex = 2;
+            rtGroupBoxSelection.TabStop = false;
+            rtGroupBoxSelection.Text = "Selection";
+            // 
+            // rtNumericMaxFiles
+            // 
+            rtNumericMaxFiles.Font = new Font("Segoe UI", 10F);
+            rtNumericMaxFiles.Location = new Point(447, 112);
+            rtNumericMaxFiles.Maximum = new decimal(new int[] { 1000000, 0, 0, 0 });
+            rtNumericMaxFiles.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            rtNumericMaxFiles.Name = "rtNumericMaxFiles";
+            rtNumericMaxFiles.Size = new Size(143, 43);
+            rtNumericMaxFiles.TabIndex = 4;
+            rtNumericMaxFiles.Value = new decimal(new int[] { 500, 0, 0, 0 });
+            // 
+            // rtCheckBoxMaxDays
+            // 
+            rtCheckBoxMaxDays.AutoSize = true;
+            rtCheckBoxMaxDays.Font = new Font("Segoe UI", 10F);
+            rtCheckBoxMaxDays.Location = new Point(29, 55);
+            rtCheckBoxMaxDays.Name = "rtCheckBoxMaxDays";
+            rtCheckBoxMaxDays.Size = new Size(399, 41);
+            rtCheckBoxMaxDays.TabIndex = 0;
+            rtCheckBoxMaxDays.Text = "Delete screenshots older than";
+            rtCheckBoxMaxDays.UseVisualStyleBackColor = true;
+            // 
+            // rtNumericMaxDays
+            // 
+            rtNumericMaxDays.Font = new Font("Segoe UI", 10F);
+            rtNumericMaxDays.Location = new Point(447, 52);
+            rtNumericMaxDays.Maximum = new decimal(new int[] { 3650, 0, 0, 0 });
+            rtNumericMaxDays.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            rtNumericMaxDays.Name = "rtNumericMaxDays";
+            rtNumericMaxDays.Size = new Size(143, 43);
+            rtNumericMaxDays.TabIndex = 1;
+            rtNumericMaxDays.Value = new decimal(new int[] { 30, 0, 0, 0 });
+            // 
+            // rtLabelDaysSuffix
+            // 
+            rtLabelDaysSuffix.AutoSize = true;
+            rtLabelDaysSuffix.Font = new Font("Segoe UI", 10F);
+            rtLabelDaysSuffix.Location = new Point(607, 55);
+            rtLabelDaysSuffix.Name = "rtLabelDaysSuffix";
+            rtLabelDaysSuffix.Size = new Size(71, 37);
+            rtLabelDaysSuffix.TabIndex = 2;
+            rtLabelDaysSuffix.Text = "days";
+            // 
+            // rtCheckBoxMaxFiles
+            // 
+            rtCheckBoxMaxFiles.AutoSize = true;
+            rtCheckBoxMaxFiles.Font = new Font("Segoe UI", 10F);
+            rtCheckBoxMaxFiles.Location = new Point(29, 115);
+            rtCheckBoxMaxFiles.Name = "rtCheckBoxMaxFiles";
+            rtCheckBoxMaxFiles.Size = new Size(316, 41);
+            rtCheckBoxMaxFiles.TabIndex = 3;
+            rtCheckBoxMaxFiles.Text = "Retain only the newest";
+            rtCheckBoxMaxFiles.UseVisualStyleBackColor = true;
+            // 
+            // rtLabelFilesSuffix
+            // 
+            rtLabelFilesSuffix.AutoSize = true;
+            rtLabelFilesSuffix.Font = new Font("Segoe UI", 10F);
+            rtLabelFilesSuffix.Location = new Point(607, 114);
+            rtLabelFilesSuffix.Name = "rtLabelFilesSuffix";
+            rtLabelFilesSuffix.Size = new Size(154, 37);
+            rtLabelFilesSuffix.TabIndex = 5;
+            rtLabelFilesSuffix.Text = "screenshots";
+            // 
+            // rtCheckBoxIncludeSubfolders
+            // 
+            rtCheckBoxIncludeSubfolders.AutoSize = true;
+            rtCheckBoxIncludeSubfolders.Font = new Font("Segoe UI", 10F);
+            rtCheckBoxIncludeSubfolders.Location = new Point(29, 173);
+            rtCheckBoxIncludeSubfolders.Name = "rtCheckBoxIncludeSubfolders";
+            rtCheckBoxIncludeSubfolders.Size = new Size(265, 41);
+            rtCheckBoxIncludeSubfolders.TabIndex = 6;
+            rtCheckBoxIncludeSubfolders.Text = "Include subfolders";
+            rtCheckBoxIncludeSubfolders.UseVisualStyleBackColor = true;
+            // 
+            // rtCheckBoxDryRun
+            // 
+            rtCheckBoxDryRun.AutoSize = true;
+            rtCheckBoxDryRun.Font = new Font("Segoe UI", 10F);
+            rtCheckBoxDryRun.Location = new Point(36, 636);
+            rtCheckBoxDryRun.Name = "rtCheckBoxDryRun";
+            rtCheckBoxDryRun.Size = new Size(535, 41);
+            rtCheckBoxDryRun.TabIndex = 4;
+            rtCheckBoxDryRun.Text = "Dry run mode (preview only, no deletion)";
+            rtCheckBoxDryRun.UseVisualStyleBackColor = true;
+            // 
+            // rtTextBoxCleanupResult
+            // 
+            rtTextBoxCleanupResult.BorderStyle = BorderStyle.FixedSingle;
+            rtTextBoxCleanupResult.Font = new Font("Segoe UI", 10F);
+            rtTextBoxCleanupResult.Location = new Point(839, 402);
+            rtTextBoxCleanupResult.Multiline = true;
+            rtTextBoxCleanupResult.Name = "rtTextBoxCleanupResult";
+            rtTextBoxCleanupResult.ReadOnly = true;
+            rtTextBoxCleanupResult.ScrollBars = ScrollBars.Vertical;
+            rtTextBoxCleanupResult.Size = new Size(570, 282);
+            rtTextBoxCleanupResult.TabIndex = 9;
+            rtTextBoxCleanupResult.Text = "Cleanup has not been run yet.";
+            // 
+            // rtLabelCleanupResultTitle
+            // 
+            rtLabelCleanupResultTitle.AutoSize = true;
+            rtLabelCleanupResultTitle.Font = new Font("Segoe UI", 10F);
+            rtLabelCleanupResultTitle.Location = new Point(833, 357);
+            rtLabelCleanupResultTitle.Name = "rtLabelCleanupResultTitle";
+            rtLabelCleanupResultTitle.Size = new Size(187, 37);
+            rtLabelCleanupResultTitle.TabIndex = 8;
+            rtLabelCleanupResultTitle.Text = "Cleanup result";
+            // 
+            // rtLabelPreviewSummary
+            // 
+            rtLabelPreviewSummary.BorderStyle = BorderStyle.FixedSingle;
+            rtLabelPreviewSummary.Font = new Font("Segoe UI", 10F);
+            rtLabelPreviewSummary.Location = new Point(833, 74);
+            rtLabelPreviewSummary.Name = "rtLabelPreviewSummary";
+            rtLabelPreviewSummary.Padding = new Padding(8);
+            rtLabelPreviewSummary.Size = new Size(570, 254);
+            rtLabelPreviewSummary.TabIndex = 7;
+            rtLabelPreviewSummary.Text = "Preview not generated yet.";
+            // 
+            // rtLabelPreviewSummaryTitle
+            // 
+            rtLabelPreviewSummaryTitle.AutoSize = true;
+            rtLabelPreviewSummaryTitle.Font = new Font("Segoe UI", 10F);
+            rtLabelPreviewSummaryTitle.Location = new Point(833, 27);
+            rtLabelPreviewSummaryTitle.Name = "rtLabelPreviewSummaryTitle";
+            rtLabelPreviewSummaryTitle.Size = new Size(224, 37);
+            rtLabelPreviewSummaryTitle.TabIndex = 6;
+            rtLabelPreviewSummaryTitle.Text = "Preview summary";
+            // 
             // buttonCancel
             // 
             buttonCancel.Font = new Font("Segoe UI", 10F);
-            buttonCancel.Location = new Point(1009, 798);
+            buttonCancel.Location = new Point(1003, 798);
             buttonCancel.Name = "buttonCancel";
             buttonCancel.Size = new Size(230, 70);
-            buttonCancel.TabIndex = 1;
+            buttonCancel.TabIndex = 0;
             buttonCancel.Text = "Cancel";
             buttonCancel.UseVisualStyleBackColor = true;
             buttonCancel.Click += ButtonCancel_Click;
@@ -1085,11 +1388,11 @@
             buttonOk.FlatStyle = FlatStyle.Flat;
             buttonOk.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             buttonOk.ForeColor = Color.White;
-            buttonOk.Location = new Point(1250, 798);
+            buttonOk.Location = new Point(1242, 798);
             buttonOk.Margin = new Padding(6);
             buttonOk.Name = "buttonOk";
             buttonOk.Size = new Size(230, 70);
-            buttonOk.TabIndex = 2;
+            buttonOk.TabIndex = 1;
             buttonOk.Text = "OK";
             buttonOk.UseVisualStyleBackColor = false;
             buttonOk.Click += ButtonOk_Click;
@@ -1099,7 +1402,6 @@
             AcceptButton = buttonOk;
             AutoScaleDimensions = new SizeF(192F, 192F);
             AutoScaleMode = AutoScaleMode.Dpi;
-            BackColor = Color.White;
             CancelButton = buttonCancel;
             ClientSize = new Size(1504, 890);
             Controls.Add(buttonOk);
@@ -1129,20 +1431,28 @@
             ((System.ComponentModel.ISupportInitialize)anTrackBarOpacity).EndInit();
             tabPageDownscale.ResumeLayout(false);
             tabPageDownscale.PerformLayout();
-            dsGroupBoxProcessing1.ResumeLayout(false);
-            dsGroupBoxProcessing1.PerformLayout();
-            dsGroupBoxModes1.ResumeLayout(false);
-            dsGroupBoxModes1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)dsNumericBoundingHeight1).EndInit();
-            ((System.ComponentModel.ISupportInitialize)dsNumericBoundingWidth1).EndInit();
-            ((System.ComponentModel.ISupportInitialize)dsNumericMaxWidth1).EndInit();
-            ((System.ComponentModel.ISupportInitialize)dsNumericPercentage1).EndInit();
-            ((System.ComponentModel.ISupportInitialize)dsNumericTargetHeight1).EndInit();
+            dsGroupBoxProcessing.ResumeLayout(false);
+            dsGroupBoxProcessing.PerformLayout();
+            dsGroupBoxModes.ResumeLayout(false);
+            dsGroupBoxModes.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)dsNumericBoundingHeight).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dsNumericBoundingWidth).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dsNumericMaxWidth).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dsNumericPercentage).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dsNumericTargetHeight).EndInit();
             tabPageImageProcessing.ResumeLayout(false);
             ipGroupBoxAdvanced.ResumeLayout(false);
             ipGroupBoxAdvanced.PerformLayout();
             ipGroupBoxColorMode.ResumeLayout(false);
             ipGroupBoxColorMode.PerformLayout();
+            tabPageRetention.ResumeLayout(false);
+            tabPageRetention.PerformLayout();
+            rtGroupBoxAction.ResumeLayout(false);
+            rtGroupBoxAction.PerformLayout();
+            rtGroupBoxSelection.ResumeLayout(false);
+            rtGroupBoxSelection.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)rtNumericMaxFiles).EndInit();
+            ((System.ComponentModel.ISupportInitialize)rtNumericMaxDays).EndInit();
             ResumeLayout(false);
         }
 
@@ -1188,35 +1498,35 @@
         private Label anLabelOpacity;
         private Label anLabelOpacityValue;
         private TabPage tabPageDownscale;
-        private ToggleSwitch dsToggleEnable1;
-        private GroupBox dsGroupBoxModes1;
-        private RadioButton dsRadioBoundingBox1;
-        private RadioButton dsRadioMaxWidth1;
-        private RadioButton dsRadioPercentage1;
-        private RadioButton dsRadioTargetHeight1;
-        private ComboBox dsComboBoxBoundingBox1;
-        private ComboBox dsComboBoxMaxWidth1;
-        private ComboBox dsComboBoxPercentage1;
-        private ComboBox dsComboBoxTargetHeight1;
-        private NumericUpDown dsNumericBoundingHeight1;
-        private NumericUpDown dsNumericBoundingWidth1;
-        private NumericUpDown dsNumericMaxWidth1;
-        private NumericUpDown dsNumericPercentage1;
-        private NumericUpDown dsNumericTargetHeight1;
+        private ToggleSwitch dsToggleEnable;
+        private GroupBox dsGroupBoxModes;
+        private RadioButton dsRadioBoundingBox;
+        private RadioButton dsRadioMaxWidth;
+        private RadioButton dsRadioPercentage;
+        private RadioButton dsRadioTargetHeight;
+        private ComboBox dsComboBoxBoundingBox;
+        private ComboBox dsComboBoxMaxWidth;
+        private ComboBox dsComboBoxPercentage;
+        private ComboBox dsComboBoxTargetHeight;
+        private NumericUpDown dsNumericBoundingHeight;
+        private NumericUpDown dsNumericBoundingWidth;
+        private NumericUpDown dsNumericMaxWidth;
+        private NumericUpDown dsNumericPercentage;
+        private NumericUpDown dsNumericTargetHeight;
         private Label dsLabelTargetHeight;
-        private Label dsLabelMaxWidth1;
-        private Label dsLabelBoundingWidth1;
-        private Label dsLabelBoundingHeight1;
-        private Label dsLabelPercentageValue1;
-        private GroupBox dsGroupBoxProcessing1;
-        private ComboBox dsComboBoxQuality1;
-        private CheckBox dsCheckBoxSharpen1;
-        private CheckBox dsCheckBoxSkipSmaller1;
-        private CheckBox dsCheckBoxFullScreenOnly1;
-        private CheckBox dsCheckBoxLossyOnly1;
-        private Label dsLabelQuality1;
+        private Label dsLabelMaxWidth;
+        private Label dsLabelBoundingWidth;
+        private Label dsLabelBoundingHeight;
+        private Label dsLabelPercentageValue;
+        private GroupBox dsGroupBoxProcessing;
+        private ComboBox dsComboBoxQuality;
+        private CheckBox dsCheckBoxSharpen;
+        private CheckBox dsCheckBoxSkipSmaller;
+        private CheckBox dsCheckBoxFullScreenOnly;
+        private CheckBox dsCheckBoxLossyOnly;
+        private Label dsLabelQuality;
         private Label dsLabelEnable;
-        private Label dsLabelSummary1;
+        private Label dsLabelSummary;
         private Label dsLabelDefaultSize;
         private TabPage tabPageImageProcessing;
         private GroupBox ipGroupBoxColorMode;
@@ -1231,7 +1541,30 @@
         private Label ipLabelColorTemperature;
         private CheckBox ipCheckBoxNoiseReduction;
         private CheckBox ipCheckBoxHighContrast;
-        private Label label1;
         private Label labelColorExFull;
+        private TabPage tabPageRetention;
+        private CheckBox rtCheckBoxMaxDays;
+        private NumericUpDown rtNumericMaxDays;
+        private Label rtLabelDaysSuffix;
+        private CheckBox rtCheckBoxMaxFiles;
+        private NumericUpDown rtNumericMaxFiles;
+        private Label rtLabelFilesSuffix;
+        private Label rtLabelAction;
+        private ComboBox rtComboBoxAction;
+        private Label rtLabelBackupFolder;
+        private TextBox rtTextBoxBackupFolder;
+        private Button rtButtonBrowseBackupFolder;
+        private CheckBox rtCheckBoxDryRun;
+        private CheckBox rtCheckBoxIncludeSubfolders;
+        private CheckBox rtCheckBoxPerSessionSubfolder;
+        private Button rtButtonCleanupNow;
+        private Label rtLabelPreviewSummaryTitle;
+        private Label rtLabelPreviewSummary;
+        private Label rtLabelCleanupResultTitle;
+        private TextBox rtTextBoxCleanupResult;
+        private GroupBox rtGroupBoxSelection;
+        private GroupBox rtGroupBoxAction;
+        private ToggleSwitch rtToggleSwitchAutoCleanup;
+        private Label rtLabelAutoCleanup;
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Text;
 //using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 
 namespace Capillume
@@ -41,6 +42,7 @@ namespace Capillume
             ("DarkGray", Color.DarkGray),
             ("Gray", Color.Gray),
             ("LightGray", Color.LightGray),
+            ("Gainsboro", Color.Gainsboro),
             ("White", Color.White),
 
             // --- Reds / Oranges / Yellows ---
@@ -50,8 +52,10 @@ namespace Capillume
             ("Goldenrod", Color.Goldenrod),
             ("Yellow", Color.Yellow),
             ("LightYellow", Color.LightYellow),
+            ("LemonChiffon", Color.LemonChiffon),
             ("LightCoral", Color.LightCoral),
             ("LightPink", Color.LightPink),
+            ("MistyRose", Color.MistyRose),
 
             // --- Greens (Windows 11 adds soft greens) ---
             ("DarkGreen", Color.DarkGreen),
@@ -91,7 +95,8 @@ namespace Capillume
             ("AntiqueWhite", Color.AntiqueWhite),      // warm modern neutral
             ("FloralWhite", Color.FloralWhite),        // soft warm white
             ("Seashell", Color.SeaShell),              // Windows 11 warm pastel
-            ("OldLace", Color.OldLace)                 // elegant warm tone
+            ("OldLace", Color.OldLace),                // elegant warm tone
+            ("NavajoWhite", Color.NavajoWhite)
         ];
 
         private static readonly (string Label, int Value)[] DownscaleHeightPresets =
@@ -111,15 +116,18 @@ namespace Capillume
             ("800 × 600", 800, 600)
         ];
 
+        private readonly string _saveFolder;
         private readonly WatermarkSettings _originalWatermarkSettings;
         private readonly AnnotationSettings _originalAnnotationSettings;
         private readonly DownscaleSettings _originalDownscaleSettings;
         private readonly ImageProcessingSettings _originalImageProcessingSettings;
+        private readonly RetentionSettings _originalRetentionSettings;
 
         private readonly WatermarkSettings _watermarkSettings;
         private readonly AnnotationSettings _annotationSettings;
         private readonly DownscaleSettings _downscaleSettings;
         private readonly ImageProcessingSettings _imageProcessingSettings;
+        private readonly RetentionSettings _retentionSettings;
 
         private Icon? _appIcon;
         private Font _watermarkFont = new("Segoe UI", 24);
@@ -129,45 +137,58 @@ namespace Capillume
         private int _annotationSelectionStart;
         private int _annotationSelectionLength;
         private bool _isUpdatingDownscaleUi;
+        private bool _isRetentionOperationRunning;
 
         private readonly Label dsLabelDefaultSize1 = new();
         public WatermarkSettings WatermarkSettings => _watermarkSettings;
         public AnnotationSettings AnnotationSettings => _annotationSettings;
         public DownscaleSettings DownscaleSettings => _downscaleSettings;
         public ImageProcessingSettings ImageProcessingSettings => _imageProcessingSettings;
+        public RetentionSettings RetentionSettings => _retentionSettings;
 
         public bool WatermarkSettingsChanged => !AreEqual(_originalWatermarkSettings, _watermarkSettings);
         public bool AnnotationSettingsChanged => !AreEqual(_originalAnnotationSettings, _annotationSettings);
         public bool DownscaleSettingsChanged => !AreEqual(_originalDownscaleSettings, _downscaleSettings);
         public bool ImageProcessingSettingsChanged => !AreEqual(_originalImageProcessingSettings, _imageProcessingSettings);
+        public bool RetentionSettingsChanged => !AreEqual(_originalRetentionSettings, _retentionSettings);
 
         public FormSettings(
             WatermarkSettings watermarkSettings,
             AnnotationSettings annotationSettings,
             DownscaleSettings downscaleSettings,
-            ImageProcessingSettings imageProcessingSettings)
+            ImageProcessingSettings imageProcessingSettings,
+            RetentionSettings retentionSettings,
+            string saveFolder)
         {
             InitializeComponent();
 
+            _saveFolder = saveFolder;
             _originalWatermarkSettings = Clone(watermarkSettings);
             _originalAnnotationSettings = Clone(annotationSettings);
             _originalDownscaleSettings = Clone(downscaleSettings);
             _originalImageProcessingSettings = Clone(imageProcessingSettings);
+            _originalRetentionSettings = Clone(retentionSettings);
             _watermarkSettings = Clone(watermarkSettings);
             _annotationSettings = Clone(annotationSettings);
             _downscaleSettings = Clone(downscaleSettings);
             _imageProcessingSettings = Clone(imageProcessingSettings);
+            _retentionSettings = Clone(retentionSettings);
 
             ToolTip toolTip = new ToolTip();
-            toolTip.SetToolTip(dsLabelQuality1, "Controls how the image is resized.\nHigher‑quality methods produce smoother results.");
-            toolTip.SetToolTip(dsCheckBoxSharpen1, "Adds a light sharpening pass to improve clarity after resizing.");
-            toolTip.SetToolTip(dsCheckBoxSkipSmaller1, "Avoids resizing when the screenshot is already smaller than the target size.");
+            toolTip.SetToolTip(dsLabelQuality, "Controls how the image is resized.\nHigher‑quality methods produce smoother results.");
+            toolTip.SetToolTip(dsCheckBoxSharpen, "Adds a light sharpening pass to improve clarity after resizing.");
+            toolTip.SetToolTip(dsCheckBoxSkipSmaller, "Avoids resizing when the screenshot is already smaller than the target size.");
+            toolTip.SetToolTip(rtToggleSwitchAutoCleanup, "Runs screenshot file cleanup after each screenshot is saved.");
+            toolTip.SetToolTip(rtCheckBoxDryRun, "Preview what would be removed without actually deleting any files.");
+            toolTip.SetToolTip(rtCheckBoxIncludeSubfolders, "Also evaluate screenshots inside subfolders of the save location.");
+            toolTip.SetToolTip(rtCheckBoxPerSessionSubfolder, "Organize each cleanup backup in a separate timestamped folder.");
 
             InitializeIcon();
             InitializeTabWatermark();
             InitializeTabAnnotation();
             InitializeTabDownscale();
             InitializeTabImageProcessing();
+            InitializeTabRetention();
         }
 
         private void InitializeIcon()
@@ -286,55 +307,47 @@ namespace Capillume
             //dsToggleEnable.Text = "Enable screenshot downscale";
             //dsToggleEnable.CheckedChanged += DownscaleSettingChanged;
 
-            int radioLeft = 24;
-            int presetLabelLeft = 560;
-            int presetComboLeft = 670;
-            int valueLabelLeft = 920;
-            int valueControlLeft = 1035;
-            int rowTop = 44;
-            int rowSpacing = 64;
+            dsComboBoxTargetHeight.Items.AddRange(DownscaleHeightPresets.Select(p => p.Label).Append("Custom").ToArray());
+            dsNumericTargetHeight.Minimum = Constants.DownscaleTargetHeightMin;
+            dsNumericTargetHeight.Maximum = Constants.DownscaleTargetHeightMax;
+            dsComboBoxPercentage.Items.AddRange(DownscalePercentagePresets.Select(p => $"{p}%").Append("Custom").ToArray());
+            dsNumericPercentage.Maximum = Constants.DownscalePercentageMax;
+            dsNumericPercentage.Minimum = Constants.DownscalePercentageMin;
+            dsComboBoxMaxWidth.Items.AddRange(DownscaleWidthPresets.Select(p => p.ToString()).Append("Custom").ToArray());
+            dsNumericMaxWidth.Maximum = Constants.DownscaleMaxWidthMax;
+            dsNumericMaxWidth.Minimum = Constants.DownscaleMaxWidthMin;
+            dsComboBoxBoundingBox.Items.AddRange(DownscaleBoundingBoxPresets.Select(p => p.Label).Append("Custom").ToArray());
+            dsNumericBoundingWidth.Maximum = Constants.DownscaleMaxWidthMax;
+            dsNumericBoundingWidth.Minimum = Constants.DownscaleMaxWidthMin;
+            dsNumericBoundingHeight.Maximum = Constants.DownscaleTargetHeightMax;
+            dsNumericBoundingHeight.Minimum = Constants.DownscaleTargetHeightMin;
 
-            dsComboBoxTargetHeight1.Items.AddRange(DownscaleHeightPresets.Select(p => p.Label).Append("Custom").ToArray());
-            dsNumericTargetHeight1.Minimum = Constants.DownscaleTargetHeightMin;
-            dsNumericTargetHeight1.Maximum = Constants.DownscaleTargetHeightMax;
-            dsComboBoxPercentage1.Items.AddRange(DownscalePercentagePresets.Select(p => $"{p}%").Append("Custom").ToArray());
-            dsNumericPercentage1.Maximum = Constants.DownscalePercentageMax;
-            dsNumericPercentage1.Minimum = Constants.DownscalePercentageMin;
-            dsComboBoxMaxWidth1.Items.AddRange(DownscaleWidthPresets.Select(p => p.ToString()).Append("Custom").ToArray());
-            dsNumericMaxWidth1.Maximum = Constants.DownscaleMaxWidthMax;
-            dsNumericMaxWidth1.Minimum = Constants.DownscaleMaxWidthMin;
-            dsComboBoxBoundingBox1.Items.AddRange(DownscaleBoundingBoxPresets.Select(p => p.Label).Append("Custom").ToArray());
-            dsNumericBoundingWidth1.Maximum = Constants.DownscaleMaxWidthMax;
-            dsNumericBoundingWidth1.Minimum = Constants.DownscaleMaxWidthMin;
-            dsNumericBoundingHeight1.Maximum = Constants.DownscaleTargetHeightMax;
-            dsNumericBoundingHeight1.Minimum = Constants.DownscaleTargetHeightMin;
-
-            dsComboBoxQuality1.Items.AddRange(
+            dsComboBoxQuality.Items.AddRange(
             [
                 "High Quality (Bicubic)",
                 "Balanced (Bilinear)",
                 "Fast (Nearest Neighbor)"
             ]);
 
-            dsComboBoxQuality1.SelectedIndexChanged += (_, _) => UpdateDownscaleSummary();
+            dsComboBoxQuality.SelectedIndexChanged += (_, _) => UpdateDownscaleSummary();
 
-            dsCheckBoxSharpen1.CheckedChanged += (_, _) => UpdateDownscaleSummary();
-            dsCheckBoxSkipSmaller1.CheckedChanged += (_, _) => UpdateDownscaleSummary();
-            dsCheckBoxFullScreenOnly1.CheckedChanged += (_, _) => UpdateDownscaleSummary();
-            dsCheckBoxLossyOnly1.CheckedChanged += (_, _) => UpdateDownscaleSummary();
+            dsCheckBoxSharpen.CheckedChanged += (_, _) => UpdateDownscaleSummary();
+            dsCheckBoxSkipSmaller.CheckedChanged += (_, _) => UpdateDownscaleSummary();
+            dsCheckBoxFullScreenOnly.CheckedChanged += (_, _) => UpdateDownscaleSummary();
+            dsCheckBoxLossyOnly.CheckedChanged += (_, _) => UpdateDownscaleSummary();
 
             _isUpdatingDownscaleUi = true;
-            dsToggleEnable1.Checked = _downscaleSettings.Enabled;
-            dsNumericTargetHeight1.Value = _downscaleSettings.TargetHeight;
-            dsNumericPercentage1.Value = _downscaleSettings.ResizePercentage;
-            dsNumericMaxWidth1.Value = _downscaleSettings.MaxWidth;
-            dsNumericBoundingWidth1.Value = _downscaleSettings.BoundingBoxWidth;
-            dsNumericBoundingHeight1.Value = _downscaleSettings.BoundingBoxHeight;
-            dsComboBoxQuality1.SelectedIndex = (int)_downscaleSettings.Quality;
-            dsCheckBoxSharpen1.Checked = _downscaleSettings.SharpenAfterResize;
-            dsCheckBoxSkipSmaller1.Checked = _downscaleSettings.SkipSmallerImages;
-            dsCheckBoxFullScreenOnly1.Checked = _downscaleSettings.FullScreenOnly;
-            dsCheckBoxLossyOnly1.Checked = _downscaleSettings.LossyFormatsOnly;
+            dsToggleEnable.Checked = _downscaleSettings.Enabled;
+            dsNumericTargetHeight.Value = _downscaleSettings.TargetHeight;
+            dsNumericPercentage.Value = _downscaleSettings.ResizePercentage;
+            dsNumericMaxWidth.Value = _downscaleSettings.MaxWidth;
+            dsNumericBoundingWidth.Value = _downscaleSettings.BoundingBoxWidth;
+            dsNumericBoundingHeight.Value = _downscaleSettings.BoundingBoxHeight;
+            dsComboBoxQuality.SelectedIndex = (int)_downscaleSettings.Quality;
+            dsCheckBoxSharpen.Checked = _downscaleSettings.SharpenAfterResize;
+            dsCheckBoxSkipSmaller.Checked = _downscaleSettings.SkipSmallerImages;
+            dsCheckBoxFullScreenOnly.Checked = _downscaleSettings.FullScreenOnly;
+            dsCheckBoxLossyOnly.Checked = _downscaleSettings.LossyFormatsOnly;
             SelectDownscaleMode(_downscaleSettings.Mode);
             SyncDownscalePresetSelections();
             _isUpdatingDownscaleUi = false;
@@ -355,6 +368,44 @@ namespace Capillume
             {
                 ipComboBoxColorTemperature.SelectedIndex = (int)ColorTemperatureMode.Neutral;
             }
+        }
+
+        private void InitializeTabRetention()
+        {
+            rtToggleSwitchAutoCleanup.Checked = _retentionSettings.AutoCleanupEnabled;
+            rtCheckBoxMaxDays.Checked = _retentionSettings.MaxDaysEnabled;
+            rtNumericMaxDays.Value = Math.Clamp(
+                _retentionSettings.MaxDaysToRetain,
+                Constants.RetentionDaysMin,
+                Constants.RetentionDaysMax);
+            rtCheckBoxMaxFiles.Checked = _retentionSettings.MaxFilesEnabled;
+            rtNumericMaxFiles.Value = Math.Clamp(
+                _retentionSettings.MaxFilesToRetain,
+                Constants.RetentionFileCountMin,
+                Constants.RetentionFileCountMax);
+            rtComboBoxAction.SelectedIndex = (int)_retentionSettings.Action;
+            rtTextBoxBackupFolder.Text = _retentionSettings.BackupFolder;
+            rtCheckBoxPerSessionSubfolder.Checked = _retentionSettings.PerSessionSubfolder;
+            rtCheckBoxDryRun.Checked = _retentionSettings.DryRunMode;
+            rtCheckBoxIncludeSubfolders.Checked = _retentionSettings.IncludeSubfolders;
+
+            if (rtComboBoxAction.SelectedIndex < 0)
+            {
+                rtComboBoxAction.SelectedIndex = (int)RetentionAction.MoveToRecycleBin;
+            }
+
+            rtToggleSwitchAutoCleanup.CheckedChanged += RetentionSettingChanged;
+            rtCheckBoxMaxDays.CheckedChanged += RetentionSettingChanged;
+            rtNumericMaxDays.ValueChanged += RetentionSettingChanged;
+            rtCheckBoxMaxFiles.CheckedChanged += RetentionSettingChanged;
+            rtNumericMaxFiles.ValueChanged += RetentionSettingChanged;
+            rtComboBoxAction.SelectedIndexChanged += RtComboBoxAction_SelectedIndexChanged;
+            rtTextBoxBackupFolder.TextChanged += RetentionSettingChanged;
+            rtCheckBoxPerSessionSubfolder.CheckedChanged += RetentionSettingChanged;
+            rtCheckBoxDryRun.CheckedChanged += RetentionSettingChanged;
+            rtCheckBoxIncludeSubfolders.CheckedChanged += RetentionSettingChanged;
+
+            UpdateRetentionControlState();
         }
 
         private void ButtonOk_Click(object sender, EventArgs e)
@@ -379,6 +430,12 @@ namespace Capillume
 
             tabControlSettings.SelectedTab = tabPageImageProcessing;
             if (!TryApplyImageProcessingSettings())
+            {
+                return;
+            }
+
+            tabControlSettings.SelectedTab = tabPageRetention;
+            if (!TryApplyRetentionSettings())
             {
                 return;
             }
@@ -447,18 +504,18 @@ namespace Capillume
 
         private bool TryApplyDownscaleSettings()
         {
-            _downscaleSettings.Enabled = dsToggleEnable1.Checked;
+            _downscaleSettings.Enabled = dsToggleEnable.Checked;
             _downscaleSettings.Mode = GetSelectedDownscaleMode();
-            _downscaleSettings.TargetHeight = (int)dsNumericTargetHeight1.Value;
-            _downscaleSettings.ResizePercentage = (int)dsNumericPercentage1.Value;
-            _downscaleSettings.MaxWidth = (int)dsNumericMaxWidth1.Value;
-            _downscaleSettings.BoundingBoxWidth = (int)dsNumericBoundingWidth1.Value;
-            _downscaleSettings.BoundingBoxHeight = (int)dsNumericBoundingHeight1.Value;
-            _downscaleSettings.Quality = (DownscaleQuality)dsComboBoxQuality1.SelectedIndex;
-            _downscaleSettings.SharpenAfterResize = dsCheckBoxSharpen1.Checked;
-            _downscaleSettings.SkipSmallerImages = dsCheckBoxSkipSmaller1.Checked;
-            _downscaleSettings.FullScreenOnly = dsCheckBoxFullScreenOnly1.Checked;
-            _downscaleSettings.LossyFormatsOnly = dsCheckBoxLossyOnly1.Checked;
+            _downscaleSettings.TargetHeight = (int)dsNumericTargetHeight.Value;
+            _downscaleSettings.ResizePercentage = (int)dsNumericPercentage.Value;
+            _downscaleSettings.MaxWidth = (int)dsNumericMaxWidth.Value;
+            _downscaleSettings.BoundingBoxWidth = (int)dsNumericBoundingWidth.Value;
+            _downscaleSettings.BoundingBoxHeight = (int)dsNumericBoundingHeight.Value;
+            _downscaleSettings.Quality = (DownscaleQuality)dsComboBoxQuality.SelectedIndex;
+            _downscaleSettings.SharpenAfterResize = dsCheckBoxSharpen.Checked;
+            _downscaleSettings.SkipSmallerImages = dsCheckBoxSkipSmaller.Checked;
+            _downscaleSettings.FullScreenOnly = dsCheckBoxFullScreenOnly.Checked;
+            _downscaleSettings.LossyFormatsOnly = dsCheckBoxLossyOnly.Checked;
             return true;
         }
 
@@ -471,6 +528,32 @@ namespace Capillume
                 ipComboBoxColorTemperature.SelectedIndex,
                 (int)ColorTemperatureMode.Neutral,
                 (int)ColorTemperatureMode.Cool);
+            return true;
+        }
+
+        private bool TryApplyRetentionSettings()
+        {
+            if ((RetentionAction)rtComboBoxAction.SelectedIndex == RetentionAction.BackupThenDelete
+                && string.IsNullOrWhiteSpace(rtTextBoxBackupFolder.Text))
+            {
+                MessageBox.Show("Select a backup folder before using backup retention action.", "Retention", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                rtTextBoxBackupFolder.Focus();
+                return false;
+            }
+
+            _retentionSettings.AutoCleanupEnabled = rtToggleSwitchAutoCleanup.Checked;
+            _retentionSettings.MaxDaysEnabled = rtCheckBoxMaxDays.Checked;
+            _retentionSettings.MaxDaysToRetain = (int)rtNumericMaxDays.Value;
+            _retentionSettings.MaxFilesEnabled = rtCheckBoxMaxFiles.Checked;
+            _retentionSettings.MaxFilesToRetain = (int)rtNumericMaxFiles.Value;
+            _retentionSettings.Action = (RetentionAction)Math.Clamp(
+                rtComboBoxAction.SelectedIndex,
+                (int)RetentionAction.MoveToRecycleBin,
+                (int)RetentionAction.BackupThenDelete);
+            _retentionSettings.BackupFolder = rtTextBoxBackupFolder.Text.Trim();
+            _retentionSettings.PerSessionSubfolder = rtCheckBoxPerSessionSubfolder.Checked;
+            _retentionSettings.DryRunMode = rtCheckBoxDryRun.Checked;
+            _retentionSettings.IncludeSubfolders = rtCheckBoxIncludeSubfolders.Checked;
             return true;
         }
 
@@ -551,9 +634,9 @@ namespace Capillume
                 return;
             }
 
-            if (dsComboBoxTargetHeight1.SelectedIndex >= 0 && dsComboBoxTargetHeight1.SelectedIndex < DownscaleHeightPresets.Length)
+            if (dsComboBoxTargetHeight.SelectedIndex >= 0 && dsComboBoxTargetHeight.SelectedIndex < DownscaleHeightPresets.Length)
             {
-                dsNumericTargetHeight1.Value = DownscaleHeightPresets[dsComboBoxTargetHeight1.SelectedIndex].Value;
+                dsNumericTargetHeight.Value = DownscaleHeightPresets[dsComboBoxTargetHeight.SelectedIndex].Value;
             }
 
             UpdateDownscaleSummary();
@@ -576,9 +659,9 @@ namespace Capillume
                 return;
             }
 
-            if (dsComboBoxPercentage1.SelectedIndex >= 0 && dsComboBoxPercentage1.SelectedIndex < DownscalePercentagePresets.Length)
+            if (dsComboBoxPercentage.SelectedIndex >= 0 && dsComboBoxPercentage.SelectedIndex < DownscalePercentagePresets.Length)
             {
-                dsNumericPercentage1.Value = DownscalePercentagePresets[dsComboBoxPercentage1.SelectedIndex];
+                dsNumericPercentage.Value = DownscalePercentagePresets[dsComboBoxPercentage.SelectedIndex];
             }
 
             UpdateDownscaleSummary();
@@ -601,9 +684,9 @@ namespace Capillume
                 return;
             }
 
-            if (dsComboBoxMaxWidth1.SelectedIndex >= 0 && dsComboBoxMaxWidth1.SelectedIndex < DownscaleWidthPresets.Length)
+            if (dsComboBoxMaxWidth.SelectedIndex >= 0 && dsComboBoxMaxWidth.SelectedIndex < DownscaleWidthPresets.Length)
             {
-                dsNumericMaxWidth1.Value = DownscaleWidthPresets[dsComboBoxMaxWidth1.SelectedIndex];
+                dsNumericMaxWidth.Value = DownscaleWidthPresets[dsComboBoxMaxWidth.SelectedIndex];
             }
 
             UpdateDownscaleSummary();
@@ -626,11 +709,11 @@ namespace Capillume
                 return;
             }
 
-            if (dsComboBoxBoundingBox1.SelectedIndex >= 0 && dsComboBoxBoundingBox1.SelectedIndex < DownscaleBoundingBoxPresets.Length)
+            if (dsComboBoxBoundingBox.SelectedIndex >= 0 && dsComboBoxBoundingBox.SelectedIndex < DownscaleBoundingBoxPresets.Length)
             {
-                var preset = DownscaleBoundingBoxPresets[dsComboBoxBoundingBox1.SelectedIndex];
-                dsNumericBoundingWidth1.Value = preset.Width;
-                dsNumericBoundingHeight1.Value = preset.Height;
+                var preset = DownscaleBoundingBoxPresets[dsComboBoxBoundingBox.SelectedIndex];
+                dsNumericBoundingWidth.Value = preset.Width;
+                dsNumericBoundingHeight.Value = preset.Height;
             }
 
             UpdateDownscaleSummary();
@@ -657,34 +740,34 @@ namespace Capillume
         private void SyncTargetHeightPresetSelection()
         {
             SetComboSelection(
-                dsComboBoxTargetHeight1,
-                Array.FindIndex(DownscaleHeightPresets, preset => preset.Value == (int)dsNumericTargetHeight1.Value),
+                dsComboBoxTargetHeight,
+                Array.FindIndex(DownscaleHeightPresets, preset => preset.Value == (int)dsNumericTargetHeight.Value),
                 DownscaleHeightPresets.Length);
         }
 
         private void SyncPercentagePresetSelection()
         {
             SetComboSelection(
-                dsComboBoxPercentage1,
-                Array.FindIndex(DownscalePercentagePresets, preset => preset == (int)dsNumericPercentage1.Value),
+                dsComboBoxPercentage,
+                Array.FindIndex(DownscalePercentagePresets, preset => preset == (int)dsNumericPercentage.Value),
                 DownscalePercentagePresets.Length);
         }
 
         private void SyncMaxWidthPresetSelection()
         {
             SetComboSelection(
-                dsComboBoxMaxWidth1,
-                Array.FindIndex(DownscaleWidthPresets, preset => preset == (int)dsNumericMaxWidth1.Value),
+                dsComboBoxMaxWidth,
+                Array.FindIndex(DownscaleWidthPresets, preset => preset == (int)dsNumericMaxWidth.Value),
                 DownscaleWidthPresets.Length);
         }
 
         private void SyncBoundingBoxPresetSelection()
         {
             SetComboSelection(
-                dsComboBoxBoundingBox1,
+                dsComboBoxBoundingBox,
                 Array.FindIndex(
                     DownscaleBoundingBoxPresets,
-                    preset => preset.Width == (int)dsNumericBoundingWidth1.Value && preset.Height == (int)dsNumericBoundingHeight1.Value),
+                    preset => preset.Width == (int)dsNumericBoundingWidth.Value && preset.Height == (int)dsNumericBoundingHeight.Value),
                 DownscaleBoundingBoxPresets.Length);
         }
 
@@ -700,26 +783,26 @@ namespace Capillume
         {
             bool previousState = _isUpdatingDownscaleUi;
             _isUpdatingDownscaleUi = true;
-            dsRadioTargetHeight1.Checked = mode == DownscaleMode.TargetHeight;
-            dsRadioPercentage1.Checked = mode == DownscaleMode.Percentage;
-            dsRadioMaxWidth1.Checked = mode == DownscaleMode.MaxWidth;
-            dsRadioBoundingBox1.Checked = mode == DownscaleMode.BoundingBox;
+            dsRadioTargetHeight.Checked = mode == DownscaleMode.TargetHeight;
+            dsRadioPercentage.Checked = mode == DownscaleMode.Percentage;
+            dsRadioMaxWidth.Checked = mode == DownscaleMode.MaxWidth;
+            dsRadioBoundingBox.Checked = mode == DownscaleMode.BoundingBox;
             _isUpdatingDownscaleUi = previousState;
         }
 
         private DownscaleMode GetSelectedDownscaleMode()
         {
-            if (dsRadioPercentage1.Checked)
+            if (dsRadioPercentage.Checked)
             {
                 return DownscaleMode.Percentage;
             }
 
-            if (dsRadioMaxWidth1.Checked)
+            if (dsRadioMaxWidth.Checked)
             {
                 return DownscaleMode.MaxWidth;
             }
 
-            if (dsRadioBoundingBox1.Checked)
+            if (dsRadioBoundingBox.Checked)
             {
                 return DownscaleMode.BoundingBox;
             }
@@ -729,56 +812,56 @@ namespace Capillume
 
         private void UpdateDownscaleControlState()
         {
-            bool enabled = dsToggleEnable1.Checked;
-            dsGroupBoxModes1.Enabled = enabled;
-            dsGroupBoxProcessing1.Enabled = enabled;
+            bool enabled = dsToggleEnable.Checked;
+            dsGroupBoxModes.Enabled = enabled;
+            dsGroupBoxProcessing.Enabled = enabled;
 
             DownscaleMode selectedMode = GetSelectedDownscaleMode();
-            dsComboBoxTargetHeight1.Enabled = enabled && selectedMode == DownscaleMode.TargetHeight;
-            dsNumericTargetHeight1.Enabled = enabled && selectedMode == DownscaleMode.TargetHeight;
-            dsComboBoxPercentage1.Enabled = enabled && selectedMode == DownscaleMode.Percentage;
-            dsNumericPercentage1.Enabled = enabled && selectedMode == DownscaleMode.Percentage;
-            dsComboBoxMaxWidth1.Enabled = enabled && selectedMode == DownscaleMode.MaxWidth;
-            dsNumericMaxWidth1.Enabled = enabled && selectedMode == DownscaleMode.MaxWidth;
-            dsComboBoxBoundingBox1.Enabled = enabled && selectedMode == DownscaleMode.BoundingBox;
-            dsNumericBoundingWidth1.Enabled = enabled && selectedMode == DownscaleMode.BoundingBox;
-            dsNumericBoundingHeight1.Enabled = enabled && selectedMode == DownscaleMode.BoundingBox;
+            dsComboBoxTargetHeight.Enabled = enabled && selectedMode == DownscaleMode.TargetHeight;
+            dsNumericTargetHeight.Enabled = enabled && selectedMode == DownscaleMode.TargetHeight;
+            dsComboBoxPercentage.Enabled = enabled && selectedMode == DownscaleMode.Percentage;
+            dsNumericPercentage.Enabled = enabled && selectedMode == DownscaleMode.Percentage;
+            dsComboBoxMaxWidth.Enabled = enabled && selectedMode == DownscaleMode.MaxWidth;
+            dsNumericMaxWidth.Enabled = enabled && selectedMode == DownscaleMode.MaxWidth;
+            dsComboBoxBoundingBox.Enabled = enabled && selectedMode == DownscaleMode.BoundingBox;
+            dsNumericBoundingWidth.Enabled = enabled && selectedMode == DownscaleMode.BoundingBox;
+            dsNumericBoundingHeight.Enabled = enabled && selectedMode == DownscaleMode.BoundingBox;
         }
 
         private void UpdateDownscaleSummary()
         {
-            if (!dsToggleEnable1.Checked)
+            if (!dsToggleEnable.Checked)
             {
-                dsLabelSummary1.Text = "Downscaling is currently off. Screenshots will be saved at their original size.";
+                dsLabelSummary.Text = "Downscaling is currently off. Screenshots will be saved at their original size.";
                 return;
             }
 
             string resizeDescription = GetSelectedDownscaleMode() switch
             {
-                DownscaleMode.TargetHeight => $"Resize to {dsNumericTargetHeight1.Value:N0}px height.",
-                DownscaleMode.Percentage => $"Resize to {dsNumericPercentage1.Value}% of the captured size.",
-                DownscaleMode.MaxWidth => $"Reduce to {dsNumericMaxWidth1.Value:N0}px width.",
-                DownscaleMode.BoundingBox => $"Fit within {dsNumericBoundingWidth1.Value:N0} × {dsNumericBoundingHeight1.Value:N0}.",
+                DownscaleMode.TargetHeight => $"Resize to {dsNumericTargetHeight.Value:N0}px height.",
+                DownscaleMode.Percentage => $"Resize to {dsNumericPercentage.Value}% of the captured size.",
+                DownscaleMode.MaxWidth => $"Reduce to {dsNumericMaxWidth.Value:N0}px width.",
+                DownscaleMode.BoundingBox => $"Fit within {dsNumericBoundingWidth.Value:N0} × {dsNumericBoundingHeight.Value:N0}.",
                 _ => string.Empty
             };
 
-            string scopeDescription = dsCheckBoxFullScreenOnly1.Checked
+            string scopeDescription = dsCheckBoxFullScreenOnly.Checked
                 ? "Applies only to full-screen captures."
                 : "Applies to full-screen and active-window captures.";
 
-            string formatDescription = dsCheckBoxLossyOnly1.Checked
+            string formatDescription = dsCheckBoxLossyOnly.Checked
                 ? "Only JPG and WEBP saves will be downscaled."
                 : "All save formats can be downscaled.";
 
-            string skipDescription = dsCheckBoxSkipSmaller1.Checked
+            string skipDescription = dsCheckBoxSkipSmaller.Checked
                 ? "Smaller images are not upscaled."
                 : "Smaller images may still be resized if the chosen target is larger.";
 
-            string sharpenDescription = dsCheckBoxSharpen1.Checked
+            string sharpenDescription = dsCheckBoxSharpen.Checked
                 ? "A light sharpen pass runs after resize."
                 : "No sharpen pass is applied.";
 
-            dsLabelSummary1.Text = $"{resizeDescription} Quality: {dsComboBoxQuality1.SelectedItem}. {scopeDescription} {formatDescription} {skipDescription} {sharpenDescription}";
+            dsLabelSummary.Text = $"{resizeDescription} Quality: {dsComboBoxQuality.SelectedItem}. {scopeDescription} {formatDescription} {skipDescription} {sharpenDescription}";
         }
 
         private static string GetDefaultCaptureSizeDescription()
@@ -791,6 +874,192 @@ namespace Capillume
             int height = maxY - minY;
 
             return $"Detected default size: full-screen captures ({width:N0}×{height:N0}); active-window captures keep the original window size.";
+        }
+
+        private void RetentionSettingChanged(object? sender, EventArgs e)
+        {
+            UpdateRetentionControlState();
+        }
+
+        private void RtComboBoxAction_SelectedIndexChanged(object? sender, EventArgs e)
+        {
+            UpdateRetentionControlState();
+        }
+
+        private void UpdateRetentionControlState()
+        {
+            bool backupSelected = GetSelectedRetentionAction() == RetentionAction.BackupThenDelete;
+            bool hasSaveFolder = !string.IsNullOrWhiteSpace(_saveFolder);
+            bool controlsEnabled = !_isRetentionOperationRunning;
+
+            rtToggleSwitchAutoCleanup.Enabled = controlsEnabled;
+            rtCheckBoxMaxDays.Enabled = controlsEnabled;
+            rtNumericMaxDays.Enabled = controlsEnabled && rtCheckBoxMaxDays.Checked;
+            rtLabelDaysSuffix.Enabled = controlsEnabled && rtCheckBoxMaxDays.Checked;
+            rtCheckBoxMaxFiles.Enabled = controlsEnabled;
+            rtNumericMaxFiles.Enabled = controlsEnabled && rtCheckBoxMaxFiles.Checked;
+            rtLabelFilesSuffix.Enabled = controlsEnabled && rtCheckBoxMaxFiles.Checked;
+            rtLabelAction.Enabled = controlsEnabled;
+            rtComboBoxAction.Enabled = controlsEnabled;
+            rtLabelBackupFolder.Enabled = controlsEnabled && backupSelected;
+            rtTextBoxBackupFolder.Enabled = controlsEnabled && backupSelected;
+            rtButtonBrowseBackupFolder.Enabled = controlsEnabled && backupSelected;
+            rtCheckBoxPerSessionSubfolder.Enabled = controlsEnabled && backupSelected;
+            rtCheckBoxDryRun.Enabled = controlsEnabled;
+            rtCheckBoxIncludeSubfolders.Enabled = controlsEnabled;
+            rtButtonCleanupNow.Enabled = controlsEnabled && hasSaveFolder;
+
+            if (!hasSaveFolder && !_isRetentionOperationRunning)
+            {
+                rtTextBoxCleanupResult.Text = "Select a screenshot save folder on the main window before running cleanup.";
+            }
+        }
+
+        private RetentionAction GetSelectedRetentionAction()
+        {
+            return (RetentionAction)Math.Clamp(
+                rtComboBoxAction.SelectedIndex,
+                (int)RetentionAction.MoveToRecycleBin,
+                (int)RetentionAction.BackupThenDelete);
+        }
+
+        private async void RtButtonCleanupNow_Click(object sender, EventArgs e)
+        {
+            if (_isRetentionOperationRunning)
+            {
+                return;
+            }
+
+            if (!TryApplyRetentionSettings())
+            {
+                return;
+            }
+
+            _isRetentionOperationRunning = true;
+            rtTextBoxCleanupResult.Text = "Generating cleanup preview...";
+            UpdateRetentionControlState();
+
+            try
+            {
+                using var retentionService = new ScreenshotRetentionService();
+                var retentionSettings = Clone(_retentionSettings);
+                var preview = await retentionService.PreviewCleanupAsync(_saveFolder, retentionSettings);
+                rtLabelPreviewSummary.Text = FormatPreviewSummary(preview, retentionSettings);
+
+                if (preview.TotalCandidateFiles == 0)
+                {
+                    rtTextBoxCleanupResult.Text = retentionSettings.DryRunMode
+                        ? "Dry run completed. No screenshots match the current retention rules."
+                        : "No screenshots match the current retention rules.";
+                    return;
+                }
+
+                string confirmButtonLabel = retentionSettings.DryRunMode ? "run the dry run" : "continue with cleanup";
+                DialogResult confirmation = MessageBox.Show(
+                    this,
+                    $"{FormatPreviewSummary(preview, retentionSettings)}\n\nSelect OK to {confirmButtonLabel}.",
+                    "Preview Cleanup Summary",
+                    MessageBoxButtons.OKCancel,
+                    MessageBoxIcon.Information);
+
+                if (confirmation != DialogResult.OK)
+                {
+                    rtTextBoxCleanupResult.Text = "Cleanup canceled after preview.";
+                    return;
+                }
+
+                rtTextBoxCleanupResult.Text = retentionSettings.DryRunMode
+                    ? "Dry run in progress..."
+                    : "Cleanup in progress...";
+
+                var result = await retentionService.ExecuteCleanupAsync(_saveFolder, retentionSettings);
+                rtTextBoxCleanupResult.Text = FormatCleanupResult(result);
+
+                if (result.Errors.Count > 0)
+                {
+                    string errorPreview = string.Join(Environment.NewLine, result.Errors.Take(5));
+                    MessageBox.Show(
+                        this,
+                        $"Some files could not be processed:\n\n{errorPreview}",
+                        "Retention Cleanup",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                }
+            }
+            catch (Exception ex)
+            {
+                rtTextBoxCleanupResult.Text = $"Cleanup failed: {ex.Message}";
+                MessageBox.Show(this, ex.Message, "Retention Cleanup", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                _isRetentionOperationRunning = false;
+                UpdateRetentionControlState();
+            }
+        }
+
+        private void RtButtonBrowseBackupFolder_Click(object sender, EventArgs e)
+        {
+            using var dialog = new FolderBrowserDialog
+            {
+                Description = "Select a backup folder (local or network shared path)",
+                SelectedPath = Directory.Exists(rtTextBoxBackupFolder.Text) ? rtTextBoxBackupFolder.Text : _saveFolder,
+                ShowNewFolderButton = true
+            };
+
+            if (dialog.ShowDialog(this) == DialogResult.OK)
+            {
+                rtTextBoxBackupFolder.Text = dialog.SelectedPath;
+            }
+        }
+
+        private static string FormatPreviewSummary(ScreenshotCleanupPreview preview, RetentionSettings settings)
+        {
+            var builder = new StringBuilder();
+            builder.AppendLine($"Older than {settings.MaxDaysToRetain:N0} days: {(settings.MaxDaysEnabled ? preview.FilesOlderThanMaxDays : 0):N0} file(s)");
+            builder.AppendLine($"Exceeding {settings.MaxFilesToRetain:N0} retained files: {(settings.MaxFilesEnabled ? preview.FilesExceedingCountLimit : 0):N0} file(s)");
+            builder.AppendLine($"Total files to process: {preview.TotalCandidateFiles:N0}");
+            builder.AppendLine($"Estimated space to free: {ScreenshotRetentionService.FormatSize(preview.TotalBytesToFree)}");
+            builder.Append($"Action: {DescribeRetentionAction(settings)}");
+            return builder.ToString();
+        }
+
+        private static string FormatCleanupResult(ScreenshotCleanupResult result)
+        {
+            var builder = new StringBuilder();
+            builder.AppendLine(result.DryRunMode ? "Dry run completed." : "Cleanup completed.");
+            builder.AppendLine($"Matched files: {result.Preview.TotalCandidateFiles:N0}");
+            builder.AppendLine($"Moved to Recycle Bin: {result.RecycledFiles:N0}");
+            builder.AppendLine($"Deleted permanently: {result.DeletedFiles:N0}");
+            builder.AppendLine($"Backed up first: {result.BackedUpFiles:N0}");
+            builder.AppendLine($"Failed: {result.FailedFiles:N0}");
+            builder.Append($"Estimated space affected: {ScreenshotRetentionService.FormatSize(result.Preview.TotalBytesToFree)}");
+
+            if (!string.IsNullOrWhiteSpace(result.BackupFolderUsed))
+            {
+                builder.AppendLine();
+                builder.Append($"Backup folder: {result.BackupFolderUsed}");
+            }
+
+            return builder.ToString();
+        }
+
+        private static string DescribeRetentionAction(RetentionSettings settings)
+        {
+            string action = settings.Action switch
+            {
+                RetentionAction.MoveToRecycleBin => "Move to Recycle Bin",
+                RetentionAction.DeletePermanently => "Delete permanently",
+                RetentionAction.BackupThenDelete => $"Backup to folder then delete ({settings.BackupFolder})",
+                _ => "Move to Recycle Bin"
+            };
+
+            if (settings.DryRunMode)
+            {
+                action += " [dry run]";
+            }
+
+            return action;
         }
 
         private void WmToggleUseText_CheckedChanged(object sender, EventArgs e)
@@ -877,31 +1146,252 @@ namespace Capillume
 
         private void AnButtonAnnotationBackgroundColor_Click(object sender, EventArgs e)
         {
-            var menu = new ContextMenuStrip(components);
-            var noColorItem = new ToolStripMenuItem("No color")
-            {
-                Tag = !_annotationBackgroundColor.HasValue
-            };
-            noColorItem.Paint += DrawCurrentColorBorder;
-            noColorItem.Click += (_, _) => SetAnnotationBackgroundColor(null);
-            menu.Items.Add(noColorItem);
-            menu.Items.Add(new ToolStripSeparator());
+            using var picker = new AnnotationColorPalette(_annotationBackgroundColor);
+            picker.StartPosition = FormStartPosition.Manual;
 
-            foreach ((string name, Color color) in AnnotationBackgroundColors)
+            // If true, the right of Color Picker will be aligned to the right of the Background Color
+            // button. Else, the left of Color Picker will be aligned to the left of the button.
+            // Aigning the right sides will help prevent the Color Picker from going outside the Settings dialog.
+            bool alignPickerToRight = true;
+            Point location;
+
+            if (alignPickerToRight)
             {
-                double luminance = (0.2126 * color.R + 0.7152 * color.G + 0.0722 * color.B) / 255.0;
-                var colorItem = new ToolStripMenuItem(name)
-                {
-                    BackColor = color,
-                    ForeColor = luminance < 0.5 ? Color.White : Color.Black,
-                    Tag = _annotationBackgroundColor?.ToArgb() == color.ToArgb()
-                };
-                colorItem.Paint += DrawCurrentColorBorder;
-                colorItem.Click += (_, _) => SetAnnotationBackgroundColor(color);
-                menu.Items.Add(colorItem);
+                Point buttonBottomRight = anButtonAnnotationBackgroundColor.PointToScreen(
+                    new Point(anButtonAnnotationBackgroundColor.Width,
+                    anButtonAnnotationBackgroundColor.Height));
+
+                location = new(buttonBottomRight.X - picker.Width, buttonBottomRight.Y);
+            }
+            else
+            {
+                location = anButtonAnnotationBackgroundColor.PointToScreen(
+                    new Point(0, anButtonAnnotationBackgroundColor.Height));
             }
 
-            menu.Show(anButtonAnnotationBackgroundColor, anButtonAnnotationBackgroundColor.Width, 0);
+
+            Rectangle workingArea = Screen.FromControl(anButtonAnnotationBackgroundColor).WorkingArea;
+            location.X = Math.Clamp(location.X, workingArea.Left, workingArea.Right - picker.Width);
+            location.Y = Math.Clamp(location.Y, workingArea.Top, workingArea.Bottom - picker.Height);
+            picker.Location = location;
+
+            if (picker.ShowDialog(this) == DialogResult.OK)
+            {
+                SetAnnotationBackgroundColor(picker.SelectedColor);
+            }
+        }
+
+        private sealed class AnnotationColorPalette : Form
+        {
+            private readonly ToolTip _toolTip = new();
+
+            public Color? SelectedColor { get; private set; }
+
+            public AnnotationColorPalette(Color? selectedColor)
+            {
+                const int FormClientWidth = 348;
+                const int FormClientHeight = 800;
+                const int FormPadding = 16;
+                const int ControlSpacing = 3;
+
+                SelectedColor = selectedColor;
+
+                AutoScaleMode = AutoScaleMode.Dpi;
+                AutoScaleDimensions = new SizeF(96F, 96F);
+                BackColor = Color.White;
+                ClientSize = new Size(FormClientWidth, FormClientHeight);
+                ControlBox = true;
+                FormBorderStyle = FormBorderStyle.FixedSingle;
+                MaximizeBox = false;
+                MinimizeBox = false;
+                Padding = new Padding(FormPadding);
+                ShowIcon = false;
+                ShowInTaskbar = false;
+                Text = "Highlight color";
+                KeyPreview = true;
+
+                int contentWidth = ClientSize.Width - Padding.Left - Padding.Right;
+
+
+                //var title = new Label
+                //{
+                //    AutoSize = true,
+                //    Font = new Font("Segoe UI Semibold", 10F),
+                //    ForeColor = Color.FromArgb(32, 32, 32),
+                //    Text = "Choose highlight color",
+                //    Location = new Point(Padding.Left, Padding.Top),
+                //    BackColor = Color.Aqua
+                //};
+
+                //var description = new Label
+                //{
+                //    AutoSize = true,
+                //    Font = new Font("Segoe UI", 8.5F),
+                //    ForeColor = Color.FromArgb(100, 100, 100),
+                //    Text = "Select a color for the annotation background.",
+                //    Location = new Point(16, 40)
+                //};
+
+                var noColorButton = new Button
+                {
+                    AccessibleName = "No color",
+                    BackColor = Color.White,
+                    FlatStyle = FlatStyle.Flat,
+                    Font = new Font("Segoe UI", 9F),
+                    Location = new Point(Padding.Left, Padding.Top),
+                    Size = new Size(contentWidth /*344*/, 40),
+                    Text = "No color",
+                    UseVisualStyleBackColor = false
+                };
+                noColorButton.FlatAppearance.BorderColor = Color.FromArgb(210, 210, 210);
+                noColorButton.Click += (_, _) => SelectColor(null);
+
+                var palette = new FlowLayoutPanel
+                {
+                    //BackColor = Color.Black,
+                    FlowDirection = FlowDirection.LeftToRight,
+                    Location = new Point(Padding.Left, noColorButton.Bottom + ControlSpacing /*112*/),
+                    Size = new Size(contentWidth, 292),
+                    WrapContents = true
+                };
+
+                foreach ((string name, Color color) in AnnotationBackgroundColors)
+                {
+                    var colorButton = new Button
+                    {
+                        AccessibleName = name,
+                        BackColor = color,
+                        FlatStyle = FlatStyle.Flat,
+                        Margin = new Padding(ControlSpacing),
+                        Size = new Size(39, 30),
+                        TabStop = true,
+                        UseVisualStyleBackColor = false
+                    };
+                    colorButton.FlatAppearance.BorderColor = Color.FromArgb(190, 190, 190);
+                    colorButton.FlatAppearance.MouseOverBackColor = color;
+                    colorButton.Tag = color.ToArgb() == selectedColor?.ToArgb();
+                    colorButton.Paint += PaintColorSelection;
+                    colorButton.Click += (_, _) => SelectColor(color);
+                    _toolTip.SetToolTip(colorButton, name);
+                    palette.Controls.Add(colorButton);
+                }
+
+                var customButton = new Button
+                {
+                    BackColor = Color.White,
+                    FlatStyle = FlatStyle.Flat,
+                    Font = new Font("Segoe UI", 9F),
+                    Location = new Point(Padding.Left, palette.Bottom + ControlSpacing /*414*/),
+                    Size = new Size(contentWidth, 40),
+                    Text = "Custom color...",
+                    UseVisualStyleBackColor = false
+                };
+                customButton.FlatAppearance.BorderColor = Color.FromArgb(210, 210, 210);
+                customButton.Click += ChooseCustomColor;
+
+                var cancelButton = new Button
+                {
+                    AccessibleName = "Cancel",
+                    BackColor = Color.White,
+                    DialogResult = DialogResult.Cancel,
+                    FlatStyle = FlatStyle.Flat,
+                    Font = new Font("Segoe UI", 9F),
+                    Location = new Point(Padding.Left, customButton.Bottom + ControlSpacing),
+                    Size = new Size(contentWidth, 40),
+                    Text = "Cancel",
+                    UseVisualStyleBackColor = false
+                };
+                cancelButton.FlatAppearance.BorderColor = Color.FromArgb(210, 210, 210);
+                CancelButton = cancelButton;
+                //Height = cancelButton.Top + cancelButton.Height + FormPadding;
+                //ClientSize = new Size(ClientSize.Width, cancelButton.Top + cancelButton.Height + FormPadding);
+
+                //Controls.Add(title);
+                //Controls.Add(description);
+                Controls.Add(noColorButton);
+                Controls.Add(palette);
+                Controls.Add(customButton);
+                Controls.Add(cancelButton);
+
+                ClientSize = new Size(ClientSize.Width, cancelButton.Bottom + Padding.Bottom);
+
+                Shown += (_, _) => ActiveControl = null;
+                Deactivate += (_, _) =>
+                {
+                    if (!IsHandleCreated || IsDisposed || Disposing)
+                    {
+                        return;
+                    }
+
+                    BeginInvoke(() =>
+                    {
+                        if (IsDisposed || Disposing || ContainsFocus)
+                        {
+                            return;
+                        }
+
+                        foreach (Form ownedForm in OwnedForms)
+                        {
+                            if (ownedForm.ContainsFocus)
+                            {
+                                return;
+                            }
+                        }
+
+                        DialogResult = DialogResult.Cancel;
+                    });
+                };
+                KeyDown += (_, args) =>
+                {
+                    if (args.KeyCode == Keys.Escape)
+                    {
+                        DialogResult = DialogResult.Cancel;
+                    }
+                };
+            }
+
+            protected override void Dispose(bool disposing)
+            {
+                if (disposing)
+                {
+                    _toolTip.Dispose();
+                }
+
+                base.Dispose(disposing);
+            }
+
+            private void SelectColor(Color? color)
+            {
+                SelectedColor = color;
+                DialogResult = DialogResult.OK;
+            }
+
+            private void ChooseCustomColor(object? sender, EventArgs e)
+            {
+                using var dialog = new ColorDialog
+                {
+                    AnyColor = true,
+                    Color = SelectedColor ?? Color.White,
+                    FullOpen = true
+                };
+
+                if (dialog.ShowDialog(this) == DialogResult.OK)
+                {
+                    SelectColor(dialog.Color);
+                }
+            }
+
+            private void PaintColorSelection(object? sender, PaintEventArgs e)
+            {
+                if (sender is not Button { Tag: true } button)
+                {
+                    return;
+                }
+
+                using var pen = new Pen(Color.FromArgb(32, 32, 32), 2);
+                Rectangle bounds = new(1, 1, button.ClientSize.Width - 3, button.ClientSize.Height - 3);
+                e.Graphics.DrawRectangle(pen, bounds);
+            }
         }
 
         private void AnButtonAnnotationFields_Click(object sender, EventArgs e)
@@ -918,18 +1408,6 @@ namespace Capillume
             }
 
             menu.Show(anButtonAnnotationFields, anButtonAnnotationFields.Width, 0);
-        }
-
-        private static void DrawCurrentColorBorder(object? sender, PaintEventArgs e)
-        {
-            if (sender is ToolStripItem { Tag: true } item)
-            {
-                double luminance = (0.2126 * item.BackColor.R + 0.7152 * item.BackColor.G + 0.0722 * item.BackColor.B) / 255.0;
-                Color borderColor = luminance < 0.5 ? Color.White : Color.Black;
-                using var pen = new Pen(borderColor, 5);
-                Rectangle borderBounds = new(1, 1, item.Width - 3, item.Height - 3);
-                e.Graphics.DrawRectangle(pen, borderBounds);
-            }
         }
 
         private void InsertAnnotationField(string field)
@@ -1153,6 +1631,23 @@ namespace Capillume
             };
         }
 
+        private static RetentionSettings Clone(RetentionSettings settings)
+        {
+            return new RetentionSettings
+            {
+                AutoCleanupEnabled = settings.AutoCleanupEnabled,
+                MaxDaysEnabled = settings.MaxDaysEnabled,
+                MaxDaysToRetain = settings.MaxDaysToRetain,
+                MaxFilesEnabled = settings.MaxFilesEnabled,
+                MaxFilesToRetain = settings.MaxFilesToRetain,
+                Action = settings.Action,
+                BackupFolder = settings.BackupFolder,
+                PerSessionSubfolder = settings.PerSessionSubfolder,
+                DryRunMode = settings.DryRunMode,
+                IncludeSubfolders = settings.IncludeSubfolders
+            };
+        }
+
         private static bool AreEqual(WatermarkSettings left, WatermarkSettings right)
         {
             return left.UseText == right.UseText
@@ -1202,6 +1697,19 @@ namespace Capillume
                 && left.HighContrast == right.HighContrast
                 && left.NoiseReduction == right.NoiseReduction
                 && left.ColorTemperature == right.ColorTemperature;
+        }
+
+        private static bool AreEqual(RetentionSettings left, RetentionSettings right)
+        {
+            return left.AutoCleanupEnabled == right.AutoCleanupEnabled
+                && left.MaxDaysEnabled == right.MaxDaysEnabled
+                && left.MaxDaysToRetain == right.MaxDaysToRetain
+                && left.MaxFilesEnabled == right.MaxFilesEnabled
+                && left.MaxFilesToRetain == right.MaxFilesToRetain
+                && left.Action == right.Action
+                && string.Equals(left.BackupFolder, right.BackupFolder, StringComparison.Ordinal)
+                && left.DryRunMode == right.DryRunMode
+                && left.IncludeSubfolders == right.IncludeSubfolders;
         }
     }
 }

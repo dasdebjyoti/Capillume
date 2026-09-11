@@ -23,6 +23,7 @@ namespace Capillume
         private System.Windows.Forms.Timer? _timer;
         private AppSettings _settings;
         private readonly IntPtr _capillumeWindowHandle;
+        private readonly ScreenshotRetentionService _retentionService;
         private bool _disposed;
         private bool _isPaused;
 
@@ -72,6 +73,7 @@ namespace Capillume
         {
             _settings = settings;
             _capillumeWindowHandle = capillumeWindowHandle;
+            _retentionService = new ScreenshotRetentionService();
         }
 
         public void Start()
@@ -159,10 +161,9 @@ namespace Capillume
             {
                 var sw = System.Diagnostics.Stopwatch.StartNew();
 
-                if (!Directory.Exists(_settings.SaveFolder))
-                {
-                    Directory.CreateDirectory(_settings.SaveFolder);
-                }
+                string saveFolder = _settings.SaveFolder;
+                string imageFormat = _settings.ImageFormat;
+                int imageQuality = _settings.ImageQuality;
 
                 Bitmap? screenshot = null;
                 try
@@ -184,7 +185,7 @@ namespace Capillume
 
                     WatermarkRenderer.Apply(screenshot, _settings.Watermark, _settings.Annotation);
 
-                    string filePath = Path.Combine(_settings.SaveFolder, GenerateFileName());
+                    string filePath = Path.Combine(saveFolder, GenerateFileName());
 
                     Bitmap? processedScreenshot = null;
                     Bitmap? imageProcessedScreenshot = null;
@@ -192,7 +193,29 @@ namespace Capillume
                     {
                         processedScreenshot = CreateDownscaledBitmapIfNeeded(screenshot, _settings.CaptureFullScreen);
                         imageProcessedScreenshot = ApplyImageProcessingIfNeeded(processedScreenshot ?? screenshot);
-                        SaveScreenshot(imageProcessedScreenshot ?? processedScreenshot ?? screenshot, filePath);
+
+                        Bitmap bitmapToSave = imageProcessedScreenshot ?? processedScreenshot ?? screenshot;
+                        if (imageProcessedScreenshot != null)
+                        {
+                            processedScreenshot?.Dispose();
+                            screenshot.Dispose();
+                        }
+                        else if (processedScreenshot != null)
+                        {
+                            screenshot.Dispose();
+                        }
+
+                        imageProcessedScreenshot = null;
+                        processedScreenshot = null;
+                        screenshot = null;
+
+                        QueueSaveScreenshot(
+                            bitmapToSave,
+                            filePath,
+                            saveFolder,
+                            imageFormat,
+                            imageQuality,
+                            sw);
                     }
                     finally
                     {
@@ -200,9 +223,6 @@ namespace Capillume
                         processedScreenshot?.Dispose();
                     }
 
-                    sw.Stop();
-                    long elapsedMs = sw.ElapsedMilliseconds;
-                    ScreenshotCaptured?.Invoke(this, new ScreenshotCapturedEventArgs(filePath, sw.ElapsedMilliseconds));
                 }
                 finally
                 {
@@ -212,6 +232,49 @@ namespace Capillume
             catch (Exception ex)
             {
                 ErrorOccurred?.Invoke(this, $"Error capturing screenshot: {ex.Message}");
+            }
+        }
+
+        private void QueueSaveScreenshot(
+            Bitmap bitmap,
+            string filePath,
+            string saveFolder,
+            string imageFormat,
+            int imageQuality,
+            System.Diagnostics.Stopwatch stopwatch)
+        {
+            try
+            {
+                _ = Task.Run(() =>
+                {
+                    try
+                    {
+                        Directory.CreateDirectory(saveFolder);
+                        SaveScreenshot(bitmap, filePath, imageFormat, imageQuality);
+
+                        stopwatch.Stop();
+                        ScreenshotCaptured?.Invoke(
+                            this,
+                            new ScreenshotCapturedEventArgs(filePath, stopwatch.ElapsedMilliseconds));
+                        _retentionService.ScheduleAutoCleanup(
+                            saveFolder,
+                            _settings.Retention,
+                            error => ErrorOccurred?.Invoke(this, error));
+                    }
+                    catch (Exception ex)
+                    {
+                        ErrorOccurred?.Invoke(this, $"Error saving screenshot: {ex.Message}");
+                    }
+                    finally
+                    {
+                        bitmap.Dispose();
+                    }
+                });
+            }
+            catch
+            {
+                bitmap.Dispose();
+                throw;
             }
         }
 
@@ -566,17 +629,27 @@ namespace Capillume
                 ApplyBoxBlur3x3InPlace(processed);
             }
 
-            if (settings.HighContrast)
+            if (settings.ColorMode == ImageColorMode.AdaptivePalette)
             {
-                ApplyHighContrastInPlace(processed);
+                if (settings.HighContrast)
+                {
+                    ApplyHighContrastInPlace(processed);
+                }
+
+                if (settings.ColorTemperature != ColorTemperatureMode.Neutral)
+                {
+                    ApplyColorTemperatureInPlace(processed, settings.ColorTemperature);
+                }
+
+                ApplyAdaptivePaletteQuantizationInPlace(processed, 256);
+            }
+            else if (settings.HighContrast
+                || settings.ColorTemperature != ColorTemperatureMode.Neutral
+                || settings.ColorMode != ImageColorMode.FullColor)
+            {
+                ApplyPixelTransformsInPlace(processed, settings);
             }
 
-            if (settings.ColorTemperature != ColorTemperatureMode.Neutral)
-            {
-                ApplyColorTemperatureInPlace(processed, settings.ColorTemperature);
-            }
-
-            ApplyColorModeInPlace(processed, settings.ColorMode);
             return processed;
         }
 
@@ -613,6 +686,93 @@ namespace Capillume
             }
         }
 
+        private static void ApplyPixelTransformsInPlace(Bitmap bitmap, ImageProcessingSettings settings)
+        {
+            (double redMultiplier, double greenMultiplier, double blueMultiplier) = settings.ColorTemperature switch
+            {
+                ColorTemperatureMode.Warm => (1.08, 1.0, 0.92),
+                ColorTemperatureMode.Cool => (0.92, 1.0, 1.08),
+                _ => (1.0, 1.0, 1.0)
+            };
+
+            Rectangle rect = new(0, 0, bitmap.Width, bitmap.Height);
+            BitmapData bitmapData = bitmap.LockBits(rect, ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
+
+            try
+            {
+                int stride = bitmapData.Stride;
+                int bytes = Math.Abs(stride) * bitmap.Height;
+                byte[] buffer = new byte[bytes];
+                Marshal.Copy(bitmapData.Scan0, buffer, 0, bytes);
+
+                for (int y = 0; y < bitmap.Height; y++)
+                {
+                    for (int x = 0; x < bitmap.Width; x++)
+                    {
+                        int pixelIndex = y * stride + x * 4;
+
+                        if (settings.HighContrast)
+                        {
+                            buffer[pixelIndex + 2] = AdjustContrast(buffer[pixelIndex + 2], 1.25, 128.0);
+                            buffer[pixelIndex + 1] = AdjustContrast(buffer[pixelIndex + 1], 1.25, 128.0);
+                            buffer[pixelIndex] = AdjustContrast(buffer[pixelIndex], 1.25, 128.0);
+                        }
+
+                        if (settings.ColorTemperature != ColorTemperatureMode.Neutral)
+                        {
+                            buffer[pixelIndex + 2] = (byte)Math.Clamp(
+                                (int)Math.Round(buffer[pixelIndex + 2] * redMultiplier), 0, 255);
+                            buffer[pixelIndex + 1] = (byte)Math.Clamp(
+                                (int)Math.Round(buffer[pixelIndex + 1] * greenMultiplier), 0, 255);
+                            buffer[pixelIndex] = (byte)Math.Clamp(
+                                (int)Math.Round(buffer[pixelIndex] * blueMultiplier), 0, 255);
+                        }
+
+                        switch (settings.ColorMode)
+                        {
+                            case ImageColorMode.Grayscale:
+                            {
+                                byte gray = (byte)((299 * buffer[pixelIndex + 2]
+                                    + 587 * buffer[pixelIndex + 1]
+                                    + 114 * buffer[pixelIndex] + 500) / 1000);
+                                buffer[pixelIndex] = gray;
+                                buffer[pixelIndex + 1] = gray;
+                                buffer[pixelIndex + 2] = gray;
+                                break;
+                            }
+                            case ImageColorMode.Monochrome1Bit:
+                            {
+                                byte gray = (byte)((299 * buffer[pixelIndex + 2]
+                                    + 587 * buffer[pixelIndex + 1]
+                                    + 114 * buffer[pixelIndex] + 500) / 1000);
+                                byte monochrome = gray >= 128 ? (byte)255 : (byte)0;
+                                buffer[pixelIndex] = monochrome;
+                                buffer[pixelIndex + 1] = monochrome;
+                                buffer[pixelIndex + 2] = monochrome;
+                                break;
+                            }
+                            case ImageColorMode.Color16:
+                                buffer[pixelIndex + 2] = QuantizeChannel(buffer[pixelIndex + 2], 2);
+                                buffer[pixelIndex + 1] = QuantizeChannel(buffer[pixelIndex + 1], 2);
+                                buffer[pixelIndex] = QuantizeChannel(buffer[pixelIndex], 4);
+                                break;
+                            case ImageColorMode.Color256:
+                                buffer[pixelIndex + 2] = QuantizeChannel(buffer[pixelIndex + 2], 8);
+                                buffer[pixelIndex + 1] = QuantizeChannel(buffer[pixelIndex + 1], 8);
+                                buffer[pixelIndex] = QuantizeChannel(buffer[pixelIndex], 4);
+                                break;
+                        }
+                    }
+                }
+
+                Marshal.Copy(buffer, 0, bitmapData.Scan0, bytes);
+            }
+            finally
+            {
+                bitmap.UnlockBits(bitmapData);
+            }
+        }
+
         private static void ApplyGrayscaleInPlace(Bitmap bitmap)
         {
             Rectangle rect = new(0, 0, bitmap.Width, bitmap.Height);
@@ -633,7 +793,9 @@ namespace Capillume
                         byte b = buffer[pixelIndex];
                         byte g = buffer[pixelIndex + 1];
                         byte r = buffer[pixelIndex + 2];
-                        byte gray = (byte)Math.Clamp((int)Math.Round(0.299 * r + 0.587 * g + 0.114 * b), 0, 255);
+                        //byte gray = (byte)Math.Clamp((int)Math.Round(0.299 * r + 0.587 * g + 0.114 * b), 0, 255);
+                        // Code optimmization: for grayscale conversion using integer math to avoid floating-point operations
+                        byte gray = (byte)((299 * r + 587 * g + 114 * b + 500) / 1000);
 
                         buffer[pixelIndex] = gray;
                         buffer[pixelIndex + 1] = gray;
@@ -669,7 +831,9 @@ namespace Capillume
                         byte b = buffer[pixelIndex];
                         byte g = buffer[pixelIndex + 1];
                         byte r = buffer[pixelIndex + 2];
-                        byte gray = (byte)Math.Clamp((int)Math.Round(0.299 * r + 0.587 * g + 0.114 * b), 0, 255);
+                        //byte gray = (byte)Math.Clamp((int)Math.Round(0.299 * r + 0.587 * g + 0.114 * b), 0, 255);
+                        // Code optimmization: for grayscale conversion using integer math to avoid floating-point operations
+                        byte gray = (byte)((299 * r + 587 * g + 114 * b + 500) / 1000);
                         byte mono = gray >= 128 ? (byte)255 : (byte)0;
 
                         buffer[pixelIndex] = mono;
@@ -916,26 +1080,32 @@ namespace Capillume
                 Marshal.Copy(bitmapData.Scan0, source, 0, bytes);
                 Buffer.BlockCopy(source, 0, destination, 0, bytes);
 
+                if (bitmap.Width < 3 || bitmap.Height < 3)
+                {
+                    Marshal.Copy(destination, 0, bitmapData.Scan0, bytes);
+                    return;
+                }
+
+                int[] topRowSums = new int[bitmap.Width * 3];
+                int[] middleRowSums = new int[bitmap.Width * 3];
+                int[] bottomRowSums = new int[bitmap.Width * 3];
                 for (int y = 1; y < bitmap.Height - 1; y++)
                 {
+                    FillHorizontalBlurSums(source, topRowSums, y - 1, stride, bitmap.Width);
+                    FillHorizontalBlurSums(source, middleRowSums, y, stride, bitmap.Width);
+                    FillHorizontalBlurSums(source, bottomRowSums, y + 1, stride, bitmap.Width);
+
                     for (int x = 1; x < bitmap.Width - 1; x++)
                     {
                         int pixelIndex = y * stride + x * 4;
 
-                        for (int channel = 0; channel < 3; channel++)
-                        {
-                            int sum = 0;
-                            for (int ky = -1; ky <= 1; ky++)
-                            {
-                                for (int kx = -1; kx <= 1; kx++)
-                                {
-                                    int sampleIndex = (y + ky) * stride + (x + kx) * 4 + channel;
-                                    sum += source[sampleIndex];
-                                }
-                            }
-
-                            destination[pixelIndex + channel] = (byte)(sum / 9);
-                        }
+                        int sumIndex = x * 3;
+                        destination[pixelIndex] = (byte)((topRowSums[sumIndex]
+                            + middleRowSums[sumIndex] + bottomRowSums[sumIndex]) / 9);
+                        destination[pixelIndex + 1] = (byte)((topRowSums[sumIndex + 1]
+                            + middleRowSums[sumIndex + 1] + bottomRowSums[sumIndex + 1]) / 9);
+                        destination[pixelIndex + 2] = (byte)((topRowSums[sumIndex + 2]
+                            + middleRowSums[sumIndex + 2] + bottomRowSums[sumIndex + 2]) / 9);
 
                         destination[pixelIndex + 3] = source[pixelIndex + 3];
                     }
@@ -949,6 +1119,40 @@ namespace Capillume
             }
         }
 
+        private static void FillHorizontalBlurSums(
+            byte[] source,
+            int[] rowSums,
+            int row,
+            int stride,
+            int width)
+        {
+            int rowStart = row * stride;
+            int firstPixel = rowStart;
+            int secondPixel = rowStart + 4;
+            int thirdPixel = rowStart + 8;
+
+            int blueSum = source[firstPixel] + source[secondPixel] + source[thirdPixel];
+            int greenSum = source[firstPixel + 1] + source[secondPixel + 1] + source[thirdPixel + 1];
+            int redSum = source[firstPixel + 2] + source[secondPixel + 2] + source[thirdPixel + 2];
+
+            for (int x = 1; x < width - 1; x++)
+            {
+                int sumIndex = x * 3;
+                rowSums[sumIndex] = blueSum;
+                rowSums[sumIndex + 1] = greenSum;
+                rowSums[sumIndex + 2] = redSum;
+
+                if (x < width - 2)
+                {
+                    int outgoingPixel = rowStart + (x - 1) * 4;
+                    int incomingPixel = rowStart + (x + 2) * 4;
+                    blueSum += source[incomingPixel] - source[outgoingPixel];
+                    greenSum += source[incomingPixel + 1] - source[outgoingPixel + 1];
+                    redSum += source[incomingPixel + 2] - source[outgoingPixel + 2];
+                }
+            }
+        }
+
         private static bool IsLossyImageFormat(string imageFormat)
         {
             return imageFormat.Equals("JPG", StringComparison.OrdinalIgnoreCase)
@@ -956,9 +1160,9 @@ namespace Capillume
                 || imageFormat.Equals("WEBP", StringComparison.OrdinalIgnoreCase);
         }
 
-        private void SaveScreenshot(Bitmap bitmap, string filePath)
+        private static void SaveScreenshot(Bitmap bitmap, string filePath, string imageFormat, int imageQuality)
         {
-            string format = _settings.ImageFormat.ToUpper();
+            string format = imageFormat.ToUpper();
 
             if (format == "PNG")
             {
@@ -966,7 +1170,7 @@ namespace Capillume
             }
             else if (format == "JPG")
             {
-                ConvertAndSaveJpg(bitmap, filePath);
+                ConvertAndSaveJpg(bitmap, filePath, imageQuality);
             }
             else if (format == "BMP")
             {
@@ -974,28 +1178,28 @@ namespace Capillume
             }
             else if (format == "WEBP")
             {
-                ConvertAndSaveWebp(bitmap, filePath);
+                ConvertAndSaveWebp(bitmap, filePath, imageQuality);
             }
             else
             {
                 // Default to JPG if the format is unrecognized
-                ConvertAndSaveJpg(bitmap, filePath);
+                ConvertAndSaveJpg(bitmap, filePath, imageQuality);
             }
         }
 
-        private void ConvertAndSavePng(Bitmap bitmap, string filePath)
+        private static void ConvertAndSavePng(Bitmap bitmap, string filePath)
         {
             EncodeAndSave(bitmap, filePath, SKEncodedImageFormat.Png, 100);
         }
 
-        private void ConvertAndSaveJpg(Bitmap bitmap, string filePath)
+        private static void ConvertAndSaveJpg(Bitmap bitmap, string filePath, int imageQuality)
         {
-            EncodeAndSave(bitmap, filePath, SKEncodedImageFormat.Jpeg, _settings.ImageQuality);
+            EncodeAndSave(bitmap, filePath, SKEncodedImageFormat.Jpeg, imageQuality);
         }
 
-        private void ConvertAndSaveWebp(Bitmap bitmap, string filePath)
+        private static void ConvertAndSaveWebp(Bitmap bitmap, string filePath, int imageQuality)
         {
-            EncodeAndSave(bitmap, filePath, SKEncodedImageFormat.Webp, _settings.ImageQuality);
+            EncodeAndSave(bitmap, filePath, SKEncodedImageFormat.Webp, imageQuality);
         }
 
         private static void EncodeAndSave(
@@ -1004,30 +1208,38 @@ namespace Capillume
             SKEncodedImageFormat format,
             int quality)
         {
-            using var ms = new MemoryStream();
-            bitmap.Save(ms, ImageFormat.Png);
-            ms.Position = 0;
+            Rectangle rect = new(0, 0, bitmap.Width, bitmap.Height);
+            BitmapData bitmapData = bitmap.LockBits(
+                rect,
+                ImageLockMode.ReadOnly,
+                PixelFormat.Format32bppArgb);
 
-            using var skBitmap = SKBitmap.Decode(ms)
-                ?? throw new InvalidOperationException("SkiaSharp could not decode the captured bitmap.");
-            using var image = SKImage.FromBitmap(skBitmap);
-            using var encodedData = image.Encode(format, quality);
-
-            if (encodedData == null)
+            try
             {
-                throw new InvalidOperationException($"SkiaSharp could not encode the image as {format}.");
-            }
+                var imageInfo = new SKImageInfo(
+                    bitmap.Width,
+                    bitmap.Height,
+                    SKColorType.Bgra8888,
+                    SKAlphaType.Unpremul);
+                using var image = SKImage.FromPixels(imageInfo, bitmapData.Scan0, bitmapData.Stride);
+                using var encodedData = image?.Encode(format, quality)
+                    ?? throw new InvalidOperationException($"SkiaSharp could not encode the image as {format}.");
 
-            using var output = File.Create(filePath);
-            encodedData.SaveTo(output);
+                using var output = File.Create(filePath);
+                encodedData.SaveTo(output);
+            }
+            finally
+            {
+                bitmap.UnlockBits(bitmapData);
+            }
         }
 
         private string GenerateFileName()
         {
             string timestamp = DateTime.Now.ToString("yyyy-MM-dd HHmmss");
-            string extension = _settings.ImageFormat.ToLower();
+            string extension = _settings.ImageFormat.ToLowerInvariant();
 
-            if (extension == "jpg")
+            if (extension == "jpeg")
             {
                 extension = "jpg";
             }
@@ -1042,6 +1254,7 @@ namespace Capillume
             if (!_disposed)
             {
                 Stop();
+                _retentionService.Dispose();
                 _disposed = true;
             }
         }

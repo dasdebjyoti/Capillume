@@ -37,6 +37,12 @@ namespace Capillume
         public const int DownscaleMaxWidthDefault = 1920;
         public const int DownscaleBoundingWidthDefault = 1920;
         public const int DownscaleBoundingHeightDefault = 1080;
+        public const int RetentionDaysMin = 1;
+        public const int RetentionDaysMax = 3650;
+        public const int RetentionDaysDefault = 30;
+        public const int RetentionFileCountMin = 1;
+        public const int RetentionFileCountMax = 1000000;
+        public const int RetentionFileCountDefault = 500;
     }
 
     public enum DownscaleMode
@@ -71,6 +77,13 @@ namespace Capillume
         Cool
     }
 
+    public enum RetentionAction
+    {
+        MoveToRecycleBin,
+        DeletePermanently,
+        BackupThenDelete
+    }
+
     public class AppSettings
     {
         public bool IsScreenshotEnabled { get; set; } = false;
@@ -87,6 +100,7 @@ namespace Capillume
         public AnnotationSettings Annotation { get; set; } = new();
         public DownscaleSettings Downscale { get; set; } = new();
         public ImageProcessingSettings ImageProcessing { get; set; } = new();
+        public RetentionSettings Retention { get; set; } = new();
     }
 
     public class WatermarkSettings
@@ -139,6 +153,20 @@ namespace Capillume
         public bool HighContrast { get; set; } = false;
         public bool NoiseReduction { get; set; } = false;
         public ColorTemperatureMode ColorTemperature { get; set; } = ColorTemperatureMode.Neutral;
+    }
+
+    public class RetentionSettings
+    {
+        public bool AutoCleanupEnabled { get; set; } = false;
+        public bool MaxDaysEnabled { get; set; } = true;
+        public int MaxDaysToRetain { get; set; } = Constants.RetentionDaysDefault;
+        public bool MaxFilesEnabled { get; set; } = false;
+        public int MaxFilesToRetain { get; set; } = Constants.RetentionFileCountDefault;
+        public RetentionAction Action { get; set; } = RetentionAction.MoveToRecycleBin;
+        public string BackupFolder { get; set; } = string.Empty;
+        public bool PerSessionSubfolder { get; set; } = false;
+        public bool DryRunMode { get; set; } = false;
+        public bool IncludeSubfolders { get; set; } = false;
     }
 
     public static class SettingsManager
@@ -281,6 +309,22 @@ namespace Capillume
             if (!Enum.IsDefined(settings.Downscale.Quality))
             {
                 settings.Downscale.Quality = DownscaleQuality.HighQuality;
+            }
+
+            settings.Retention ??= new RetentionSettings();
+            settings.Retention.MaxDaysToRetain = Math.Clamp(
+                settings.Retention.MaxDaysToRetain,
+                Constants.RetentionDaysMin,
+                Constants.RetentionDaysMax);
+            settings.Retention.MaxFilesToRetain = Math.Clamp(
+                settings.Retention.MaxFilesToRetain,
+                Constants.RetentionFileCountMin,
+                Constants.RetentionFileCountMax);
+            settings.Retention.BackupFolder ??= string.Empty;
+
+            if (!Enum.IsDefined(settings.Retention.Action))
+            {
+                settings.Retention.Action = RetentionAction.MoveToRecycleBin;
             }
         }
 

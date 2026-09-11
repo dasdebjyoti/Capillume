@@ -56,8 +56,9 @@ GETTING STARTED
 10. Configure annotations if needed.
 11. Configure downscaling if needed.
 12. Configure image processing if needed.
-13. Click Save.
-14. Use Capture Now at any time to save an immediate screenshot.
+13. Configure retention and cleanup if needed.
+14. Click Save.
+15. Use Capture Now at any time to save an immediate screenshot.
 
 The default screenshot folder is:
 
@@ -122,7 +123,9 @@ Image watermarks support:
 - Position
 - Rotation
 
-Watermarks are applied before screenshots are saved.
+Watermarks and annotations are applied before downscaling. If downscaling is
+enabled, image processing is applied after downscaling and before the image is
+saved.
 
 ANNOTATIONS
 -----------
@@ -179,9 +182,9 @@ IMAGE PROCESSING
 ----------------
 
 You can configure screenshot image processing from the Image Processing tab in
-the Advanced Settings window. Image processing is applied after downscaling and
-before the screenshot is saved. All image processing options are disabled by
-default.
+the Advanced Settings window. Image processing is applied after watermarking,
+annotation, and downscaling, and before the screenshot is saved. All image
+processing options are disabled by default.
 
 Choose one color mode:
 
@@ -198,6 +201,34 @@ Advanced Processing options:
 - High contrast: Increase tonal contrast.
 - Noise reduction: Apply a light blur to reduce small image variations.
 - Color temperature: Choose Neutral, Warm, or Cool.
+
+RETENTION AND CLEANUP
+---------------------
+
+Use the Retention tab in the Advanced Settings window to control how long
+screenshots remain in the destination folder. Automatic cleanup runs after a
+screenshot is saved when Enable File Auto-cleanup is enabled.
+
+By default, Capillume removes screenshots older than 30 days and keeps only the
+newest 500 screenshots. You can enable or disable either rule and choose
+whether cleanup also scans subfolders. Cleanup processes JPG, JPEG, PNG, BMP,
+and WebP files.
+
+Retention rules are applied sequentially:
+
+1. Screenshots older than the configured maximum age are selected first.
+2. From the remaining files, screenshots beyond the newest configured count are
+   selected next.
+
+Choose one cleanup action:
+
+- Move to Recycle Bin.
+- Delete permanently.
+- Back up to another folder before deleting.
+
+When using backup, you can create a separate subfolder for each cleanup
+session. Use Cleanup Now to preview or execute cleanup immediately. Enable Dry
+run mode to preview the files and estimated space without changing them.
 
 SYSTEM TRAY
 -----------

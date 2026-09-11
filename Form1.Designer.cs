@@ -560,7 +560,7 @@
             buttonSettings.Name = "buttonSettings";
             buttonSettings.Size = new Size(700, 67);
             buttonSettings.TabIndex = 5;
-            buttonSettings.Text = "A&dvanced Settings";
+            buttonSettings.Text = "A&dvanced Settings...";
             buttonSettings.UseVisualStyleBackColor = true;
             buttonSettings.Click += ButtonSettings_Click;
             // 

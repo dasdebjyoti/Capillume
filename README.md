@@ -21,6 +21,8 @@ Capillume is a lightweight Windows screenshot automation tool. Capture your enti
 - Position watermarks at the top, center, or bottom of the screenshot, aligned left, center, or right.
 - Rotate watermarks by 0°, 90°, 180°, or 270°.
 - Add dynamic annotations containing capture time, system, user, application, and process information.
+- Automatically clean up screenshots by age and/or file count.
+- Move retained screenshots to the Recycle Bin, delete them permanently, or back them up before deletion.
 - Show desktop notifications after screenshots are saved.
 - Start automatically with Windows.
 - Use the **Capture Now** button in the main window for an immediate screenshot.
@@ -64,7 +66,8 @@ Use the main window to configure:
 8. Annotation settings.
 9. Downscale settings.
 10. Image Processing settings.
-11. Notifications and Windows startup behavior.
+11. Retention and cleanup settings.
+12. Notifications and Windows startup behavior.
 
 ### Watermarks
 
@@ -75,9 +78,9 @@ watermarks support scaling from 1% to 100%. Both watermark types support
 opacity from 1% to 100%, nine placement options, and 0°, 90°, 180°, or 270°
 rotation.
 
-Watermark settings are applied to each captured screenshot before it is saved.
-If a watermark image is enabled, the selected image file must exist when the
-settings are saved.
+Watermarks and annotations are applied to each captured screenshot before
+downscaling. If downscaling is enabled, image processing is applied after
+downscaling and before the result is saved. If a watermark image is enabled, the selected image file must exist when the settings are saved.
 
 Capture automatically pauses during screen lock and system sleep. These lifecycle
 behaviors are enabled by default and do not require a separate dialog. The
@@ -166,6 +169,31 @@ The Advanced Processing options are:
 
 Image processing is applied after downscaling and before the screenshot is saved.
 All image processing options are disabled by default.
+
+### Retention
+
+Go to the **Retention** tab in the Advanced Settings window to control cleanup
+of saved screenshots. Automatic cleanup runs after a screenshot is saved when
+**Enable File Auto-cleanup** is enabled. Cleanup considers JPG, JPEG, PNG, BMP,
+and WebP files in the destination folder. Enable **Include subfolders** to scan
+the folder tree as well.
+
+Retention rules are applied in this order:
+
+1. Remove screenshots older than the configured maximum age.
+2. From the files that remain, retain only the newest configured number of screenshots.
+
+The default retention settings are 30 days and 500 screenshots, with both rules
+enabled. Cleanup can:
+
+- Move files to the Windows Recycle Bin.
+- Delete files permanently.
+- Back up files to another folder before deleting them, optionally creating a
+  separate subfolder for each cleanup session.
+
+Use **Cleanup Now** to preview or execute cleanup immediately. Enable **Dry run
+mode** to preview candidates and the estimated space to be freed without
+deleting or recycling files.
 
 ## Technology
 
