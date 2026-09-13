@@ -122,12 +122,14 @@ namespace Capillume
         private readonly DownscaleSettings _originalDownscaleSettings;
         private readonly ImageProcessingSettings _originalImageProcessingSettings;
         private readonly RetentionSettings _originalRetentionSettings;
+        private readonly HotkeySettings _originalHotkeySettings;
 
         private readonly WatermarkSettings _watermarkSettings;
         private readonly AnnotationSettings _annotationSettings;
         private readonly DownscaleSettings _downscaleSettings;
         private readonly ImageProcessingSettings _imageProcessingSettings;
         private readonly RetentionSettings _retentionSettings;
+        private readonly HotkeySettings _hotkeySettings;
 
         private Icon? _appIcon;
         private Font _watermarkFont = new("Segoe UI", 24);
@@ -137,7 +139,12 @@ namespace Capillume
         private int _annotationSelectionStart;
         private int _annotationSelectionLength;
         private bool _isUpdatingDownscaleUi;
+        private bool _isUpdatingHotkeyList;
         private bool _isRetentionOperationRunning;
+        private int _hotkeyListSortColumn;
+        private SortOrder _hotkeyListSortOrder = SortOrder.Ascending;
+
+        private readonly record struct HotkeyCandidate(Keys Modifiers, Keys Key);
 
         private readonly Label dsLabelDefaultSize1 = new();
         public WatermarkSettings WatermarkSettings => _watermarkSettings;
@@ -145,12 +152,14 @@ namespace Capillume
         public DownscaleSettings DownscaleSettings => _downscaleSettings;
         public ImageProcessingSettings ImageProcessingSettings => _imageProcessingSettings;
         public RetentionSettings RetentionSettings => _retentionSettings;
+        public HotkeySettings HotkeySettings => _hotkeySettings;
 
         public bool WatermarkSettingsChanged => !AreEqual(_originalWatermarkSettings, _watermarkSettings);
         public bool AnnotationSettingsChanged => !AreEqual(_originalAnnotationSettings, _annotationSettings);
         public bool DownscaleSettingsChanged => !AreEqual(_originalDownscaleSettings, _downscaleSettings);
         public bool ImageProcessingSettingsChanged => !AreEqual(_originalImageProcessingSettings, _imageProcessingSettings);
         public bool RetentionSettingsChanged => !AreEqual(_originalRetentionSettings, _retentionSettings);
+        public bool HotkeySettingsChanged => !AreEqual(_originalHotkeySettings, _hotkeySettings);
 
         public FormSettings(
             WatermarkSettings watermarkSettings,
@@ -158,6 +167,7 @@ namespace Capillume
             DownscaleSettings downscaleSettings,
             ImageProcessingSettings imageProcessingSettings,
             RetentionSettings retentionSettings,
+            HotkeySettings hotkeySettings,
             string saveFolder)
         {
             InitializeComponent();
@@ -168,11 +178,13 @@ namespace Capillume
             _originalDownscaleSettings = Clone(downscaleSettings);
             _originalImageProcessingSettings = Clone(imageProcessingSettings);
             _originalRetentionSettings = Clone(retentionSettings);
+            _originalHotkeySettings = Clone(hotkeySettings);
             _watermarkSettings = Clone(watermarkSettings);
             _annotationSettings = Clone(annotationSettings);
             _downscaleSettings = Clone(downscaleSettings);
             _imageProcessingSettings = Clone(imageProcessingSettings);
             _retentionSettings = Clone(retentionSettings);
+            _hotkeySettings = Clone(hotkeySettings);
 
             ToolTip toolTip = new ToolTip();
             toolTip.SetToolTip(dsLabelQuality, "Controls how the image is resized.\nHigher‑quality methods produce smoother results.");
@@ -189,6 +201,7 @@ namespace Capillume
             InitializeTabDownscale();
             InitializeTabImageProcessing();
             InitializeTabRetention();
+            InitializeTabHotkeys();
         }
 
         private void InitializeIcon()
@@ -408,6 +421,24 @@ namespace Capillume
             UpdateRetentionControlState();
         }
 
+        private void InitializeTabHotkeys()
+        {
+            if (_hotkeySettings.Modifiers == Keys.None)
+            {
+                _hotkeySettings.Modifiers = HotkeySettings.DefaultModifiers;
+            }
+
+            if (_hotkeySettings.Key == Keys.None)
+            {
+                _hotkeySettings.Key = HotkeySettings.DefaultKey;
+            }
+
+            hkToggleEnable.Checked = _hotkeySettings.Enabled;
+            hkTextBoxShortcut.Text = FormatHotkey(_hotkeySettings.Modifiers, _hotkeySettings.Key);
+            PopulateAvailableHotkeys();
+            UpdateHotkeyControlState();
+        }
+
         private void ButtonOk_Click(object sender, EventArgs e)
         {
             tabControlSettings.SelectedTab = tabPageWatermark;
@@ -436,6 +467,12 @@ namespace Capillume
 
             tabControlSettings.SelectedTab = tabPageRetention;
             if (!TryApplyRetentionSettings())
+            {
+                return;
+            }
+
+            tabControlSettings.SelectedTab = tabPageHotkeys;
+            if (!TryApplyHotkeySettings())
             {
                 return;
             }
@@ -479,6 +516,244 @@ namespace Capillume
             _watermarkSettings.WatermarkRotation = wmComboBoxWatermarkRotation.SelectedIndex * 90;
 
             return true;
+        }
+
+        private bool TryApplyHotkeySettings()
+        {
+            if (hkToggleEnable.Checked &&
+                (_hotkeySettings.Modifiers == Keys.None || _hotkeySettings.Key == Keys.None))
+            {
+                MessageBox.Show(
+                    "Choose a shortcut with at least one modifier and a key.",
+                    "Hotkeys",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                hkTextBoxShortcut.Focus();
+                return false;
+            }
+
+            _hotkeySettings.Enabled = hkToggleEnable.Checked;
+            return true;
+        }
+
+        private void HkToggleEnable_CheckedChanged(object? sender, EventArgs e)
+        {
+            UpdateHotkeyControlState();
+        }
+
+        private void HkTextBoxShortcut_KeyDown(object? sender, KeyEventArgs e)
+        {
+            Keys key = e.KeyCode;
+            if (key is Keys.ControlKey or Keys.ShiftKey or Keys.Menu or Keys.LWin or Keys.RWin)
+            {
+                e.SuppressKeyPress = true;
+                return;
+            }
+
+            Keys modifiers = e.Modifiers & Keys.Modifiers;
+            if (modifiers == Keys.None)
+            {
+                hkLabelStatus.Text = "Use Ctrl, Alt, Shift, or Windows with a key.";
+                e.SuppressKeyPress = true;
+                return;
+            }
+
+            _hotkeySettings.Modifiers = modifiers;
+            _hotkeySettings.Key = key;
+            hkTextBoxShortcut.Text = FormatHotkey(modifiers, key);
+            PopulateAvailableHotkeys();
+            UpdateHotkeyControlState();
+            e.SuppressKeyPress = true;
+        }
+
+        private void HkButtonClear_Click(object? sender, EventArgs e)
+        {
+            _hotkeySettings.Modifiers = Keys.None;
+            _hotkeySettings.Key = Keys.None;
+            hkToggleEnable.Checked = false;
+            hkTextBoxShortcut.Clear();
+            hkLabelStatus.Text = "Capture hotkey is disabled.";
+        }
+
+        private void UpdateHotkeyControlState()
+        {
+            hkLabelShortcut.Enabled = hkToggleEnable.Checked;
+            hkTextBoxShortcut.Enabled = hkToggleEnable.Checked;
+            hkButtonClear.Enabled = hkToggleEnable.Checked || _hotkeySettings.Key != Keys.None;
+            hkListViewAvailable.Enabled = true;
+            if (!hkToggleEnable.Checked)
+            {
+                hkLabelStatus.Text = "Capture hotkey is disabled.";
+            }
+            else if (GetCurrentHotkeyAvailability() == "In use")
+            {
+                hkLabelStatus.Text = "Shortcut is already taken.";
+            }
+            else
+            {
+                hkLabelStatus.Text = "Shortcut ready to save.";
+            }
+        }
+
+        private void HkListViewAvailable_SelectedIndexChanged(object? sender, EventArgs e)
+        {
+            if (_isUpdatingHotkeyList || hkListViewAvailable.SelectedItems.Count == 0)
+            {
+                return;
+            }
+
+            if (hkListViewAvailable.SelectedItems[0].Tag is not HotkeyCandidate candidate)
+            {
+                return;
+            }
+
+            bool available = hkListViewAvailable.SelectedItems[0].SubItems[1].Text == "Available";
+            _hotkeySettings.Modifiers = candidate.Modifiers;
+            _hotkeySettings.Key = candidate.Key;
+            hkTextBoxShortcut.Text = FormatHotkey(candidate.Modifiers, candidate.Key);
+            hkToggleEnable.Checked = available;
+            hkLabelStatus.Text = available
+                ? "Available shortcut selected."
+                : "Shortcut is already taken.";
+        }
+
+        private string? GetCurrentHotkeyAvailability()
+        {
+            foreach (ListViewItem item in hkListViewAvailable.Items)
+            {
+                if (item.Tag is HotkeyCandidate candidate
+                    && candidate.Modifiers == _hotkeySettings.Modifiers
+                    && candidate.Key == _hotkeySettings.Key)
+                {
+                    return item.SubItems[1].Text;
+                }
+            }
+
+            return null;
+        }
+
+        private void HkListViewAvailable_ColumnClick(object? sender, ColumnClickEventArgs e)
+        {
+            if (_hotkeyListSortColumn == e.Column)
+            {
+                _hotkeyListSortOrder = _hotkeyListSortOrder == SortOrder.Ascending
+                    ? SortOrder.Descending
+                    : SortOrder.Ascending;
+            }
+            else
+            {
+                _hotkeyListSortColumn = e.Column;
+                _hotkeyListSortOrder = SortOrder.Ascending;
+            }
+
+            hkListViewAvailable.ListViewItemSorter = new HotkeyListViewItemComparer(
+                _hotkeyListSortColumn,
+                _hotkeyListSortOrder);
+            hkListViewAvailable.Sort();
+        }
+
+        private void PopulateAvailableHotkeys()
+        {
+            _isUpdatingHotkeyList = true;
+            try
+            {
+                hkListViewAvailable.Items.Clear();
+                foreach (HotkeyCandidate candidate in GetHotkeyCandidates())
+                {
+                    bool isCurrent = candidate.Modifiers == _hotkeySettings.Modifiers
+                        && candidate.Key == _hotkeySettings.Key;
+                    bool available = isCurrent || GlobalHotkeyManager.IsAvailable(Handle, candidate.Modifiers, candidate.Key);
+                    var item = new ListViewItem(FormatHotkey(candidate.Modifiers, candidate.Key));
+                    item.SubItems.Add(available ? "Available" : "In use");
+                    item.Tag = candidate;
+                    hkListViewAvailable.Items.Add(item);
+                }
+            }
+            finally
+            {
+                _isUpdatingHotkeyList = false;
+            }
+        }
+
+        private IEnumerable<HotkeyCandidate> GetHotkeyCandidates()
+        {
+            Keys[] modifiers =
+            [
+                Keys.Control,
+                Keys.Alt,
+                Keys.Shift,
+                Keys.Control | Keys.Alt,
+                Keys.Control | Keys.Shift,
+                Keys.Alt | Keys.Shift,
+                Keys.Control | Keys.Alt | Keys.Shift
+            ];
+
+            Keys[] keys =
+            [
+                .. Enumerable.Range((int)Keys.F1, 12).Select(value => (Keys)value),
+                Keys.PrintScreen,
+                Keys.Pause,
+                Keys.Insert,
+                Keys.Home,
+                Keys.End,
+                Keys.PageUp,
+                Keys.PageDown,
+                Keys.Up,
+                Keys.Down,
+                Keys.Left,
+                Keys.Right,
+                .. Enumerable.Range((int)Keys.A, 26).Select(value => (Keys)value),
+                .. Enumerable.Range((int)Keys.D0, 10).Select(value => (Keys)value)
+            ];
+
+            foreach (Keys modifier in modifiers)
+            {
+                foreach (Keys key in keys)
+                {
+                    yield return new HotkeyCandidate(modifier, key);
+                }
+            }
+
+            HotkeyCandidate current = new(_hotkeySettings.Modifiers, _hotkeySettings.Key);
+            if (!modifiers.Contains(current.Modifiers) || !keys.Contains(current.Key))
+            {
+                yield return current;
+            }
+        }
+
+        private static string FormatHotkey(Keys modifiers, Keys key)
+        {
+            if (key == Keys.None)
+            {
+                return string.Empty;
+            }
+
+            return new KeysConverter().ConvertToString(modifiers | (key & Keys.KeyCode)) ?? string.Empty;
+        }
+
+        private sealed class HotkeyListViewItemComparer : System.Collections.IComparer
+        {
+            private readonly int _column;
+            private readonly SortOrder _sortOrder;
+
+            public HotkeyListViewItemComparer(int column, SortOrder sortOrder)
+            {
+                _column = column;
+                _sortOrder = sortOrder;
+            }
+
+            public int Compare(object? x, object? y)
+            {
+                if (x is not ListViewItem left || y is not ListViewItem right)
+                {
+                    return 0;
+                }
+
+                string leftText = left.SubItems[_column].Text;
+                string rightText = right.SubItems[_column].Text;
+                int result = StringComparer.CurrentCultureIgnoreCase.Compare(leftText, rightText);
+                return _sortOrder == SortOrder.Descending ? -result : result;
+            }
         }
 
         private bool TryApplyAnnotationSettings()
@@ -1648,6 +1923,16 @@ namespace Capillume
             };
         }
 
+        private static HotkeySettings Clone(HotkeySettings settings)
+        {
+            return new HotkeySettings
+            {
+                Enabled = settings.Enabled,
+                Modifiers = settings.Modifiers,
+                Key = settings.Key
+            };
+        }
+
         private static bool AreEqual(WatermarkSettings left, WatermarkSettings right)
         {
             return left.UseText == right.UseText
@@ -1710,6 +1995,13 @@ namespace Capillume
                 && string.Equals(left.BackupFolder, right.BackupFolder, StringComparison.Ordinal)
                 && left.DryRunMode == right.DryRunMode
                 && left.IncludeSubfolders == right.IncludeSubfolders;
+        }
+
+        private static bool AreEqual(HotkeySettings left, HotkeySettings right)
+        {
+            return left.Enabled == right.Enabled
+                && left.Modifiers == right.Modifiers
+                && left.Key == right.Key;
         }
     }
 }

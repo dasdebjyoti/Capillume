@@ -27,6 +27,7 @@ Capillume is a lightweight Windows screenshot automation tool. Capture your enti
 - Start automatically with Windows.
 - Use the **Capture Now** button in the main window for an immediate screenshot.
 - Use the **Capture Now** command from the system tray.
+- Configure an optional global keyboard shortcut to capture a screenshot while Capillume is minimized or another application is active.
 - Minimize to the system tray instead of closing the application.
 - Pause screenshot capture when Windows locks the session.
 - Resume screenshot capture when the user unlocks the session.
@@ -68,6 +69,7 @@ Use the main window to configure:
 10. Image Processing settings.
 11. Retention and cleanup settings.
 12. Notifications and Windows startup behavior.
+13. An optional global capture hotkey.
 
 ### Watermarks
 
@@ -105,6 +107,19 @@ By default, Capillume does not include its own window in screenshots. Enable
 **Include Capillume in screenshots** to include it in both full-screen and
 active-window captures. For active-window capture, screenshots are not saved
 when the Capillume window is the active window while this option is disabled.
+
+### Hotkeys
+
+Go to the **Hotkeys** tab in the Advanced Settings window to enable or disable
+the global **Capture Now** shortcut. Choose at least one modifier key (Ctrl,
+Shift, Alt, or Windows) and a keyboard key. The default shortcut shown when no
+shortcut has been configured is **Ctrl+Shift+F12**, but the global hotkey is
+disabled by default.
+
+The shortcut works while Capillume is minimized to the system tray or another
+application is active. Capillume checks whether the shortcut is available when
+you save the settings. If Windows or another application is already using it,
+the settings are not applied and the previous shortcut remains active.
 
 ### Annotations
 

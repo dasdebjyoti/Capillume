@@ -133,6 +133,16 @@
             rtLabelCleanupResultTitle = new Label();
             rtLabelPreviewSummary = new Label();
             rtLabelPreviewSummaryTitle = new Label();
+            tabPageHotkeys = new TabPage();
+            hkLabelEnable = new Label();
+            hkToggleEnable = new ToggleSwitch();
+            hkLabelShortcut = new Label();
+            hkTextBoxShortcut = new TextBox();
+            hkButtonClear = new Button();
+            hkLabelStatus = new Label();
+            hkListViewAvailable = new ListView();
+            hkColumnShortcut = new ColumnHeader();
+            hkColumnAvailability = new ColumnHeader();
             buttonCancel = new Button();
             buttonOk = new Button();
             tabControlSettings.SuspendLayout();
@@ -162,6 +172,7 @@
             rtGroupBoxSelection.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)rtNumericMaxFiles).BeginInit();
             ((System.ComponentModel.ISupportInitialize)rtNumericMaxDays).BeginInit();
+            tabPageHotkeys.SuspendLayout();
             SuspendLayout();
             // 
             // tabControlSettings
@@ -171,6 +182,7 @@
             tabControlSettings.Controls.Add(tabPageDownscale);
             tabControlSettings.Controls.Add(tabPageImageProcessing);
             tabControlSettings.Controls.Add(tabPageRetention);
+            tabControlSettings.Controls.Add(tabPageHotkeys);
             tabControlSettings.Font = new Font("Segoe UI", 10F);
             tabControlSettings.Location = new Point(24, 29);
             tabControlSettings.Name = "tabControlSettings";
@@ -1370,6 +1382,106 @@
             rtLabelPreviewSummaryTitle.TabIndex = 6;
             rtLabelPreviewSummaryTitle.Text = "Preview summary";
             // 
+            // tabPageHotkeys
+            // 
+            tabPageHotkeys.Controls.Add(hkLabelEnable);
+            tabPageHotkeys.Controls.Add(hkToggleEnable);
+            tabPageHotkeys.Controls.Add(hkLabelShortcut);
+            tabPageHotkeys.Controls.Add(hkTextBoxShortcut);
+            tabPageHotkeys.Controls.Add(hkButtonClear);
+            tabPageHotkeys.Controls.Add(hkLabelStatus);
+            tabPageHotkeys.Controls.Add(hkListViewAvailable);
+            tabPageHotkeys.Location = new Point(8, 51);
+            tabPageHotkeys.Name = "tabPageHotkeys";
+            tabPageHotkeys.Padding = new Padding(3);
+            tabPageHotkeys.Size = new Size(1440, 701);
+            tabPageHotkeys.TabIndex = 5;
+            tabPageHotkeys.Text = "Hotkeys";
+            tabPageHotkeys.UseVisualStyleBackColor = true;
+            // 
+            // hkLabelEnable
+            // 
+            hkLabelEnable.AutoSize = true;
+            hkLabelEnable.Location = new Point(129, 27);
+            hkLabelEnable.Name = "hkLabelEnable";
+            hkLabelEnable.Size = new Size(280, 37);
+            hkLabelEnable.TabIndex = 0;
+            hkLabelEnable.Text = "Enable capture hotkey";
+            // 
+            // hkToggleEnable
+            // 
+            hkToggleEnable.Checked = false;
+            hkToggleEnable.Location = new Point(33, 29);
+            hkToggleEnable.Margin = new Padding(6);
+            hkToggleEnable.Name = "hkToggleEnable";
+            hkToggleEnable.OffColor = Color.FromArgb(200, 200, 200);
+            hkToggleEnable.OnColor = Color.FromArgb(0, 120, 212);
+            hkToggleEnable.Size = new Size(75, 30);
+            hkToggleEnable.TabIndex = 1;
+            hkToggleEnable.ThumbColor = Color.White;
+            hkToggleEnable.CheckedChanged += HkToggleEnable_CheckedChanged;
+            // 
+            // hkLabelShortcut
+            // 
+            hkLabelShortcut.AutoSize = true;
+            hkLabelShortcut.Location = new Point(36, 115);
+            hkLabelShortcut.Name = "hkLabelShortcut";
+            hkLabelShortcut.Size = new Size(116, 37);
+            hkLabelShortcut.TabIndex = 2;
+            hkLabelShortcut.Text = "Shortcut";
+            // 
+            // hkTextBoxShortcut
+            // 
+            hkTextBoxShortcut.Location = new Point(178, 111);
+            hkTextBoxShortcut.Name = "hkTextBoxShortcut";
+            hkTextBoxShortcut.ReadOnly = true;
+            hkTextBoxShortcut.Size = new Size(442, 43);
+            hkTextBoxShortcut.TabIndex = 3;
+            hkTextBoxShortcut.KeyDown += HkTextBoxShortcut_KeyDown;
+            // 
+            // hkButtonClear
+            // 
+            hkButtonClear.Location = new Point(638, 108);
+            hkButtonClear.Name = "hkButtonClear";
+            hkButtonClear.Size = new Size(180, 50);
+            hkButtonClear.TabIndex = 4;
+            hkButtonClear.Text = "Clear";
+            hkButtonClear.UseVisualStyleBackColor = true;
+            hkButtonClear.Click += HkButtonClear_Click;
+            // 
+            // hkLabelStatus
+            // 
+            hkLabelStatus.AutoSize = true;
+            hkLabelStatus.Location = new Point(36, 191);
+            hkLabelStatus.Name = "hkLabelStatus";
+            hkLabelStatus.Size = new Size(610, 37);
+            hkLabelStatus.TabIndex = 5;
+            hkLabelStatus.Text = "Choose a shortcut with Ctrl, Alt, Shift, or Windows.";
+            // 
+            // hkListViewAvailable
+            // 
+            hkListViewAvailable.Columns.AddRange(new ColumnHeader[] { hkColumnShortcut, hkColumnAvailability });
+            hkListViewAvailable.FullRowSelect = true;
+            hkListViewAvailable.GridLines = true;
+            hkListViewAvailable.Location = new Point(36, 254);
+            hkListViewAvailable.Name = "hkListViewAvailable";
+            hkListViewAvailable.Size = new Size(782, 419);
+            hkListViewAvailable.TabIndex = 6;
+            hkListViewAvailable.UseCompatibleStateImageBehavior = false;
+            hkListViewAvailable.View = View.Details;
+            hkListViewAvailable.ColumnClick += HkListViewAvailable_ColumnClick;
+            hkListViewAvailable.SelectedIndexChanged += HkListViewAvailable_SelectedIndexChanged;
+            // 
+            // hkColumnShortcut
+            // 
+            hkColumnShortcut.Text = "Shortcut";
+            hkColumnShortcut.Width = 400;
+            // 
+            // hkColumnAvailability
+            // 
+            hkColumnAvailability.Text = "Availability";
+            hkColumnAvailability.Width = 300;
+            // 
             // buttonCancel
             // 
             buttonCancel.Font = new Font("Segoe UI", 10F);
@@ -1453,6 +1565,8 @@
             rtGroupBoxSelection.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)rtNumericMaxFiles).EndInit();
             ((System.ComponentModel.ISupportInitialize)rtNumericMaxDays).EndInit();
+            tabPageHotkeys.ResumeLayout(false);
+            tabPageHotkeys.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -1543,6 +1657,7 @@
         private CheckBox ipCheckBoxHighContrast;
         private Label labelColorExFull;
         private TabPage tabPageRetention;
+        private TabPage tabPageHotkeys;
         private CheckBox rtCheckBoxMaxDays;
         private NumericUpDown rtNumericMaxDays;
         private Label rtLabelDaysSuffix;
@@ -1566,5 +1681,14 @@
         private GroupBox rtGroupBoxAction;
         private ToggleSwitch rtToggleSwitchAutoCleanup;
         private Label rtLabelAutoCleanup;
+        private Label hkLabelEnable;
+        private ToggleSwitch hkToggleEnable;
+        private Label hkLabelShortcut;
+        private TextBox hkTextBoxShortcut;
+        private Button hkButtonClear;
+        private Label hkLabelStatus;
+        private ListView hkListViewAvailable;
+        private ColumnHeader hkColumnShortcut;
+        private ColumnHeader hkColumnAvailability;
     }
 }
