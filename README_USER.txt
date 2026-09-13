@@ -57,8 +57,9 @@ GETTING STARTED
 11. Configure downscaling if needed.
 12. Configure image processing if needed.
 13. Configure retention and cleanup if needed.
-14. Click Save.
-15. Use Capture Now at any time to save an immediate screenshot.
+14. Configure an optional global capture hotkey.
+15. Click Save.
+16. Use Capture Now at any time to save an immediate screenshot.
 
 The default screenshot folder is:
 
@@ -86,6 +87,23 @@ Capture Now
 
     To take an immediate screenshot while the application is minimized, right-
     click the Capillume icon in the Windows system tray and select Capture Now.
+
+GLOBAL HOTKEY
+-------------
+
+Use the Hotkeys tab in the Advanced Settings window to configure a global
+keyboard shortcut for Capture Now. The shortcut can trigger a screenshot while
+Capillume is minimized to the system tray or another application is active.
+
+Enable the hotkey and choose at least one modifier key (Ctrl, Shift, Alt, or
+Windows) together with a keyboard key. The default shortcut shown when no
+shortcut has been configured is Ctrl+Shift+F12, but the hotkey is disabled by
+default.
+
+Capillume checks the shortcut when you save the settings. If Windows or another
+application already uses it, the settings are rejected and the previous
+shortcut remains active. Disable the hotkey if you do not want a global
+shortcut.
 
 IMAGE FORMATS
 -------------

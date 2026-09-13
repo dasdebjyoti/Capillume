@@ -6,12 +6,14 @@ namespace Capillume
     public partial class Form1 : Form
     {
         private ScreenshotService? _screenshotService;
+        private GlobalHotkeyManager? _globalHotkeyManager;
         private AppSettings _settings;
         private bool WatermarkSettingsChanged = false;
         private bool AnnotationSettingsChanged = false;
         private bool DownscaleSettingsChanged = false;
         private bool ImageProcessingSettingsChanged = false;
         private bool RetentionSettingsChanged = false;
+        private bool HotkeySettingsChanged = false;
         private Icon? _appIcon;
         private bool _isStartedWithWindows;
         private bool _isSessionLocked;
@@ -28,6 +30,7 @@ namespace Capillume
             _settings = SettingsManager.LoadSettings();
             InitializeUI();
             InitializeScreenshotService();
+            InitializeGlobalHotkey();
             SystemEvents.SessionSwitch += SystemEvents_SessionSwitch;
             SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
             SystemEvents.SessionEnding += SystemEvents_SessionEnding;
@@ -79,6 +82,7 @@ namespace Capillume
             if (_isExiting)
             {
                 _screenshotService?.Stop();
+                _globalHotkeyManager?.Dispose();
             }
         }
 
@@ -102,6 +106,54 @@ namespace Capillume
                     UpdateLifecyclePauseState();
                     break;
             }
+        }
+
+        private void InitializeGlobalHotkey()
+        {
+            _globalHotkeyManager = new GlobalHotkeyManager(Handle);
+            TryApplyGlobalHotkey(_settings.Hotkeys, showError: false);
+        }
+
+        private bool TryApplyGlobalHotkey(HotkeySettings hotkeySettings, bool showError)
+        {
+            if (_globalHotkeyManager == null)
+            {
+                return true;
+            }
+
+            HotkeySettings previousSettings = CloneHotkeySettings(_settings.Hotkeys);
+            if (_globalHotkeyManager.TryRegister(hotkeySettings, out string error))
+            {
+                return true;
+            }
+
+            _globalHotkeyManager.TryRegister(previousSettings, out _);
+            if (showError)
+            {
+                MessageBox.Show(error, "Capture hotkey", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+
+            return false;
+        }
+
+        private static HotkeySettings CloneHotkeySettings(HotkeySettings settings)
+        {
+            return new HotkeySettings
+            {
+                Enabled = settings.Enabled,
+                Modifiers = settings.Modifiers,
+                Key = settings.Key
+            };
+        }
+
+        protected override void WndProc(ref Message m)
+        {
+            if (_globalHotkeyManager?.IsHotkeyMessage(ref m) == true)
+            {
+                CaptureScreenshotNow();
+            }
+
+            base.WndProc(ref m);
         }
 
         private void SystemEvents_PowerModeChanged(object? sender, PowerModeChangedEventArgs e)
@@ -379,13 +431,19 @@ namespace Capillume
         private void ButtonSettings_Click(object sender, EventArgs e)
         {
             using var settingsForm = new FormSettings(
-                _settings.Watermark,
-                _settings.Annotation,
-                _settings.Downscale,
-                _settings.ImageProcessing,
-                _settings.Retention,
-                textBoxFolder.Text.Trim());
+                watermarkSettings: _settings.Watermark,
+                annotationSettings: _settings.Annotation,
+                downscaleSettings: _settings.Downscale,
+                imageProcessingSettings: _settings.ImageProcessing,
+                retentionSettings: _settings.Retention,
+                hotkeySettings: _settings.Hotkeys,
+                saveFolder: textBoxFolder.Text.Trim());
             if (settingsForm.ShowDialog(this) != DialogResult.OK)
+            {
+                return;
+            }
+
+            if (!TryApplyGlobalHotkey(settingsForm.HotkeySettings, showError: true))
             {
                 return;
             }
@@ -395,11 +453,13 @@ namespace Capillume
             _settings.Downscale = settingsForm.DownscaleSettings;
             _settings.ImageProcessing = settingsForm.ImageProcessingSettings;
             _settings.Retention = settingsForm.RetentionSettings;
+            _settings.Hotkeys = settingsForm.HotkeySettings;
             WatermarkSettingsChanged = WatermarkSettingsChanged || settingsForm.WatermarkSettingsChanged;
             AnnotationSettingsChanged = AnnotationSettingsChanged || settingsForm.AnnotationSettingsChanged;
             DownscaleSettingsChanged = DownscaleSettingsChanged || settingsForm.DownscaleSettingsChanged;
             ImageProcessingSettingsChanged = ImageProcessingSettingsChanged || settingsForm.ImageProcessingSettingsChanged;
             RetentionSettingsChanged = RetentionSettingsChanged || settingsForm.RetentionSettingsChanged;
+            HotkeySettingsChanged = HotkeySettingsChanged || settingsForm.HotkeySettingsChanged;
             UpdateSaveButtonState();
         }
 
@@ -484,7 +544,8 @@ namespace Capillume
                 || AnnotationSettingsChanged == true
                 || DownscaleSettingsChanged == true
                 || ImageProcessingSettingsChanged == true
-                || RetentionSettingsChanged == true;
+                || RetentionSettingsChanged == true
+                || HotkeySettingsChanged == true;
         }
 
         /// <summary>
@@ -540,6 +601,7 @@ namespace Capillume
                 DownscaleSettingsChanged = false;
                 ImageProcessingSettingsChanged = false;
                 RetentionSettingsChanged = false;
+                HotkeySettingsChanged = false;
             }
             finally
             {
@@ -579,6 +641,7 @@ namespace Capillume
             DownscaleSettingsChanged = false;
             ImageProcessingSettingsChanged = false;
             RetentionSettingsChanged = false;
+            HotkeySettingsChanged = false;
 
             _screenshotService?.UpdateSettings(_settings);
 

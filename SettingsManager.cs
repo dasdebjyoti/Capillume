@@ -101,6 +101,17 @@ namespace Capillume
         public DownscaleSettings Downscale { get; set; } = new();
         public ImageProcessingSettings ImageProcessing { get; set; } = new();
         public RetentionSettings Retention { get; set; } = new();
+        public HotkeySettings Hotkeys { get; set; } = new();
+    }
+
+    public class HotkeySettings
+    {
+        public static Keys DefaultModifiers => Keys.Control | Keys.Shift;
+        public static Keys DefaultKey => Keys.F12;
+
+        public bool Enabled { get; set; } = false;
+        public Keys Modifiers { get; set; } = DefaultModifiers;
+        public Keys Key { get; set; } = DefaultKey;
     }
 
     public class WatermarkSettings
@@ -325,6 +336,24 @@ namespace Capillume
             if (!Enum.IsDefined(settings.Retention.Action))
             {
                 settings.Retention.Action = RetentionAction.MoveToRecycleBin;
+            }
+
+            settings.Hotkeys ??= new HotkeySettings();
+            settings.Hotkeys.Modifiers &= Keys.Modifiers;
+            settings.Hotkeys.Key &= Keys.KeyCode;
+            if (settings.Hotkeys.Modifiers == Keys.None)
+            {
+                settings.Hotkeys.Modifiers = HotkeySettings.DefaultModifiers;
+            }
+
+            if (settings.Hotkeys.Key == Keys.None)
+            {
+                settings.Hotkeys.Key = HotkeySettings.DefaultKey;
+            }
+
+            if (settings.Hotkeys.Modifiers == Keys.None || settings.Hotkeys.Key == Keys.None)
+            {
+                settings.Hotkeys.Enabled = false;
             }
         }
 
