@@ -26,8 +26,10 @@ namespace Capillume
             linkLabelGitHub = new LinkLabel();
             buttonClose = new Button();
             panelHeader = new Panel();
+            pictureBoxLink = new PictureBox();
             ((System.ComponentModel.ISupportInitialize)pictureBoxLogo).BeginInit();
             panelHeader.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBoxLink).BeginInit();
             SuspendLayout();
             // 
             // pictureBoxLogo
@@ -56,12 +58,12 @@ namespace Capillume
             // labelVersion
             // 
             labelVersion.AutoSize = true;
-            labelVersion.Font = new Font("Segoe UI", 11F);
+            labelVersion.Font = new Font("Segoe UI Semibold", 10.875F, FontStyle.Bold, GraphicsUnit.Point, 0);
             labelVersion.ForeColor = Color.Black;
             labelVersion.Location = new Point(236, 150);
             labelVersion.Margin = new Padding(6, 0, 6, 0);
             labelVersion.Name = "labelVersion";
-            labelVersion.Size = new Size(209, 41);
+            labelVersion.Size = new Size(200, 40);
             labelVersion.TabIndex = 2;
             labelVersion.Text = "Version 1.1.0.0";
             // 
@@ -84,7 +86,7 @@ namespace Capillume
             labelCopyright.Location = new Point(60, 560);
             labelCopyright.Margin = new Padding(6, 0, 6, 0);
             labelCopyright.Name = "labelCopyright";
-            labelCopyright.Size = new Size(358, 32);
+            labelCopyright.Size = new Size(398, 37);
             labelCopyright.TabIndex = 2;
             labelCopyright.Text = "© 2026 Capillume - MIT License";
             // 
@@ -92,13 +94,13 @@ namespace Capillume
             // 
             linkLabelGitHub.AutoSize = true;
             linkLabelGitHub.Font = new Font("Segoe UI", 10F);
-            linkLabelGitHub.Location = new Point(60, 620);
+            linkLabelGitHub.Location = new Point(102, 620);
             linkLabelGitHub.Margin = new Padding(6, 0, 6, 0);
             linkLabelGitHub.Name = "linkLabelGitHub";
-            linkLabelGitHub.Size = new Size(531, 37);
+            linkLabelGitHub.Size = new Size(235, 37);
             linkLabelGitHub.TabIndex = 3;
             linkLabelGitHub.TabStop = true;
-            linkLabelGitHub.Text = "GitHub: github.com/dasdebjyoti/Capillume";
+            linkLabelGitHub.Text = "GitHub: Capillume";
             linkLabelGitHub.LinkClicked += LinkLabelGitHub_LinkClicked;
             // 
             // buttonClose
@@ -108,7 +110,7 @@ namespace Capillume
             buttonClose.FlatStyle = FlatStyle.Flat;
             buttonClose.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             buttonClose.ForeColor = Color.White;
-            buttonClose.Location = new Point(730, 700);
+            buttonClose.Location = new Point(730, 587);
             buttonClose.Margin = new Padding(6);
             buttonClose.Name = "buttonClose";
             buttonClose.Size = new Size(210, 70);
@@ -130,14 +132,25 @@ namespace Capillume
             panelHeader.Size = new Size(1000, 240);
             panelHeader.TabIndex = 0;
             // 
+            // pictureBoxLink
+            // 
+            pictureBoxLink.BackgroundImageLayout = ImageLayout.Zoom;
+            pictureBoxLink.Image = Properties.Resources.link_64x64;
+            pictureBoxLink.Location = new Point(68, 624);
+            pictureBoxLink.Name = "pictureBoxLink";
+            pictureBoxLink.Size = new Size(30, 30);
+            pictureBoxLink.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBoxLink.TabIndex = 5;
+            pictureBoxLink.TabStop = false;
+            // 
             // FormAbout
             // 
             AcceptButton = buttonClose;
             AutoScaleDimensions = new SizeF(192F, 192F);
             AutoScaleMode = AutoScaleMode.Dpi;
-            BackColor = Color.White;
             CancelButton = buttonClose;
-            ClientSize = new Size(1000, 800);
+            ClientSize = new Size(1000, 687);
+            Controls.Add(pictureBoxLink);
             Controls.Add(buttonClose);
             Controls.Add(linkLabelGitHub);
             Controls.Add(labelCopyright);
@@ -154,6 +167,7 @@ namespace Capillume
             ((System.ComponentModel.ISupportInitialize)pictureBoxLogo).EndInit();
             panelHeader.ResumeLayout(false);
             panelHeader.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBoxLink).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -168,5 +182,6 @@ namespace Capillume
         private Label labelCopyright;
         private LinkLabel linkLabelGitHub;
         private Button buttonClose;
+        private PictureBox pictureBoxLink;
     }
 }

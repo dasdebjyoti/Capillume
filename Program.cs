@@ -29,20 +29,7 @@ namespace Capillume
 
             var mainForm = new Form1(isAutoStart);
 
-            if (isAutoStart)
-            {
-                // Auto-started: start minimized to tray
-                mainForm.WindowState = FormWindowState.Minimized;
-                mainForm.ShowInTaskbar = false;
-
-                // Don't show the form, just run the application
-                Application.Run(mainForm);
-            }
-            else
-            {
-                // User-initiated: show the form
-                Application.Run(mainForm);
-            }
+            Application.Run(mainForm);
 
             _mutex?.ReleaseMutex();
             _mutex?.Dispose();

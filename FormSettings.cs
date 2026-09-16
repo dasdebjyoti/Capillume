@@ -130,6 +130,7 @@ namespace Capillume
         private readonly ImageProcessingSettings _imageProcessingSettings;
         private readonly RetentionSettings _retentionSettings;
         private readonly HotkeySettings _hotkeySettings;
+        private readonly GlobalHotkeyManager _globalHotkeyManager;
 
         private Icon? _appIcon;
         private Font _watermarkFont = new("Segoe UI", 24);
@@ -168,7 +169,8 @@ namespace Capillume
             ImageProcessingSettings imageProcessingSettings,
             RetentionSettings retentionSettings,
             HotkeySettings hotkeySettings,
-            string saveFolder)
+            string saveFolder,
+            GlobalHotkeyManager? globalHotkeyManager)
         {
             InitializeComponent();
 
@@ -185,6 +187,8 @@ namespace Capillume
             _imageProcessingSettings = Clone(imageProcessingSettings);
             _retentionSettings = Clone(retentionSettings);
             _hotkeySettings = Clone(hotkeySettings);
+            _globalHotkeyManager = globalHotkeyManager
+                ?? throw new ArgumentNullException(nameof(globalHotkeyManager));
 
             ToolTip toolTip = new ToolTip();
             toolTip.SetToolTip(dsLabelQuality, "Controls how the image is resized.\nHigher‑quality methods produce smoother results.");
@@ -660,9 +664,7 @@ namespace Capillume
                 hkListViewAvailable.Items.Clear();
                 foreach (HotkeyCandidate candidate in GetHotkeyCandidates())
                 {
-                    bool isCurrent = candidate.Modifiers == _hotkeySettings.Modifiers
-                        && candidate.Key == _hotkeySettings.Key;
-                    bool available = isCurrent || GlobalHotkeyManager.IsAvailable(Handle, candidate.Modifiers, candidate.Key);
+                    bool available = _globalHotkeyManager.IsAvailable(candidate.Modifiers, candidate.Key);
                     var item = new ListViewItem(FormatHotkey(candidate.Modifiers, candidate.Key));
                     item.SubItems.Add(available ? "Available" : "In use");
                     item.Tag = candidate;
