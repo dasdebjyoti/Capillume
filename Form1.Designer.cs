@@ -165,7 +165,7 @@
             // 
             linkLabelAbout.AutoSize = true;
             linkLabelAbout.Font = new Font("Segoe UI", 10F);
-            linkLabelAbout.Location = new Point(462, 75);
+            linkLabelAbout.Location = new Point(462, 73);
             linkLabelAbout.Margin = new Padding(6, 0, 6, 0);
             linkLabelAbout.Name = "linkLabelAbout";
             linkLabelAbout.Size = new Size(90, 37);
@@ -493,7 +493,6 @@
             // 
             // textBoxFolder
             // 
-            textBoxFolder.BackColor = Color.White;
             textBoxFolder.Font = new Font("Segoe UI", 10F);
             textBoxFolder.Location = new Point(30, 63);
             textBoxFolder.Margin = new Padding(6);
@@ -501,6 +500,7 @@
             textBoxFolder.ReadOnly = true;
             textBoxFolder.Size = new Size(402, 43);
             textBoxFolder.TabIndex = 0;
+            textBoxFolder.Text = "C:\\Users\\Smith\\Pictures\\Capillume Screenshots";
             // 
             // groupBox3
             // 
@@ -568,7 +568,6 @@
             // 
             AutoScaleDimensions = new SizeF(192F, 192F);
             AutoScaleMode = AutoScaleMode.Dpi;
-            BackColor = Color.White;
             ClientSize = new Size(1480, 772);
             Controls.Add(buttonSettings);
             Controls.Add(groupBox3);

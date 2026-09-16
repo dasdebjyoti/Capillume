@@ -65,6 +65,14 @@ The default screenshot folder is:
 
 %USERPROFILE%\Pictures\Capillume Screenshots
 
+INSTALLATION AND RELEASE BUILDS
+-------------------------------
+
+For a packaged Windows build, use the published application supplied with the
+release. The application is self-contained for 64-bit Windows and does not
+require a separate .NET runtime installation. Keep README.txt and LICENSE.txt
+with the application files when copying or distributing the published folder.
+
 CAPTURE MODES
 -------------
 

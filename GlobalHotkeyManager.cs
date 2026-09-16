@@ -2,7 +2,7 @@ using System.Runtime.InteropServices;
 
 namespace Capillume
 {
-    internal sealed class GlobalHotkeyManager : IDisposable
+    public sealed class GlobalHotkeyManager : IDisposable
     {
         private const int HotkeyId = 0xCA11;
         private const int AvailabilityProbeId = 0xCA12;
@@ -12,9 +12,11 @@ namespace Capillume
         private const uint ModWin = 0x0008;
         private const int WmHotkey = 0x0312;
 
-        private readonly IntPtr _windowHandle;
+        private IntPtr _windowHandle;
         private bool _isRegistered;
         private bool _disposed;
+        private uint _registeredModifierFlags;
+        private uint _registeredVirtualKey;
 
         [DllImport("user32.dll", SetLastError = true)]
         private static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk);
@@ -25,6 +27,39 @@ namespace Capillume
         public GlobalHotkeyManager(IntPtr windowHandle)
         {
             _windowHandle = windowHandle;
+        }
+
+        public void Rebind(IntPtr windowHandle)
+        {
+            if (_windowHandle == windowHandle)
+            {
+                return;
+            }
+
+            bool wasRegistered = _isRegistered;
+            uint previousModifierFlags = _registeredModifierFlags;
+            uint previousVirtualKey = _registeredVirtualKey;
+
+            if (wasRegistered)
+            {
+                UnregisterHotKey(_windowHandle, HotkeyId);
+                _isRegistered = false;
+            }
+
+            _windowHandle = windowHandle;
+
+            if (wasRegistered
+                && RegisterHotKey(_windowHandle, HotkeyId, previousModifierFlags, previousVirtualKey))
+            {
+                _isRegistered = true;
+                _registeredModifierFlags = previousModifierFlags;
+                _registeredVirtualKey = previousVirtualKey;
+            }
+            else if (!wasRegistered)
+            {
+                _registeredModifierFlags = 0;
+                _registeredVirtualKey = 0;
+            }
         }
 
         public bool IsRegistered => _isRegistered;
@@ -54,6 +89,8 @@ namespace Capillume
             }
 
             _isRegistered = true;
+            _registeredModifierFlags = modifierFlags;
+            _registeredVirtualKey = (uint)(settings.Key & Keys.KeyCode);
             return true;
         }
 
@@ -66,6 +103,8 @@ namespace Capillume
 
             UnregisterHotKey(_windowHandle, HotkeyId);
             _isRegistered = false;
+            _registeredModifierFlags = 0;
+            _registeredVirtualKey = 0;
         }
 
         public bool IsHotkeyMessage(ref Message message)
@@ -73,20 +112,45 @@ namespace Capillume
             return message.Msg == WmHotkey && message.WParam == (IntPtr)HotkeyId;
         }
 
-        public static bool IsAvailable(IntPtr windowHandle, Keys modifiers, Keys key)
+        public bool IsAvailable(Keys modifiers, Keys key)
         {
             if (!TryGetModifierFlags(modifiers, out uint modifierFlags) || key == Keys.None)
             {
                 return false;
             }
 
-            if (!RegisterHotKey(windowHandle, AvailabilityProbeId, modifierFlags, (uint)(key & Keys.KeyCode)))
+            uint virtualKey = (uint)(key & Keys.KeyCode);
+            bool wasRegistered = _isRegistered;
+            uint previousModifierFlags = _registeredModifierFlags;
+            uint previousVirtualKey = _registeredVirtualKey;
+
+            if (wasRegistered
+                && previousModifierFlags == modifierFlags
+                && previousVirtualKey == virtualKey)
             {
-                return false;
+                return true;
             }
 
-            UnregisterHotKey(windowHandle, AvailabilityProbeId);
-            return true;
+            if (wasRegistered)
+            {
+                Unregister();
+            }
+
+            bool available = RegisterHotKey(_windowHandle, AvailabilityProbeId, modifierFlags, virtualKey);
+            if (available)
+            {
+                UnregisterHotKey(_windowHandle, AvailabilityProbeId);
+            }
+
+            if (wasRegistered
+                && RegisterHotKey(_windowHandle, HotkeyId, previousModifierFlags, previousVirtualKey))
+            {
+                _isRegistered = true;
+                _registeredModifierFlags = previousModifierFlags;
+                _registeredVirtualKey = previousVirtualKey;
+            }
+
+            return available;
         }
 
         private static bool TryGetModifierFlags(Keys modifiers, out uint flags)

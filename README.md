@@ -53,6 +53,16 @@ dotnet run --project .\Capillume.csproj
 
 The project targets `net10.0-windows` and requires Windows Forms support.
 
+To create the distributable Windows build, run:
+
+```powershell
+dotnet build .\Capillume.csproj --configuration Release
+```
+
+The Release build publishes a self-contained, single-file `win-x64` application
+under `bin\Release\net10.0-windows\publish\win-x64`. The published output includes
+`LICENSE.txt` and `README.txt` for distribution with the application.
+
 ## Configuration
 
 Use the main window to configure:
@@ -120,6 +130,11 @@ The shortcut works while Capillume is minimized to the system tray or another
 application is active. Capillume checks whether the shortcut is available when
 you save the settings. If Windows or another application is already using it,
 the settings are not applied and the previous shortcut remains active.
+
+### About
+
+Open **About** from the main window or the system-tray menu to view the installed
+application version and open the Capillume GitHub repository.
 
 ### Annotations
 

@@ -19,6 +19,7 @@ namespace Capillume
         private bool _isSessionLocked;
         private bool _isSuspended;
         private bool _isExiting;
+        private bool _suppressInitialShow;
 
         private bool _isUpdatingUi;
 
@@ -27,6 +28,7 @@ namespace Capillume
             InitializeComponent();
 
             _isStartedWithWindows = isStartedWithWindows;
+            _suppressInitialShow = isStartedWithWindows;
             _settings = SettingsManager.LoadSettings();
             InitializeUI();
             InitializeScreenshotService();
@@ -34,6 +36,18 @@ namespace Capillume
             SystemEvents.SessionSwitch += SystemEvents_SessionSwitch;
             SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
             SystemEvents.SessionEnding += SystemEvents_SessionEnding;
+        }
+
+        protected override void SetVisibleCore(bool value)
+        {
+            if (value && _suppressInitialShow)
+            {
+                _suppressInitialShow = false;
+                base.SetVisibleCore(false);
+                return;
+            }
+
+            base.SetVisibleCore(value);
         }
 
         private void Form1_FormClosing(object? sender, FormClosingEventArgs e)
@@ -437,7 +451,8 @@ namespace Capillume
                 imageProcessingSettings: _settings.ImageProcessing,
                 retentionSettings: _settings.Retention,
                 hotkeySettings: _settings.Hotkeys,
-                saveFolder: textBoxFolder.Text.Trim());
+                saveFolder: textBoxFolder.Text.Trim(),
+                globalHotkeyManager: _globalHotkeyManager);
             if (settingsForm.ShowDialog(this) != DialogResult.OK)
             {
                 return;
