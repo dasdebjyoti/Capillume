@@ -165,7 +165,7 @@
             // 
             linkLabelAbout.AutoSize = true;
             linkLabelAbout.Font = new Font("Segoe UI", 10F);
-            linkLabelAbout.Location = new Point(462, 73);
+            linkLabelAbout.Location = new Point(452, 73);
             linkLabelAbout.Margin = new Padding(6, 0, 6, 0);
             linkLabelAbout.Name = "linkLabelAbout";
             linkLabelAbout.Size = new Size(90, 37);
@@ -178,10 +178,10 @@
             // 
             pictureBoxLogo.BackColor = Color.Transparent;
             pictureBoxLogo.Image = Properties.Resources.icon;
-            pictureBoxLogo.Location = new Point(28, 30);
+            pictureBoxLogo.Location = new Point(28, 26);
             pictureBoxLogo.Margin = new Padding(6);
             pictureBoxLogo.Name = "pictureBoxLogo";
-            pictureBoxLogo.Size = new Size(90, 90);
+            pictureBoxLogo.Size = new Size(100, 100);
             pictureBoxLogo.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBoxLogo.TabIndex = 2;
             pictureBoxLogo.TabStop = false;
@@ -191,7 +191,7 @@
             labelTitle.AutoSize = true;
             labelTitle.Font = new Font("Segoe UI", 24F);
             labelTitle.ForeColor = Color.FromArgb(64, 64, 64);
-            labelTitle.Location = new Point(130, 34);
+            labelTitle.Location = new Point(124, 34);
             labelTitle.Margin = new Padding(6, 0, 6, 0);
             labelTitle.Name = "labelTitle";
             labelTitle.Size = new Size(320, 86);

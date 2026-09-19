@@ -109,7 +109,9 @@ Settings are stored in:
 %APPDATA%\Capillume\settings.json
 ```
 
-The default destination is the `Capillume Screenshots` folder under the current user's Pictures directory.
+The default destination is the `Capillume Screenshots` folder under the current
+user's Pictures directory. Scheduled capture, save notifications, Windows
+startup, and the global hotkey are disabled by default.
 
 ### Capture scope
 
@@ -213,8 +215,9 @@ Retention rules are applied in this order:
 1. Remove screenshots older than the configured maximum age.
 2. From the files that remain, retain only the newest configured number of screenshots.
 
-The default retention settings are 30 days and 500 screenshots, with both rules
-enabled. Cleanup can:
+The default retention settings are a 30-day maximum age and a 500-screenshot
+file-count limit. The age rule is enabled by default; the file-count rule is
+available but disabled by default. Cleanup can:
 
 - Move files to the Windows Recycle Bin.
 - Delete files permanently.
