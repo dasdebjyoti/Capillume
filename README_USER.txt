@@ -235,10 +235,10 @@ Use the Retention tab in the Advanced Settings window to control how long
 screenshots remain in the destination folder. Automatic cleanup runs after a
 screenshot is saved when Enable File Auto-cleanup is enabled.
 
-By default, Capillume removes screenshots older than 30 days and keeps only the
-newest 500 screenshots. You can enable or disable either rule and choose
-whether cleanup also scans subfolders. Cleanup processes JPG, JPEG, PNG, BMP,
-and WebP files.
+By default, the maximum-age rule is enabled for 30 days and the file-count rule
+is disabled. The file-count limit defaults to 500 screenshots when enabled. You
+can enable or disable either rule and choose whether cleanup also scans
+subfolders. Cleanup processes JPG, JPEG, PNG, BMP, and WebP files.
 
 Retention rules are applied sequentially:
 

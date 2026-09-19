@@ -35,7 +35,7 @@ namespace Capillume
             // pictureBoxLogo
             // 
             pictureBoxLogo.Image = Properties.Resources.icon;
-            pictureBoxLogo.Location = new Point(44, 50);
+            pictureBoxLogo.Location = new Point(42, 44);
             pictureBoxLogo.Margin = new Padding(6);
             pictureBoxLogo.Name = "pictureBoxLogo";
             pictureBoxLogo.Size = new Size(160, 160);
@@ -48,7 +48,7 @@ namespace Capillume
             labelAppName.AutoSize = true;
             labelAppName.Font = new Font("Segoe UI", 24F, FontStyle.Bold);
             labelAppName.ForeColor = Color.Black;
-            labelAppName.Location = new Point(226, 70);
+            labelAppName.Location = new Point(209, 70);
             labelAppName.Margin = new Padding(6, 0, 6, 0);
             labelAppName.Name = "labelAppName";
             labelAppName.Size = new Size(338, 86);
@@ -60,7 +60,7 @@ namespace Capillume
             labelVersion.AutoSize = true;
             labelVersion.Font = new Font("Segoe UI Semibold", 10.875F, FontStyle.Bold, GraphicsUnit.Point, 0);
             labelVersion.ForeColor = Color.Black;
-            labelVersion.Location = new Point(236, 150);
+            labelVersion.Location = new Point(227, 149);
             labelVersion.Margin = new Padding(6, 0, 6, 0);
             labelVersion.Name = "labelVersion";
             labelVersion.Size = new Size(200, 40);
