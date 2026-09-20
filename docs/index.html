@@ -8,7 +8,6 @@
   <meta name="keywords" content="Windows screenshot tool, screenshot automation, scheduled screenshots, desktop capture, watermark screenshots, Capillume">
   <meta name="author" content="Capillume contributors">
   <meta name="theme-color" content="#f6f8fa">
-  <link rel="canonical" href="https://dasdebjyoti.github.io/Capillume/">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://dasdebjyoti.github.io/Capillume/">
   <meta property="og:title" content="Capillume | Automated Screenshots for Windows">
@@ -18,6 +17,11 @@
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Capillume | Automated Screenshots for Windows">
   <meta name="twitter:description" content="A focused, privacy-friendly screenshot automation tool for Windows.">
+  <link rel="canonical" href="https://dasdebjyoti.github.io/Capillume/">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/brand/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/brand/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/brand/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
   <script type="application/ld+json">
   {
 	"@context": "https://schema.org",
@@ -465,6 +469,10 @@
             </p>
           </article>
           <article class="faq-item">
+            <h3>Why can’t Capillume save a screenshot?</h3>
+            <p>Check that the destination folder exists and that your account can write to it. Windows Security’s Controlled folder access or another antivirus program can also block saves. Review its protection logs, then allow the Capillume executable to write to the destination folder if needed.</p>
+          </article>
+          <article class="faq-item">
             <h3>Does the release require .NET?</h3>
             <p>The packaged 64-bit Windows release is self-contained with the .NET 10 runtime.</p>
           </article>
@@ -497,7 +505,7 @@
 
   <footer>
     <div class="wrap footer-inner">
-      <div>© 2026 Capillume contributors. Open-source software licensed under MIT.</div>
+      <div>© 2026 Capillume. Released under MIT license.</div>
       <div class="footer-links">
         <a href="https://github.com/dasdebjyoti/Capillume#readme">Documentation</a>
         <a href="https://github.com/dasdebjyoti/Capillume/blob/master/LICENSE">License</a>
@@ -505,5 +513,7 @@
       </div>
     </div>
   </footer>
+  
+  <script data-goatcounter="https://capillume.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>

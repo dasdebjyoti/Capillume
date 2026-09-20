@@ -97,10 +97,10 @@ namespace Capillume
             linkLabelGitHub.Location = new Point(102, 620);
             linkLabelGitHub.Margin = new Padding(6, 0, 6, 0);
             linkLabelGitHub.Name = "linkLabelGitHub";
-            linkLabelGitHub.Size = new Size(235, 37);
+            linkLabelGitHub.Size = new Size(166, 37);
             linkLabelGitHub.TabIndex = 3;
             linkLabelGitHub.TabStop = true;
-            linkLabelGitHub.Text = "GitHub: Capillume";
+            linkLabelGitHub.Text = "Visit website";
             linkLabelGitHub.LinkClicked += LinkLabelGitHub_LinkClicked;
             // 
             // buttonClose
