@@ -33,6 +33,13 @@ namespace Capillume
         [DllImport("user32.dll")]
         private static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
 
+        [DllImport("dwmapi.dll")]
+        private static extern int DwmGetWindowAttribute(
+            IntPtr hWnd,
+            int dwAttribute,
+            out RECT pvAttribute,
+            int cbAttribute);
+
         [DllImport("user32.dll")]
         private static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
 
@@ -55,6 +62,7 @@ namespace Capillume
 
         private const int SW_HIDE = 0;
         private const int SW_SHOWNOACTIVATE = 4;
+        private const int DWMWA_EXTENDED_FRAME_BOUNDS = 9;
 
         [StructLayout(LayoutKind.Sequential)]
         private struct RECT
@@ -335,7 +343,8 @@ namespace Capillume
                 }
             }
 
-            if (!GetWindowRect(handle, out RECT rect))
+            if (!TryGetVisibleWindowRect(handle, out RECT rect) &&
+                !GetWindowRect(handle, out rect))
             {
                 return null;
             }
@@ -370,6 +379,15 @@ namespace Capillume
                     SetForegroundWindow(_capillumeWindowHandle);
                 }
             }
+        }
+
+        private static bool TryGetVisibleWindowRect(IntPtr handle, out RECT rect)
+        {
+            return DwmGetWindowAttribute(
+                handle,
+                DWMWA_EXTENDED_FRAME_BOUNDS,
+                out rect,
+                Marshal.SizeOf<RECT>()) == 0;
         }
 
         private IntPtr FindWindowBelow(IntPtr window)

@@ -337,6 +337,16 @@ The selected watermark cannot be used
     Confirm that the watermark image still exists and that it is a supported
     image format.
 
+Error saving screenshot: Could not find file ...
+    If you are using Windows Security or another antivirus program, it may be
+    blocking Capillume from saving screenshots. Check the antivirus logs and
+    settings to allow Capillume to write to the destination folder. In Windows
+    Security, go to Virus & threat protection > Controlled folder access >
+    Manage Controlled folder access > Allow an app through Controlled folder
+    access, and add the Capillume executable to the allowed list. If you are
+    using another antivirus program, check its documentation for how to allow
+    Capillume to write to the drive.
+
 SUPPORT
 -------
 

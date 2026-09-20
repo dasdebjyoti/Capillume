@@ -71,7 +71,7 @@ namespace Capillume
             {
                 System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
                 {
-                    FileName = "https://github.com/dasdebjyoti/Capillume",
+                    FileName = "https://dasdebjyoti.github.io/Capillume/", //"https://github.com/dasdebjyoti/Capillume",
                     UseShellExecute = true
                 });
             }

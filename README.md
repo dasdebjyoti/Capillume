@@ -92,7 +92,8 @@ rotation.
 
 Watermarks and annotations are applied to each captured screenshot before
 downscaling. If downscaling is enabled, image processing is applied after
-downscaling and before the result is saved. If a watermark image is enabled, the selected image file must exist when the settings are saved.
+downscaling and before the result is saved. If a watermark image is enabled, the
+selected image file must exist when the settings are saved.
 
 Capture automatically pauses during screen lock and system sleep. These lifecycle
 behaviors are enabled by default and do not require a separate dialog. The
