@@ -17,6 +17,8 @@
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Capillume | Automated Screenshots for Windows">
   <meta name="twitter:description" content="A focused, privacy-friendly screenshot automation tool for Windows.">
+  <meta name="twitter:image" content="https://dasdebjyoti.github.io/Capillume/assets/screenshots/main.png">
+  <meta name="twitter:site" content="@ddasedEn">
   <link rel="canonical" href="https://dasdebjyoti.github.io/Capillume/">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/brand/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="assets/brand/favicon-32x32.png">
@@ -36,7 +38,7 @@
   }
   </script>
   <style>
-	:root {
+    :root {
     --bg: #f6f8fa;
     --surface: #ffffff;
     --surface-strong: #eef2f4;
@@ -47,102 +49,120 @@
     --accent-bright: #0b9f94;
     --cyan: #168f87;
     --shadow: 0 12px 32px rgba(23, 33, 38, .08);
-	}
-	* { box-sizing: border-box; }
-	html { scroll-behavior: smooth; }
-	body {
-	  margin: 0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+    margin: 0;
     color: var(--text);
     background: radial-gradient(circle at 78% 0%, rgba(11, 159, 148, .10), transparent 30rem), var(--bg);
-	  font: 16px/1.65 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-	}
-	a { color: inherit; text-decoration: none; }
-	.wrap { width: min(1120px, calc(100% - 40px)); margin: auto; }
-	.site-header { padding: 24px 0; border-bottom: 1px solid var(--line); }
-	nav { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
-	.brand { display: flex; align-items: center; gap: 11px; font-weight: 400; font-size: 2rem; letter-spacing: .04em; }
-  .brand-mark { display: grid; place-items: center; width: 46px; height: 46px; padding: 0px; border: 0px solid transparent; border-radius: 6px; background: transparent; }
-  .brand-mark img { display: block; width: 46px; height: 46px; object-fit: contain; filter: drop-shadow(0 2px 3px rgba(8, 127, 120, .16)); }
-	.nav-links { display: flex; align-items: center; gap: 25px; color: var(--muted); font-size: .94rem; }
-	.nav-links a:hover, footer a:hover { color: var(--text); }
-  .button { display: inline-flex; align-items: center; justify-content: center; gap: 9px; padding: 12px 18px; border: 1px solid transparent; border-radius: 10px; color: #ffffff; background: linear-gradient(135deg, var(--cyan), var(--accent-bright)); font-weight: 750; box-shadow: 0 8px 20px rgba(8, 127, 120, .16); transition: transform .2s, box-shadow .2s; }
-  .button:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(8, 127, 120, .24); }
-	.button.secondary { color: var(--text); background: transparent; border-color: var(--line); box-shadow: none; }
-  .button.secondary:hover { border-color: rgba(37, 200, 186, .7); background: rgba(37, 200, 186, .1); }
-	.hero { display: grid; grid-template-columns: 1.03fr .97fr; align-items: center; gap: 70px; padding: 92px 0 110px; }
-  .eyebrow { display: inline-flex; align-items: center; gap: 8px; padding: 6px 11px; border: 1px solid rgba(11, 181, 168, .32); border-radius: 999px; color: var(--cyan); background: rgba(11, 181, 168, .09); font-size: .8rem; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
-  .eyebrow span { width: 7px; height: 7px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 9px rgba(22, 143, 135, .48); }
-	h1 { max-width: 680px; margin: 21px 0 20px; font-size: clamp(2.7rem, 6vw, 5.3rem); line-height: .99; letter-spacing: -.075em; }
-	.hero h1 em { color: var(--accent-bright); font-style: normal; }
-	.lead { max-width: 590px; margin: 0; color: var(--muted); font-size: 1.16rem; }
-	.actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
-  .requirements { margin-top: 19px; color: var(--muted); font-size: .83rem; }
-  .product-card { position: relative; isolation: isolate; padding: 12px; border: 1px solid var(--line); border-radius: 20px; background: var(--surface); box-shadow: var(--shadow); transform: rotate(0deg); }
-  .product-card::before { position: absolute; inset: -2px; z-index: -1; border-radius: 22px; background: linear-gradient(135deg, rgba(22, 143, 135, .22), transparent 48%, rgba(11, 159, 148, .14)); content: ""; filter: blur(10px); }
-	.product-image { display: block; width: 100%; height: auto; border-radius: 6px; }
-  .product-caption { margin: 10px 5px 2px; color: var(--muted); font-size: .78rem; }
-  .sample-shot { padding: 28px; background: linear-gradient(145deg, #f2faf9, var(--surface-strong)); }
-  .sample-shot figure { max-width: 1000px; margin: 0 auto; }
-  .sample-shot img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 6px; box-shadow: 0 12px 28px rgba(23, 33, 38, .12); }
-  .sample-shot figcaption { max-width: 760px; margin: 20px auto 0; text-align: center; }
-  .sample-shot figcaption strong { display: block; margin-bottom: 5px; font-size: 1.15rem; }
-  .sample-shot figcaption span { color: var(--muted); font-size: .94rem; }
-	.section { padding: 94px 0; border-top: 1px solid var(--line); }
-	.section-heading { max-width: 670px; margin-bottom: 38px; }
-	.section-heading h2 { margin: 0 0 12px; font-size: clamp(2rem, 4vw, 3rem); line-height: 1.05; letter-spacing: -.055em; }
-	.section-heading p { margin: 0; color: var(--muted); }
-	.feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
-	.feature { min-height: 200px; padding: 25px; border: 1px solid var(--line); border-radius: 15px; background: var(--surface); }
-  .feature-icon { display: grid; place-items: center; width: 40px; height: 40px; margin-bottom: 21px; border-radius: 11px; color: var(--cyan); background: rgba(11, 181, 168, .12); }
-	.feature-icon svg { width: 21px; height: 21px; }
-	.feature h3 { margin: 0 0 7px; font-size: 1.06rem; }
-	.feature p { margin: 0; color: var(--muted); font-size: .92rem; }
-	.workflow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; counter-reset: step; }
-	.step { position: relative; padding: 25px 25px 25px 68px; }
-  .step::before { position: absolute; top: 22px; left: 0; display: grid; place-items: center; width: 42px; height: 42px; border: 1px solid rgba(37, 200, 186, .55); border-radius: 50%; color: var(--accent-bright); background: rgba(37, 200, 186, .12); content: counter(step); counter-increment: step; font-weight: 800; }
-	.step:not(:last-child)::after { position: absolute; top: 43px; left: 43px; width: calc(100% - 18px); border-top: 1px dashed var(--line); content: ""; }
-	.step h3 { margin: 0 0 7px; }
-	.step p { position: relative; z-index: 1; margin: 0; color: var(--muted); font-size: .92rem; }
-	.interface-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
-  .interface-card { overflow: hidden; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); box-shadow: var(--shadow); }
-	.interface-card.featured { grid-column: 1 / -1; }
-	.interface-card img { display: block; width: 100%; height: auto; background: #fff; }
-	.interface-card figcaption { padding: 17px 20px 19px; }
-	.interface-card strong { display: block; margin-bottom: 3px; }
-	.interface-card span { color: var(--muted); font-size: .88rem; }
-  .audience-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
-  .audience-card { padding: 25px; border: 1px solid var(--line); border-radius: 15px; background: var(--surface); }
-  .audience-icon { display: grid; place-items: center; width: 40px; height: 40px; margin-bottom: 17px; border-radius: 11px; color: var(--cyan); background: rgba(11, 181, 168, .12); }
-  .audience-icon svg { width: 21px; height: 21px; }
-  .audience-card h3 { margin: 0 0 8px; font-size: 1.06rem; }
-  .audience-card p { margin: 0; color: var(--muted); font-size: .92rem; }
-  .audience-card strong { color: var(--text); }
-  .steps-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; counter-reset: setup; }
-  .quick-step { position: relative; padding: 25px 20px 22px; border: 1px solid var(--line); border-radius: 15px; background: var(--surface); }
-  .quick-step::before { display: grid; place-items: center; width: 32px; height: 32px; margin-bottom: 18px; border-radius: 9px; color: #ffffff; background: linear-gradient(135deg, var(--cyan), var(--accent-bright)); box-shadow: 0 4px 10px rgba(8, 127, 120, .16); content: counter(setup); counter-increment: setup; font-weight: 800; }
-  .quick-step h3 { margin: 0 0 7px; font-size: 1rem; }
-  .quick-step p { margin: 0; color: var(--muted); font-size: .88rem; }
-  .trust-panel { display: grid; grid-template-columns: 1.25fr .75fr; align-items: center; gap: 32px; padding: 34px 38px; border: 1px solid rgba(8, 127, 120, .3); border-radius: 18px; background: linear-gradient(110deg, rgba(22, 143, 135, .12), rgba(11, 159, 148, .05)); }
-  .trust-panel h2 { margin: 0 0 9px; font-size: 1.8rem; letter-spacing: -.04em; }
-  .privacy-icon { display: grid; place-items: center; width: 46px; height: 46px; margin-bottom: 16px; border-radius: 13px; color: var(--accent); background: rgba(8, 127, 120, .12); }
-  .privacy-icon svg { width: 24px; height: 24px; }
-  .trust-panel p { margin: 0; color: var(--muted); }
-  .trust-points { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
-  .trust-points li { color: var(--text); font-size: .91rem; }
-  .trust-points li::before { margin-right: 9px; color: var(--cyan); content: "✓"; font-weight: 800; }
-  .faq-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
-  .faq-item { padding: 22px 24px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
-  .faq-item h3 { margin: 0 0 7px; font-size: 1rem; }
-  .faq-item p { margin: 0; color: var(--muted); font-size: .9rem; }
-  .download { display: flex; align-items: center; justify-content: space-between; gap: 30px; padding: 36px 40px; border: 1px solid rgba(8, 127, 120, .3); border-radius: 18px; background: linear-gradient(105deg, rgba(8, 127, 120, .14), rgba(22, 143, 135, .06)); }
-	.download h2 { margin: 0 0 6px; font-size: 1.8rem; letter-spacing: -.04em; }
-	.download p { margin: 0; color: var(--muted); }
-	footer { padding: 29px 0 38px; border-top: 1px solid var(--line); color: var(--muted); font-size: .88rem; }
-	.footer-inner { display: flex; justify-content: space-between; gap: 20px; }
-	.footer-links { display: flex; gap: 21px; }
-  @media (max-width: 820px) { .hero { grid-template-columns: 1fr; gap: 48px; padding: 68px 0 80px; } .product-card { max-width: 700px; margin: auto; } .feature-grid, .audience-grid { grid-template-columns: repeat(2, 1fr); } .steps-grid { grid-template-columns: repeat(2, 1fr); } .workflow { grid-template-columns: 1fr; gap: 8px; } .step:not(:last-child)::after { display: none; } .trust-panel { grid-template-columns: 1fr; } }
-  @media (max-width: 560px) { .wrap { width: min(100% - 28px, 1120px); } .nav-links a:not(.button) { display: none; } .hero { padding-top: 52px; } h1 { font-size: 3rem; } .feature-grid, .interface-grid, .audience-grid, .steps-grid, .faq-grid { grid-template-columns: 1fr; } .interface-card.featured { grid-column: auto; } .download, .footer-inner { align-items: flex-start; flex-direction: column; padding: 27px; } .trust-panel { padding: 28px 24px; } }
-	@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { transition: none !important; } }
+    font: 16px/1.65 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    a { color: inherit; text-decoration: none; }
+    .wrap { width: min(1120px, calc(100% - 40px)); margin: auto; }
+    .site-header { padding: 24px 0; border-bottom: 1px solid var(--line); }
+    nav { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+    .brand { display: flex; align-items: center; gap: 11px; font-weight: 400; font-size: 2rem; letter-spacing: .04em; }
+    .brand-mark { display: grid; place-items: center; width: 46px; height: 46px; padding: 0px; border: 0px solid transparent; border-radius: 6px; background: transparent; }
+    .brand-mark img { display: block; width: 46px; height: 46px; object-fit: contain; filter: drop-shadow(0 2px 3px rgba(8, 127, 120, .16)); }
+    .nav-links { display: flex; align-items: center; gap: 25px; color: var(--muted); font-size: .94rem; }
+    .nav-links a:hover, footer a:hover { color: var(--text); }
+    .button { display: inline-flex; align-items: center; justify-content: center; gap: 9px; padding: 12px 18px; border: 1px solid transparent; border-radius: 10px; color: #ffffff; background: linear-gradient(135deg, var(--cyan), var(--accent-bright)); font-weight: 750; box-shadow: 0 8px 20px rgba(8, 127, 120, .16); transition: transform .2s, box-shadow .2s; }
+    .button:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(8, 127, 120, .24); }
+    .button.secondary { color: var(--text); background: transparent; border-color: var(--line); box-shadow: none; }
+    .button.secondary:hover { border-color: rgba(37, 200, 186, .7); background: rgba(37, 200, 186, .1); }
+    .hero { display: grid; grid-template-columns: 1.03fr .97fr; align-items: center; gap: 70px; padding: 92px 0 110px; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 8px; padding: 6px 11px; border: 1px solid rgba(11, 181, 168, .32); border-radius: 999px; color: var(--cyan); background: rgba(11, 181, 168, .09); font-size: .8rem; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
+    .eyebrow span { width: 7px; height: 7px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 9px rgba(22, 143, 135, .48); }
+    h1 { max-width: 680px; margin: 21px 0 20px; font-size: clamp(2.7rem, 6vw, 5.3rem); line-height: .99; letter-spacing: -.075em; }
+    .hero h1 em { color: var(--accent-bright); font-style: normal; }
+    .lead { max-width: 590px; margin: 0; color: var(--muted); font-size: 1.16rem; }
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+    .requirements { margin-top: 19px; color: var(--muted); font-size: .83rem; }
+    .product-card { position: relative; isolation: isolate; padding: 12px; border: 1px solid var(--line); border-radius: 20px; background: var(--surface); box-shadow: var(--shadow); transform: rotate(0deg); }
+    .product-card::before { position: absolute; inset: -2px; z-index: -1; border-radius: 22px; background: linear-gradient(135deg, rgba(22, 143, 135, .22), transparent 48%, rgba(11, 159, 148, .14)); content: ""; filter: blur(10px); }
+    .product-image { display: block; width: 100%; height: auto; border-radius: 6px; }
+    .product-caption { margin: 10px 5px 2px; color: var(--muted); font-size: .78rem; }
+    .sample-shot { padding: 28px; background: linear-gradient(145deg, #f2faf9, var(--surface-strong)); }
+    .sample-shot figure { max-width: 1000px; margin: 0 auto; }
+    .sample-shot img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 6px; box-shadow: 0 12px 28px rgba(23, 33, 38, .12); }
+    .sample-shot figcaption { max-width: 760px; margin: 20px auto 0; text-align: center; }
+    .sample-shot figcaption strong { display: block; margin-bottom: 5px; font-size: 1.15rem; }
+    .sample-shot figcaption span { color: var(--muted); font-size: .94rem; }
+    .section { padding: 94px 0; border-top: 1px solid var(--line); }
+    .section-heading { max-width: 670px; margin-bottom: 38px; }
+    .section-heading h2 { margin: 0 0 12px; font-size: clamp(2rem, 4vw, 3rem); line-height: 1.05; letter-spacing: -.055em; }
+    .section-heading p { margin: 0; color: var(--muted); }
+    .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+    .feature { min-height: 200px; padding: 25px; border: 1px solid var(--line); border-radius: 15px; background: var(--surface); }
+    .feature.hidden { display: none; }
+    .feature-icon { display: grid; place-items: center; width: 40px; height: 40px; margin-bottom: 21px; border-radius: 11px; color: var(--cyan); background: rgba(11, 181, 168, .12); }
+    .feature-icon svg { width: 21px; height: 21px; }
+    .feature h3 { margin: 0 0 7px; font-size: 1.06rem; }
+    .feature p { margin: 0; color: var(--muted); font-size: .92rem; }
+     .feature-toggle { display: block; margin: 28px auto 0; padding: 11px 18px; border: 1px solid var(--line); border-radius: 10px; color: var(--text); background: var(--surface); cursor: pointer; font: inherit; font-weight: 750; transition: border-color .2s, background .2s; }
+     .feature-toggle:hover, .feature-toggle:focus-visible { border-color: rgba(37, 200, 186, .7); background: rgba(37, 200, 186, .1); outline: none; }
+    .workflow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; counter-reset: step; }
+    .step { position: relative; padding: 25px 25px 25px 68px; }
+    .step::before { position: absolute; top: 22px; left: 0; display: grid; place-items: center; width: 42px; height: 42px; border: 1px solid rgba(37, 200, 186, .55); border-radius: 50%; color: var(--accent-bright); background: rgba(37, 200, 186, .12); content: counter(step); counter-increment: step; font-weight: 800; }
+    .step:not(:last-child)::after { position: absolute; top: 43px; left: 43px; width: calc(100% - 18px); border-top: 1px dashed var(--line); content: ""; }
+    .step h3 { margin: 0 0 7px; }
+    .step p { position: relative; z-index: 1; margin: 0; color: var(--muted); font-size: .92rem; }
+    .interface-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+     .interface-card { position: relative; display: flex; flex-direction: column; overflow: hidden; margin: 0; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); box-shadow: 0 6px 18px rgba(23, 33, 38, .06); cursor: pointer; transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease; }
+     .interface-card::after { position: absolute; top: 12px; right: 12px; display: grid; place-items: center; width: 36px; height: 36px; border: 1px solid rgba(220, 228, 231, .50); border-radius: 50%; color: var(--text); background: rgba(255, 255, 255, .20); box-shadow: 0 4px 12px rgba(23, 33, 38, .12); content: "🔍"; font-size: 1rem; pointer-events: none; }
+    .interface-card.feature-card { grid-column: 1 / -1; width: min(100%, 760px); justify-self: center; }
+    .interface-card.feature-card span { display: inline; }
+    .interface-card:hover, .interface-card:focus-visible { border-color: rgba(8, 127, 120, .55); box-shadow: 0 10px 26px rgba(8, 127, 120, .14); outline: none; transform: translateY(-3px); }
+    .interface-card img { display: block; width: 100%; height: auto; <!--aspect-ratio: 16 / 9;--> object-fit: cover; object-position: top; background: #fff; }
+    .interface-card.feature-card img { width: 100%; height: auto; <!--aspect-ratio: 1484 / 832;--> object-fit: contain; }
+    .interface-card figcaption { display: flex; flex: 1; flex-direction: column; padding: 13px 15px 15px; }
+    .interface-card strong { display: block; margin-bottom: 4px; font-size: .94rem; }
+    .interface-card span { display: none; }
+     .gallery-hint { margin-top: 8px !important; color: var(--accent) !important; font-size: .88rem; font-weight: 700; }
+     .interface-dialog { position: relative; width: min(1100px, calc(100% - 32px)); max-height: min(900px, calc(100% - 32px)); padding: 0; border: 0; border-radius: 16px; background: var(--surface); box-shadow: 0 24px 70px rgba(23, 33, 38, .3); overflow: auto; }
+    .interface-dialog::backdrop { background: rgba(23, 33, 38, .7); backdrop-filter: blur(4px); }
+     .interface-dialog-toolbar { position: absolute; top: 12px; left: 50%; z-index: 1; display: flex; align-items: center; gap: 10px; transform: translateX(-50%); }
+     .interface-dialog-control { display: grid; place-items: center; width: 34px; height: 34px; padding: 0; border: 1px solid var(--line); border-radius: 50%; color: var(--text); background: rgba(255, 255, 255, .94); cursor: pointer; font: inherit; font-size: 1.25rem; line-height: 1; }
+     .interface-dialog-control:hover, .interface-dialog-control:focus-visible, .interface-dialog-close:focus-visible { border-color: rgba(8, 127, 120, .55); outline: 3px solid rgba(11, 159, 148, .22); outline-offset: 2px; }
+     .interface-dialog img { display: block; width: 100%; max-height: 72vh; margin-top: 58px; object-fit: contain; background: #fff; }
+    .interface-dialog-content { padding: 18px 22px 21px; }
+    .interface-dialog h3 { margin: 0 0 5px; font-size: 1.15rem; }
+    .interface-dialog p { margin: 0; color: var(--muted); font-size: .92rem; }
+    .interface-dialog-close { position: absolute; top: 12px; right: 12px; z-index: 1; display: grid; place-items: center; width: 36px; height: 36px; border: 1px solid var(--line); border-radius: 50%; color: var(--text); background: rgba(255, 255, 255, .9); cursor: pointer; font-size: 1.3rem; line-height: 1; }
+    .audience-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+    .audience-card { padding: 25px; border: 1px solid var(--line); border-radius: 15px; background: var(--surface); }
+    .audience-icon { display: grid; place-items: center; width: 40px; height: 40px; margin-bottom: 17px; border-radius: 11px; color: var(--cyan); background: rgba(11, 181, 168, .12); }
+    .audience-icon svg { width: 21px; height: 21px; }
+    .audience-card h3 { margin: 0 0 8px; font-size: 1.06rem; }
+    .audience-card p { margin: 0; color: var(--muted); font-size: .92rem; }
+    .audience-card strong { color: var(--text); }
+    .steps-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; counter-reset: setup; }
+    .quick-step { position: relative; padding: 25px 20px 22px; border: 1px solid var(--line); border-radius: 15px; background: var(--surface); }
+    .quick-step::before { display: grid; place-items: center; width: 32px; height: 32px; margin-bottom: 18px; border-radius: 9px; color: #ffffff; background: linear-gradient(135deg, var(--cyan), var(--accent-bright)); box-shadow: 0 4px 10px rgba(8, 127, 120, .16); content: counter(setup); counter-increment: setup; font-weight: 800; }
+    .quick-step h3 { margin: 0 0 7px; font-size: 1rem; }
+    .quick-step p { margin: 0; color: var(--muted); font-size: .88rem; }
+    .trust-panel { display: grid; grid-template-columns: 1.25fr .75fr; align-items: center; gap: 32px; padding: 34px 38px; border: 1px solid rgba(8, 127, 120, .3); border-radius: 18px; background: linear-gradient(110deg, rgba(22, 143, 135, .12), rgba(11, 159, 148, .05)); }
+    .trust-panel h2 { margin: 0 0 9px; font-size: 1.8rem; letter-spacing: -.04em; }
+    .privacy-icon { display: grid; place-items: center; width: 46px; height: 46px; margin-bottom: 16px; border-radius: 13px; color: var(--accent); background: rgba(8, 127, 120, .12); }
+    .privacy-icon svg { width: 24px; height: 24px; }
+    .trust-panel p { margin: 0; color: var(--muted); }
+    .trust-points { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+    .trust-points li { color: var(--text); font-size: .91rem; }
+    .trust-points li::before { margin-right: 9px; color: var(--cyan); content: "✓"; font-weight: 800; }
+    .faq-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+    .faq-item { padding: 22px 24px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+    .faq-item h3 { margin: 0 0 7px; font-size: 1rem; }
+    .faq-item p { margin: 0; color: var(--muted); font-size: .9rem; }
+    .download { display: flex; align-items: center; justify-content: space-between; gap: 30px; padding: 36px 40px; border: 1px solid rgba(8, 127, 120, .3); border-radius: 18px; background: linear-gradient(105deg, rgba(8, 127, 120, .14), rgba(22, 143, 135, .06)); }
+    .download h2 { margin: 0 0 6px; font-size: 1.8rem; letter-spacing: -.04em; }
+    .download p { margin: 0; color: var(--muted); }
+    footer { padding: 29px 0 38px; border-top: 1px solid var(--line); color: var(--muted); font-size: .88rem; }
+    .footer-inner { display: flex; justify-content: space-between; gap: 20px; }
+    .footer-links { display: flex; gap: 21px; }
+    @media (max-width: 820px) { .hero { grid-template-columns: 1fr; gap: 48px; padding: 68px 0 80px; } .product-card { max-width: 700px; margin: auto; } .feature-grid, .audience-grid { grid-template-columns: repeat(2, 1fr); } .interface-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } .steps-grid { grid-template-columns: repeat(2, 1fr); } .workflow { grid-template-columns: 1fr; gap: 8px; } .step:not(:last-child)::after { display: none; } .trust-panel { grid-template-columns: 1fr; } }
+     @media (max-width: 560px) { .wrap { width: min(100% - 28px, 1120px); } .nav-links a:not(.button) { display: none; } .hero { padding-top: 52px; } h1 { font-size: 3rem; } .feature-grid, .interface-grid, .audience-grid, .steps-grid, .faq-grid { grid-template-columns: 1fr; } .interface-grid { gap: 12px; } .interface-card figcaption { padding: 11px 12px 13px; } .interface-card span { display: none; } .interface-dialog { width: calc(100% - 16px); max-height: calc(100% - 16px); border-radius: 12px; } .interface-dialog-toolbar { top: 10px; gap: 6px; } .interface-dialog-control { width: 32px; height: 32px; } .interface-dialog img { max-height: 58vh; margin-top: 52px; } .interface-dialog-content { padding: 14px 16px 18px; } .download, .footer-inner { align-items: flex-start; flex-direction: column; padding: 27px; } .trust-panel { padding: 28px 24px; } }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { transition: none !important; } }
   </style>
 </head>
 <body>
@@ -159,13 +179,13 @@
         </span>Capillume
       </a>
       <div class="nav-links">
+        <a href="#privacy">Privacy</a>
         <a href="#use-cases">Use cases</a>
         <a href="#features">Features</a>
         <a href="#getting-started">Getting Started</a>
         <a href="#interface">Interface</a>
-        <a href="#privacy">Privacy</a>
         <a href="#faq">FAQ</a>
-        <a href="https://github.com/dasdebjyoti/Capillume">GitHub</a>
+        <a href="https://github.com/dasdebjyoti/Capillume" hidden="">GitHub</a>
         <a class="button" href="https://github.com/dasdebjyoti/Capillume/releases/latest">Download</a>
       </div>
     </nav>
@@ -186,14 +206,34 @@
           <a class="button" href="https://github.com/dasdebjyoti/Capillume/releases/latest">
             Download the latest release <span aria-hidden="true">→</span>
           </a>
-          <a class="button secondary" href="https://github.com/dasdebjyoti/Capillume">View on GitHub</a>
+          <!--<a class="button secondary" href="https://github.com/dasdebjyoti/Capillume">View on GitHub</a>-->
         </div>
-        <p class="requirements">For Windows 10 and later · Requires the .NET 10 runtime</p>
+        <p class="requirements">Windows 10/11 · 64-bit · Self-contained · MIT licensed</p>
       </div>
       <div class="product-card">
         <img class="product-image" src="assets/screenshots/main.png" alt="Capillume main window showing scheduled screenshot capture settings" width="1484" height="832">
           <p class="product-caption">The Capillume main window · Capture settings at a glance</p>
         </div>
+    </section>
+
+    <section class="section" id="privacy">
+      <div class="wrap">
+        <div class="trust-panel">
+          <div>
+             <span class="privacy-icon" aria-hidden="true">
+               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 5 6v5c0 4.6 2.9 8.5 7 10 4.1-1.5 7-5.4 7-10V6z"/><path d="m9 12 2 2 4-4"/></svg>
+             </span>
+            <h2>Your screenshots stay on your computer.</h2>
+            <p>Capillume saves images to the local folder you configure, such as <code>%USERPROFILE%\Pictures\Capillume Screenshots</code>. It does not upload screenshots or send them to an online service.</p>
+          </div>
+          <ul class="trust-points">
+            <li>Local destination you control</li>
+            <li>Visible system-tray application</li>
+            <li>Pause on Windows lock and sleep</li>
+            <li>Use only with appropriate consent</li>
+          </ul>
+        </div>
+      </div>
     </section>
 
       <section class="section" id="sample-screenshot">
@@ -275,7 +315,7 @@
           <h2>A complete capture workflow, without the clutter.</h2>
           <p>From the first capture to the final file, Capillume gives you precise control while staying quietly available in the system tray.</p>
         </div>
-        <div class="feature-grid">
+        <div class="feature-grid" id="feature-grid">
           <article class="feature">
             <div class="feature-icon" aria-hidden="true">▣</div>
             <h3>Capture your way</h3>
@@ -285,11 +325,6 @@
             <div class="feature-icon" aria-hidden="true">◷</div>
             <h3>Set it and forget it</h3>
             <p>Choose your interval and destination, then let Capillume run unobtrusively from the system tray.</p>
-          </article>
-          <article class="feature">
-            <div class="feature-icon" aria-hidden="true">✦</div>
-            <h3>Make images yours</h3>
-            <p>Save as PNG, JPG, BMP, or WebP with configurable quality and flexible downscaling options.</p>
           </article>
           <article class="feature">
             <div class="feature-icon" aria-hidden="true">✎</div>
@@ -302,41 +337,52 @@
             <p>Apply color modes, contrast, noise reduction, and color temperature adjustments to your captures.</p>
           </article>
           <article class="feature">
+            <div class="feature-icon" aria-hidden="true">≋</div>
+            <h3>Skip duplicate captures</h3>
+            <p>Detect identical screenshots with configurable comparison modes, sensitivity, timeouts, and dry-run support.</p>
+          </article>
+          <article class="feature">
             <div class="feature-icon" aria-hidden="true">⌁</div>
             <h3>Stay organized</h3>
             <p>Automatically clean up by age or file count, with options to back up, recycle, or permanently remove old images.</p>
           </article>
-          <article class="feature">
+          <article class="feature additional-feature hidden">
+            <div class="feature-icon" aria-hidden="true">✦</div>
+            <h3>Make images yours</h3>
+            <p>Save as PNG, JPG, BMP, or WebP with configurable quality and flexible downscaling options.</p>
+          </article>
+          <article class="feature additional-feature hidden">
             <div class="feature-icon" aria-hidden="true">◉</div>
             <h3>Local by design</h3>
             <p>Save screenshots to a folder you control. Capillume does not upload images or send them to an online service.</p>
           </article>
-          <article class="feature">
+          <article class="feature additional-feature hidden">
             <div class="feature-icon" aria-hidden="true">▤</div>
             <h3>System-tray control</h3>
             <p>Keep Capillume running quietly in the tray with quick access to Show, Capture Now, About, and Exit.</p>
           </article>
-          <article class="feature">
+          <article class="feature additional-feature hidden">
             <div class="feature-icon" aria-hidden="true">↻</div>
             <h3>Lock and sleep aware</h3>
             <p>Scheduled capture pauses during Windows lock and sleep, resumes after wake, and captures immediately when the schedule restarts.</p>
           </article>
-          <article class="feature">
+          <article class="feature additional-feature hidden">
             <div class="feature-icon" aria-hidden="true">⚙</div>
             <h3>Start with Windows</h3>
             <p>Launch automatically when you sign in and let Capillume begin in the system tray, ready for its schedule.</p>
           </article>
-          <article class="feature">
+          <article class="feature additional-feature hidden">
             <div class="feature-icon" aria-hidden="true">▥</div>
             <h3>Flexible image output</h3>
             <p>Choose PNG, JPG, BMP, or WebP. Tune JPG and WebP quality to balance image detail and file size.</p>
           </article>
-          <article class="feature">
+          <article class="feature additional-feature hidden">
             <div class="feature-icon" aria-hidden="true">⌕</div>
             <h3>Safe cleanup previews</h3>
             <p>Use Cleanup Now with dry-run mode to preview selected files and estimated space before anything changes.</p>
           </article>
         </div>
+         <button class="feature-toggle" id="feature-toggle" type="button" aria-controls="feature-grid" aria-expanded="false">Show all features</button>
       </div>
     </section>
 
@@ -372,51 +418,59 @@
         <div class="section-heading">
           <h2>See the controls behind every capture.</h2>
           <p>Capillume keeps powerful options organized in focused settings panels, so you can fine-tune your screenshot workflow without getting in the way.</p>
+          <p class="gallery-hint">Click any screenshot to enlarge it.</p>
         </div>
         <div class="interface-grid">
-          <!--<figure class="interface-card featured">
-            <img src="assets/screenshots/watermark.png" alt="Capillume Watermark settings with text and image watermark controls" loading="lazy" width="1508" height="950">
+          <figure class="interface-card feature-card" tabindex="0" role="button" aria-label="Open Main Settings screenshot" data-title="Main Settings" data-description="Set up automation, capture mode, storage location, and file format in one place.">
+            <img src="assets/screenshots/main.png" alt="Capillume's main settings window showing automation, capture mode, storage location, and file format options." loading="lazy" width="1508" height="950">
               <figcaption>
-                <strong>Watermarks</strong>
-                <span>Configure text or image watermarks, opacity, placement, rotation, and scale.</span>
+                <strong>Main Settings</strong>
+                <span>Set up automation, capture mode, storage location, and file format in one place.</span>
               </figcaption>
-          </figure>-->
-          <figure class="interface-card">
+          </figure>
+          <figure class="interface-card" tabindex="0" role="button" aria-label="Open Watermarks screenshot" data-title="Watermarks" data-description="Configure text or image watermarks, opacity, placement, rotation, and scale.">
             <img src="assets/screenshots/watermark.png" alt="Capillume Watermark settings with text and image watermark controls" loading="lazy" width="1508" height="950">
               <figcaption>
                 <strong>Watermarks</strong>
                 <span>Configure text or image watermarks, opacity, placement, rotation, and scale.</span>
               </figcaption>
             </figure>
-          <figure class="interface-card">
+          <figure class="interface-card" tabindex="0" role="button" aria-label="Open Dynamic annotations screenshot" data-title="Dynamic annotations" data-description="Add capture time, system, user, application, and process details to images.">
             <img src="assets/screenshots/annotation.png" alt="Capillume Annotation settings for adding dynamic capture information" loading="lazy" width="1508" height="950">
               <figcaption>
                 <strong>Dynamic annotations</strong>
                 <span>Add capture time, system, user, application, and process details to images.</span>
               </figcaption>
           </figure>
-          <figure class="interface-card">
+          <figure class="interface-card" tabindex="0" role="button" aria-label="Open Downscaling screenshot" data-title="Downscaling" data-description="Reduce image dimensions with target height, percentage, maximum width, or bounding box modes.">
             <img src="assets/screenshots/downscale.png" alt="Capillume Downscale settings with resize and quality options" loading="lazy" width="1508" height="950">
               <figcaption>
                 <strong>Downscaling</strong>
                 <span>Reduce image dimensions with target height, percentage, maximum width, or bounding box modes.</span>
               </figcaption>
           </figure>
-          <figure class="interface-card">
+          <figure class="interface-card" tabindex="0" role="button" aria-label="Open Image processing screenshot" data-title="Image processing" data-description="Apply color modes, high contrast, noise reduction, sharpening, and color temperature adjustments.">
             <img src="assets/screenshots/image-processing.png" alt="Capillume Image Processing settings for color and enhancement controls" loading="lazy" width="1508" height="950">
               <figcaption>
                 <strong>Image processing</strong>
                 <span>Apply color modes, high contrast, noise reduction, sharpening, and color temperature adjustments.</span>
               </figcaption>
           </figure>
-          <figure class="interface-card">
+          <figure class="interface-card" tabindex="0" role="button" aria-label="Open Duplicate detection screenshot" data-title="Skip duplicates" data-description="Detect and skip saving identical screenshots based on comparison modes and sensitivity.">
+            <img src="assets/screenshots/duplicates.png" alt="Capillume Deplicate detection settings to skip saving screenshots" loading="lazy" width="1508" height="950">
+              <figcaption>
+                <strong>Skip duplicates</strong>
+                <span>Detect and skip saving identical screenshots based on comparison modes and sensitivity.</span>
+              </figcaption>
+            </figure>
+          <figure class="interface-card" tabindex="0" role="button" aria-label="Open Retention and cleanup screenshot" data-title="Retention and cleanup" data-description="Keep your screenshot archive under control by age or file count, with backup and recycle options.">
             <img src="assets/screenshots/retention.png" alt="Capillume Retention settings for managing old screenshots" loading="lazy" width="1508" height="950">
               <figcaption>
                 <strong>Retention and cleanup</strong>
                 <span>Keep your screenshot archive under control by age or file count, with backup and recycle options.</span>
               </figcaption>
           </figure>
-          <figure class="interface-card">
+          <figure class="interface-card" tabindex="0" role="button" aria-label="Open Global hotkey screenshot" data-title="Global hotkey" data-description="Capture immediately from another application or while Capillume is minimized to the tray.">
             <img src="assets/screenshots/hotkey.png" alt="Capillume Hotkey settings for configuring a global capture shortcut" loading="lazy" width="1508" height="950">
               <figcaption>
                 <strong>Global hotkey</strong>
@@ -427,25 +481,18 @@
       </div>
     </section>
 
-    <section class="section" id="privacy">
-      <div class="wrap">
-        <div class="trust-panel">
-          <div>
-             <span class="privacy-icon" aria-hidden="true">
-               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 5 6v5c0 4.6 2.9 8.5 7 10 4.1-1.5 7-5.4 7-10V6z"/><path d="m9 12 2 2 4-4"/></svg>
-             </span>
-            <h2>Your screenshots stay on your computer.</h2>
-            <p>Capillume saves images to the local folder you configure, such as <code>%USERPROFILE%\Pictures\Capillume Screenshots</code>. It does not upload screenshots or send them to an online service.</p>
-          </div>
-          <ul class="trust-points">
-            <li>Local destination you control</li>
-            <li>Visible system-tray application</li>
-            <li>Pause on Windows lock and sleep</li>
-            <li>Use only with appropriate consent</li>
-          </ul>
-        </div>
+    <dialog class="interface-dialog" id="interface-dialog" aria-labelledby="interface-dialog-title">
+      <button class="interface-dialog-close" type="button" aria-label="Close screenshot preview">×</button>
+      <div class="interface-dialog-toolbar" aria-label="Screenshot controls">
+        <button class="interface-dialog-control" id="interface-dialog-previous" type="button" aria-label="Previous screenshot">‹</button>
+        <button class="interface-dialog-control" id="interface-dialog-next" type="button" aria-label="Next screenshot">›</button>
       </div>
-    </section>
+      <img id="interface-dialog-image" src="" alt="">
+      <div class="interface-dialog-content">
+        <h3 id="interface-dialog-title"></h3>
+        <p id="interface-dialog-description"></p>
+      </div>
+    </dialog>
 
     <section class="section" id="faq">
       <div class="wrap">
@@ -515,5 +562,96 @@
   </footer>
   
   <script data-goatcounter="https://capillume.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  <script>
+    const interfaceCards = document.querySelectorAll('.interface-card');
+    const interfaceDialog = document.querySelector('#interface-dialog');
+    const interfaceDialogImage = document.querySelector('#interface-dialog-image');
+    const interfaceDialogTitle = document.querySelector('#interface-dialog-title');
+    const interfaceDialogDescription = document.querySelector('#interface-dialog-description');
+    const interfaceDialogClose = document.querySelector('.interface-dialog-close');
+     const interfaceDialogPrevious = document.querySelector('#interface-dialog-previous');
+     const interfaceDialogNext = document.querySelector('#interface-dialog-next');
+     const featureToggle = document.querySelector('#feature-toggle');
+    let interfaceScrollY = 0;
+    let interfaceCardToRestore = null;
+     let interfaceCardIndex = 0;
+    let originalScrollBehavior = '';
+
+     featureToggle.addEventListener('click', () => {
+       const isExpanded = featureToggle.getAttribute('aria-expanded') === 'true';
+       document.querySelectorAll('.additional-feature').forEach(feature => feature.classList.toggle('hidden', isExpanded));
+       featureToggle.setAttribute('aria-expanded', String(!isExpanded));
+       featureToggle.textContent = isExpanded ? 'Show all features' : 'Show less features';
+     });
+
+     function showInterfacePreview(card) {
+      const image = card.querySelector('img');
+
+      interfaceDialogImage.src = image.src;
+      interfaceDialogImage.alt = image.alt;
+      interfaceDialogTitle.textContent = card.dataset.title;
+      interfaceDialogDescription.textContent = card.dataset.description;
+      interfaceCardToRestore = card;
+       interfaceCardIndex = Array.from(interfaceCards).indexOf(card);
+     }
+
+     function openInterfacePreview(card) {
+       showInterfacePreview(card);
+      interfaceScrollY = window.scrollY;
+      originalScrollBehavior = document.documentElement.style.scrollBehavior;
+      document.documentElement.style.scrollBehavior = 'auto';
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${interfaceScrollY}px`;
+      document.body.style.left = '0';
+      document.body.style.right = '0';
+      document.body.style.width = '100%';
+      interfaceDialog.showModal();
+    }
+
+     function navigateInterfacePreview(direction) {
+       interfaceCardIndex = (interfaceCardIndex + direction + interfaceCards.length) % interfaceCards.length;
+       showInterfacePreview(interfaceCards[interfaceCardIndex]);
+     }
+
+    function restoreInterfacePage() {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.width = '';
+      document.documentElement.style.scrollBehavior = originalScrollBehavior;
+      window.scrollTo(0, interfaceScrollY);
+      interfaceCardToRestore?.focus({ preventScroll: true });
+    }
+
+    interfaceCards.forEach(card => {
+      card.addEventListener('click', () => openInterfacePreview(card));
+      card.addEventListener('keydown', event => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          openInterfacePreview(card);
+        }
+      });
+    });
+
+    interfaceDialogClose.addEventListener('click', () => interfaceDialog.close());
+     interfaceDialogPrevious.addEventListener('click', () => navigateInterfacePreview(-1));
+     interfaceDialogNext.addEventListener('click', () => navigateInterfacePreview(1));
+     interfaceDialog.addEventListener('keydown', event => {
+       if (event.key === 'ArrowLeft') {
+         event.preventDefault();
+         navigateInterfacePreview(-1);
+       } else if (event.key === 'ArrowRight') {
+         event.preventDefault();
+         navigateInterfacePreview(1);
+       }
+     });
+    interfaceDialog.addEventListener('close', restoreInterfacePage);
+    interfaceDialog.addEventListener('click', event => {
+      if (event.target === interfaceDialog) {
+        interfaceDialog.close();
+      }
+    });
+  </script>
 </body>
 </html>

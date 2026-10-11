@@ -17,6 +17,15 @@
             {
                 components.Dispose();
             }
+            if (disposing)
+            {
+                foreach (ToolStripDropDown menu in _ownedMenus)
+                {
+                    menu.Dispose();
+                }
+
+                _ownedMenus.Clear();
+            }
             base.Dispose(disposing);
         }
 
@@ -28,9 +37,11 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormSettings));
             tabControlSettings = new TabControl();
             tabPageWatermark = new TabPage();
             wmGroupBoxCommon = new GroupBox();
+            wmButtonCommonDefault = new Button();
             wmComboBoxWatermarkRotation = new ComboBox();
             wmLabelWatermarkRotation = new Label();
             wmComboBoxWatermarkPosition = new ComboBox();
@@ -39,6 +50,7 @@
             wmLabelOpacity = new Label();
             wmLabelOpacityValue = new Label();
             wmGroupBoxUseImage = new GroupBox();
+            wmButtonUseImageDefault = new Button();
             wmToggleUseImage = new ToggleSwitch();
             wmLabelWatermarkImage = new Label();
             wmTextBoxWatermarkImagePath = new TextBox();
@@ -48,6 +60,7 @@
             wmLabelWatermarkImageScaleValue = new Label();
             wmPictureBoxWatermarkImage = new PictureBox();
             wmGroupBoxUseText = new GroupBox();
+            wmButtonUseTextDefault = new Button();
             wmToggleUseText = new ToggleSwitch();
             wmLabelWatermarkText = new Label();
             wmTextBoxWatermarkText = new TextBox();
@@ -55,6 +68,7 @@
             wmLabelFontDescription = new Label();
             tabPageAnnotation = new TabPage();
             anGroupBoxAnnotation = new GroupBox();
+            anButtonDefault = new Button();
             anToggleUseAnnotation = new ToggleSwitch();
             anLabelAnnotationFormat = new Label();
             anComboBoxAnnotationFormat = new ComboBox();
@@ -71,6 +85,7 @@
             dsLabelEnable = new Label();
             dsToggleEnable = new ToggleSwitch();
             dsGroupBoxProcessing = new GroupBox();
+            dsButtonProcessingDefault = new Button();
             dsLabelQuality = new Label();
             dsCheckBoxLossyOnly = new CheckBox();
             dsCheckBoxFullScreenOnly = new CheckBox();
@@ -78,6 +93,7 @@
             dsCheckBoxSharpen = new CheckBox();
             dsComboBoxQuality = new ComboBox();
             dsGroupBoxModes = new GroupBox();
+            dsButtonModesDefault = new Button();
             dsLabelBoundingWidth = new Label();
             dsLabelMaxWidth = new Label();
             dsLabelBoundingHeight = new Label();
@@ -98,21 +114,51 @@
             dsRadioTargetHeight = new RadioButton();
             tabPageImageProcessing = new TabPage();
             ipGroupBoxAdvanced = new GroupBox();
+            ipButtonAdvProcessingDefault = new Button();
             ipComboBoxColorTemperature = new ComboBox();
             ipLabelColorTemperature = new Label();
             ipCheckBoxNoiseReduction = new CheckBox();
             ipCheckBoxHighContrast = new CheckBox();
             ipGroupBoxColorMode = new GroupBox();
+            ipButtonColorModeDefault = new Button();
             ipRadioAdaptivePalette = new RadioButton();
             ipRadioColor256 = new RadioButton();
             ipRadioColor16 = new RadioButton();
             ipRadioMonochrome1Bit = new RadioButton();
             ipRadioGrayscale = new RadioButton();
             ipRadioFullColor = new RadioButton();
+            tabPageDedupe = new TabPage();
+            ddButtonDefault = new Button();
+            panel5 = new Panel();
+            panel6 = new Panel();
+            ddLabelMinimumSaveIntervalUnit = new Label();
+            ddLabelMinimumSaveInterval = new Label();
+            ddLabelCompareMode = new Label();
+            ddLabelTimeoutUnit = new Label();
+            ddLabelDescription = new Label();
+            ddTextBoxExcludedRegions = new TextBox();
+            ddLabelExcludedRegions = new Label();
+            ddCheckBoxShowNotifications = new CheckBox();
+            ddCheckBoxUpdateReferenceOnSave = new CheckBox();
+            ddCheckBoxDiagnostics = new CheckBox();
+            ddCheckBoxDryRun = new CheckBox();
+            ddNumericTimeout = new NumericUpDown();
+            ddNumericMinimumSaveInterval = new NumericUpDown();
+            ddLabelTimeout = new Label();
+            ddCheckBoxPerActiveWindow = new CheckBox();
+            ddComboBoxDynamicRegions = new ComboBox();
+            ddComboBoxCompareMode = new ComboBox();
+            ddLabelDynamicRegions = new Label();
+            ddLabelSensitivityValue = new Label();
+            ddTrackBarSensitivity = new TrackBar();
+            ddLabelSensitivity = new Label();
+            ddToggleEnable = new ToggleSwitch();
+            ddLabelEnable = new Label();
             tabPageRetention = new TabPage();
             rtLabelAutoCleanup = new Label();
             rtToggleSwitchAutoCleanup = new ToggleSwitch();
             rtGroupBoxAction = new GroupBox();
+            rtButtonActionDefault = new Button();
             rtComboBoxAction = new ComboBox();
             rtLabelAction = new Label();
             rtLabelBackupFolder = new Label();
@@ -121,12 +167,13 @@
             rtCheckBoxPerSessionSubfolder = new CheckBox();
             rtButtonCleanupNow = new Button();
             rtGroupBoxSelection = new GroupBox();
+            rtButtonSelectionDefault = new Button();
             rtNumericMaxFiles = new NumericUpDown();
             rtCheckBoxMaxDays = new CheckBox();
             rtNumericMaxDays = new NumericUpDown();
-            rtLabelDaysSuffix = new Label();
+            rtLabelMaxDaysSuffix = new Label();
             rtCheckBoxMaxFiles = new CheckBox();
-            rtLabelFilesSuffix = new Label();
+            rtLabelMaxFilesSuffix = new Label();
             rtCheckBoxIncludeSubfolders = new CheckBox();
             rtCheckBoxDryRun = new CheckBox();
             rtTextBoxCleanupResult = new TextBox();
@@ -134,6 +181,9 @@
             rtLabelPreviewSummary = new Label();
             rtLabelPreviewSummaryTitle = new Label();
             tabPageHotkeys = new TabPage();
+            hkLabelDescription = new Label();
+            hkLabelWarning = new Label();
+            hkButtonDefault = new Button();
             hkLabelEnable = new Label();
             hkToggleEnable = new ToggleSwitch();
             hkLabelShortcut = new Label();
@@ -167,6 +217,11 @@
             tabPageImageProcessing.SuspendLayout();
             ipGroupBoxAdvanced.SuspendLayout();
             ipGroupBoxColorMode.SuspendLayout();
+            tabPageDedupe.SuspendLayout();
+            panel5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)ddNumericTimeout).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)ddNumericMinimumSaveInterval).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)ddTrackBarSensitivity).BeginInit();
             tabPageRetention.SuspendLayout();
             rtGroupBoxAction.SuspendLayout();
             rtGroupBoxSelection.SuspendLayout();
@@ -181,6 +236,7 @@
             tabControlSettings.Controls.Add(tabPageAnnotation);
             tabControlSettings.Controls.Add(tabPageDownscale);
             tabControlSettings.Controls.Add(tabPageImageProcessing);
+            tabControlSettings.Controls.Add(tabPageDedupe);
             tabControlSettings.Controls.Add(tabPageRetention);
             tabControlSettings.Controls.Add(tabPageHotkeys);
             tabControlSettings.Font = new Font("Segoe UI", 10F);
@@ -205,6 +261,7 @@
             // 
             // wmGroupBoxCommon
             // 
+            wmGroupBoxCommon.Controls.Add(wmButtonCommonDefault);
             wmGroupBoxCommon.Controls.Add(wmComboBoxWatermarkRotation);
             wmGroupBoxCommon.Controls.Add(wmLabelWatermarkRotation);
             wmGroupBoxCommon.Controls.Add(wmComboBoxWatermarkPosition);
@@ -215,10 +272,26 @@
             wmGroupBoxCommon.Font = new Font("Segoe UI", 10F);
             wmGroupBoxCommon.Location = new Point(16, 351);
             wmGroupBoxCommon.Name = "wmGroupBoxCommon";
-            wmGroupBoxCommon.Size = new Size(1408, 142);
+            wmGroupBoxCommon.Size = new Size(1408, 161);
             wmGroupBoxCommon.TabIndex = 2;
             wmGroupBoxCommon.TabStop = false;
             wmGroupBoxCommon.Text = "Common Settings";
+            // 
+            // wmButtonCommonDefault
+            // 
+            wmButtonCommonDefault.BackColor = Color.Transparent;
+            wmButtonCommonDefault.Cursor = Cursors.Hand;
+            wmButtonCommonDefault.FlatAppearance.BorderSize = 0;
+            wmButtonCommonDefault.FlatStyle = FlatStyle.Flat;
+            wmButtonCommonDefault.Font = new Font("Segoe Fluent Icons", 12F);
+            wmButtonCommonDefault.Location = new Point(1358, -1);
+            wmButtonCommonDefault.Name = "wmButtonCommonDefault";
+            wmButtonCommonDefault.Size = new Size(42, 42);
+            wmButtonCommonDefault.TabIndex = 12;
+            wmButtonCommonDefault.TabStop = false;
+            wmButtonCommonDefault.Text = "";
+            wmButtonCommonDefault.UseVisualStyleBackColor = true;
+            wmButtonCommonDefault.Click += WmButtonCommonDefault_Click;
             // 
             // wmComboBoxWatermarkRotation
             // 
@@ -226,7 +299,7 @@
             wmComboBoxWatermarkRotation.Font = new Font("Segoe UI", 10F);
             wmComboBoxWatermarkRotation.FormattingEnabled = true;
             wmComboBoxWatermarkRotation.Items.AddRange(new object[] { "0°", "90°", "180°", "270°" });
-            wmComboBoxWatermarkRotation.Location = new Point(1196, 52);
+            wmComboBoxWatermarkRotation.Location = new Point(1196, 79);
             wmComboBoxWatermarkRotation.Name = "wmComboBoxWatermarkRotation";
             wmComboBoxWatermarkRotation.Size = new Size(190, 45);
             wmComboBoxWatermarkRotation.TabIndex = 6;
@@ -235,7 +308,7 @@
             // 
             wmLabelWatermarkRotation.AutoSize = true;
             wmLabelWatermarkRotation.Font = new Font("Segoe UI", 10F);
-            wmLabelWatermarkRotation.Location = new Point(1054, 56);
+            wmLabelWatermarkRotation.Location = new Point(1054, 83);
             wmLabelWatermarkRotation.Name = "wmLabelWatermarkRotation";
             wmLabelWatermarkRotation.Size = new Size(118, 37);
             wmLabelWatermarkRotation.TabIndex = 5;
@@ -247,7 +320,7 @@
             wmComboBoxWatermarkPosition.Font = new Font("Segoe UI", 10F);
             wmComboBoxWatermarkPosition.FormattingEnabled = true;
             wmComboBoxWatermarkPosition.Items.AddRange(new object[] { "Top Left", "Top Center", "Top Right", "Center Left", "Center", "Center Right", "Bottom Left", "Bottom Center", "Bottom Right" });
-            wmComboBoxWatermarkPosition.Location = new Point(747, 52);
+            wmComboBoxWatermarkPosition.Location = new Point(747, 79);
             wmComboBoxWatermarkPosition.Name = "wmComboBoxWatermarkPosition";
             wmComboBoxWatermarkPosition.Size = new Size(242, 45);
             wmComboBoxWatermarkPosition.TabIndex = 4;
@@ -256,7 +329,7 @@
             // 
             wmLabelWatermarkPosition.AutoSize = true;
             wmLabelWatermarkPosition.Font = new Font("Segoe UI", 10F);
-            wmLabelWatermarkPosition.Location = new Point(616, 56);
+            wmLabelWatermarkPosition.Location = new Point(616, 83);
             wmLabelWatermarkPosition.Name = "wmLabelWatermarkPosition";
             wmLabelWatermarkPosition.Size = new Size(112, 37);
             wmLabelWatermarkPosition.TabIndex = 3;
@@ -265,7 +338,7 @@
             // wmTrackBarOpacity
             // 
             wmTrackBarOpacity.AutoSize = false;
-            wmTrackBarOpacity.Location = new Point(149, 54);
+            wmTrackBarOpacity.Location = new Point(149, 81);
             wmTrackBarOpacity.Margin = new Padding(6);
             wmTrackBarOpacity.Maximum = 100;
             wmTrackBarOpacity.Minimum = 1;
@@ -281,7 +354,7 @@
             // 
             wmLabelOpacity.AutoSize = true;
             wmLabelOpacity.Font = new Font("Segoe UI", 10F);
-            wmLabelOpacity.Location = new Point(36, 56);
+            wmLabelOpacity.Location = new Point(36, 83);
             wmLabelOpacity.Margin = new Padding(6, 0, 6, 0);
             wmLabelOpacity.Name = "wmLabelOpacity";
             wmLabelOpacity.Size = new Size(108, 37);
@@ -292,7 +365,7 @@
             // 
             wmLabelOpacityValue.AutoSize = true;
             wmLabelOpacityValue.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            wmLabelOpacityValue.Location = new Point(500, 56);
+            wmLabelOpacityValue.Location = new Point(500, 83);
             wmLabelOpacityValue.Margin = new Padding(6, 0, 6, 0);
             wmLabelOpacityValue.Name = "wmLabelOpacityValue";
             wmLabelOpacityValue.Size = new Size(72, 37);
@@ -302,6 +375,7 @@
             // 
             // wmGroupBoxUseImage
             // 
+            wmGroupBoxUseImage.Controls.Add(wmButtonUseImageDefault);
             wmGroupBoxUseImage.Controls.Add(wmToggleUseImage);
             wmGroupBoxUseImage.Controls.Add(wmLabelWatermarkImage);
             wmGroupBoxUseImage.Controls.Add(wmTextBoxWatermarkImagePath);
@@ -311,12 +385,28 @@
             wmGroupBoxUseImage.Controls.Add(wmLabelWatermarkImageScaleValue);
             wmGroupBoxUseImage.Controls.Add(wmPictureBoxWatermarkImage);
             wmGroupBoxUseImage.Font = new Font("Segoe UI", 10F);
-            wmGroupBoxUseImage.Location = new Point(727, 24);
+            wmGroupBoxUseImage.Location = new Point(730, 24);
             wmGroupBoxUseImage.Name = "wmGroupBoxUseImage";
-            wmGroupBoxUseImage.Size = new Size(697, 309);
+            wmGroupBoxUseImage.Size = new Size(694, 309);
             wmGroupBoxUseImage.TabIndex = 1;
             wmGroupBoxUseImage.TabStop = false;
             wmGroupBoxUseImage.Text = "             Use Image";
+            // 
+            // wmButtonUseImageDefault
+            // 
+            wmButtonUseImageDefault.BackColor = Color.Transparent;
+            wmButtonUseImageDefault.Cursor = Cursors.Hand;
+            wmButtonUseImageDefault.FlatAppearance.BorderSize = 0;
+            wmButtonUseImageDefault.FlatStyle = FlatStyle.Flat;
+            wmButtonUseImageDefault.Font = new Font("Segoe Fluent Icons", 12F);
+            wmButtonUseImageDefault.Location = new Point(641, -1);
+            wmButtonUseImageDefault.Name = "wmButtonUseImageDefault";
+            wmButtonUseImageDefault.Size = new Size(42, 42);
+            wmButtonUseImageDefault.TabIndex = 12;
+            wmButtonUseImageDefault.TabStop = false;
+            wmButtonUseImageDefault.Text = "";
+            wmButtonUseImageDefault.UseVisualStyleBackColor = true;
+            wmButtonUseImageDefault.Click += WmButtonUseImageDefault_Click;
             // 
             // wmToggleUseImage
             // 
@@ -375,7 +465,7 @@
             wmTrackBarWatermarkImageScale.Maximum = 100;
             wmTrackBarWatermarkImageScale.Minimum = 1;
             wmTrackBarWatermarkImageScale.Name = "wmTrackBarWatermarkImageScale";
-            wmTrackBarWatermarkImageScale.Size = new Size(170, 50);
+            wmTrackBarWatermarkImageScale.Size = new Size(190, 50);
             wmTrackBarWatermarkImageScale.TabIndex = 5;
             wmTrackBarWatermarkImageScale.TickFrequency = 10;
             wmTrackBarWatermarkImageScale.TickStyle = TickStyle.None;
@@ -406,6 +496,7 @@
             // 
             // wmGroupBoxUseText
             // 
+            wmGroupBoxUseText.Controls.Add(wmButtonUseTextDefault);
             wmGroupBoxUseText.Controls.Add(wmToggleUseText);
             wmGroupBoxUseText.Controls.Add(wmLabelWatermarkText);
             wmGroupBoxUseText.Controls.Add(wmTextBoxWatermarkText);
@@ -414,10 +505,26 @@
             wmGroupBoxUseText.Font = new Font("Segoe UI", 10F);
             wmGroupBoxUseText.Location = new Point(16, 24);
             wmGroupBoxUseText.Name = "wmGroupBoxUseText";
-            wmGroupBoxUseText.Size = new Size(691, 309);
+            wmGroupBoxUseText.Size = new Size(694, 309);
             wmGroupBoxUseText.TabIndex = 1;
             wmGroupBoxUseText.TabStop = false;
             wmGroupBoxUseText.Text = "             Use Text";
+            // 
+            // wmButtonUseTextDefault
+            // 
+            wmButtonUseTextDefault.BackColor = Color.Transparent;
+            wmButtonUseTextDefault.Cursor = Cursors.Hand;
+            wmButtonUseTextDefault.FlatAppearance.BorderSize = 0;
+            wmButtonUseTextDefault.FlatStyle = FlatStyle.Flat;
+            wmButtonUseTextDefault.Font = new Font("Segoe Fluent Icons", 12F);
+            wmButtonUseTextDefault.Location = new Point(641, -1);
+            wmButtonUseTextDefault.Name = "wmButtonUseTextDefault";
+            wmButtonUseTextDefault.Size = new Size(42, 42);
+            wmButtonUseTextDefault.TabIndex = 11;
+            wmButtonUseTextDefault.TabStop = false;
+            wmButtonUseTextDefault.Text = "";
+            wmButtonUseTextDefault.UseVisualStyleBackColor = true;
+            wmButtonUseTextDefault.Click += WmButtonUseTextDefault_Click;
             // 
             // wmToggleUseText
             // 
@@ -481,6 +588,7 @@
             // 
             // anGroupBoxAnnotation
             // 
+            anGroupBoxAnnotation.Controls.Add(anButtonDefault);
             anGroupBoxAnnotation.Controls.Add(anToggleUseAnnotation);
             anGroupBoxAnnotation.Controls.Add(anLabelAnnotationFormat);
             anGroupBoxAnnotation.Controls.Add(anComboBoxAnnotationFormat);
@@ -498,6 +606,22 @@
             anGroupBoxAnnotation.TabIndex = 0;
             anGroupBoxAnnotation.TabStop = false;
             anGroupBoxAnnotation.Text = "             Use Annotation";
+            // 
+            // anButtonDefault
+            // 
+            anButtonDefault.BackColor = Color.Transparent;
+            anButtonDefault.Cursor = Cursors.Hand;
+            anButtonDefault.FlatAppearance.BorderSize = 0;
+            anButtonDefault.FlatStyle = FlatStyle.Flat;
+            anButtonDefault.Font = new Font("Segoe Fluent Icons", 12F);
+            anButtonDefault.Location = new Point(1358, -1);
+            anButtonDefault.Name = "anButtonDefault";
+            anButtonDefault.Size = new Size(42, 42);
+            anButtonDefault.TabIndex = 10;
+            anButtonDefault.TabStop = false;
+            anButtonDefault.Text = "";
+            anButtonDefault.UseVisualStyleBackColor = true;
+            anButtonDefault.Click += AnButtonDefault_Click;
             // 
             // anToggleUseAnnotation
             // 
@@ -529,7 +653,10 @@
             anComboBoxAnnotationFormat.Name = "anComboBoxAnnotationFormat";
             anComboBoxAnnotationFormat.Size = new Size(733, 45);
             anComboBoxAnnotationFormat.TabIndex = 2;
+            anComboBoxAnnotationFormat.SelectionChangeCommitted += AnComboBoxAnnotationFormat_SelectionChangeCommitted;
             anComboBoxAnnotationFormat.TextChanged += AnComboBoxAnnotationFormat_TextChanged;
+            anComboBoxAnnotationFormat.KeyUp += AnComboBoxAnnotationFormat_KeyUp;
+            anComboBoxAnnotationFormat.MouseUp += AnComboBoxAnnotationFormat_MouseUp;
             // 
             // anButtonAnnotationFields
             // 
@@ -629,9 +756,9 @@
             // dsLabelDefaultSize
             // 
             dsLabelDefaultSize.ForeColor = SystemColors.Highlight;
-            dsLabelDefaultSize.Location = new Point(615, 11);
+            dsLabelDefaultSize.Location = new Point(523, 11);
             dsLabelDefaultSize.Name = "dsLabelDefaultSize";
-            dsLabelDefaultSize.Size = new Size(809, 80);
+            dsLabelDefaultSize.Size = new Size(845, 80);
             dsLabelDefaultSize.TabIndex = 2;
             dsLabelDefaultSize.Text = "Detected default size: full-screen captures 3,840×2,160; active-window captures keep the original window size.";
             // 
@@ -669,6 +796,7 @@
             // 
             // dsGroupBoxProcessing
             // 
+            dsGroupBoxProcessing.Controls.Add(dsButtonProcessingDefault);
             dsGroupBoxProcessing.Controls.Add(dsLabelQuality);
             dsGroupBoxProcessing.Controls.Add(dsCheckBoxLossyOnly);
             dsGroupBoxProcessing.Controls.Add(dsCheckBoxFullScreenOnly);
@@ -682,6 +810,22 @@
             dsGroupBoxProcessing.TabIndex = 4;
             dsGroupBoxProcessing.TabStop = false;
             dsGroupBoxProcessing.Text = "Processing";
+            // 
+            // dsButtonProcessingDefault
+            // 
+            dsButtonProcessingDefault.BackColor = Color.Transparent;
+            dsButtonProcessingDefault.Cursor = Cursors.Hand;
+            dsButtonProcessingDefault.FlatAppearance.BorderSize = 0;
+            dsButtonProcessingDefault.FlatStyle = FlatStyle.Flat;
+            dsButtonProcessingDefault.Font = new Font("Segoe Fluent Icons", 12F);
+            dsButtonProcessingDefault.Location = new Point(1358, -1);
+            dsButtonProcessingDefault.Name = "dsButtonProcessingDefault";
+            dsButtonProcessingDefault.Size = new Size(42, 42);
+            dsButtonProcessingDefault.TabIndex = 19;
+            dsButtonProcessingDefault.TabStop = false;
+            dsButtonProcessingDefault.Text = "";
+            dsButtonProcessingDefault.UseVisualStyleBackColor = true;
+            dsButtonProcessingDefault.Click += DsButtonProcessingDefault_Click;
             // 
             // dsLabelQuality
             // 
@@ -748,6 +892,7 @@
             // 
             // dsGroupBoxModes
             // 
+            dsGroupBoxModes.Controls.Add(dsButtonModesDefault);
             dsGroupBoxModes.Controls.Add(dsLabelBoundingWidth);
             dsGroupBoxModes.Controls.Add(dsLabelMaxWidth);
             dsGroupBoxModes.Controls.Add(dsLabelBoundingHeight);
@@ -774,10 +919,26 @@
             dsGroupBoxModes.TabStop = false;
             dsGroupBoxModes.Text = "Resize Mode";
             // 
+            // dsButtonModesDefault
+            // 
+            dsButtonModesDefault.BackColor = Color.Transparent;
+            dsButtonModesDefault.Cursor = Cursors.Hand;
+            dsButtonModesDefault.FlatAppearance.BorderSize = 0;
+            dsButtonModesDefault.FlatStyle = FlatStyle.Flat;
+            dsButtonModesDefault.Font = new Font("Segoe Fluent Icons", 12F);
+            dsButtonModesDefault.Location = new Point(1358, -1);
+            dsButtonModesDefault.Name = "dsButtonModesDefault";
+            dsButtonModesDefault.Size = new Size(42, 42);
+            dsButtonModesDefault.TabIndex = 18;
+            dsButtonModesDefault.TabStop = false;
+            dsButtonModesDefault.Text = "";
+            dsButtonModesDefault.UseVisualStyleBackColor = true;
+            dsButtonModesDefault.Click += DsButtonModesDefault_Click;
+            // 
             // dsLabelBoundingWidth
             // 
             dsLabelBoundingWidth.AutoSize = true;
-            dsLabelBoundingWidth.Location = new Point(807, 217);
+            dsLabelBoundingWidth.Location = new Point(820, 217);
             dsLabelBoundingWidth.Name = "dsLabelBoundingWidth";
             dsLabelBoundingWidth.Size = new Size(89, 37);
             dsLabelBoundingWidth.TabIndex = 14;
@@ -786,7 +947,7 @@
             // dsLabelMaxWidth
             // 
             dsLabelMaxWidth.AutoSize = true;
-            dsLabelMaxWidth.Location = new Point(807, 171);
+            dsLabelMaxWidth.Location = new Point(820, 171);
             dsLabelMaxWidth.Name = "dsLabelMaxWidth";
             dsLabelMaxWidth.Size = new Size(89, 37);
             dsLabelMaxWidth.TabIndex = 10;
@@ -804,7 +965,7 @@
             // dsLabelPercentageValue
             // 
             dsLabelPercentageValue.AutoSize = true;
-            dsLabelPercentageValue.Location = new Point(807, 123);
+            dsLabelPercentageValue.Location = new Point(820, 123);
             dsLabelPercentageValue.Name = "dsLabelPercentageValue";
             dsLabelPercentageValue.Size = new Size(104, 37);
             dsLabelPercentageValue.TabIndex = 6;
@@ -813,7 +974,7 @@
             // dsLabelTargetHeight
             // 
             dsLabelTargetHeight.AutoSize = true;
-            dsLabelTargetHeight.Location = new Point(807, 77);
+            dsLabelTargetHeight.Location = new Point(820, 77);
             dsLabelTargetHeight.Name = "dsLabelTargetHeight";
             dsLabelTargetHeight.Size = new Size(97, 37);
             dsLabelTargetHeight.TabIndex = 2;
@@ -830,7 +991,7 @@
             // 
             // dsNumericBoundingWidth
             // 
-            dsNumericBoundingWidth.Location = new Point(922, 217);
+            dsNumericBoundingWidth.Location = new Point(935, 217);
             dsNumericBoundingWidth.Name = "dsNumericBoundingWidth";
             dsNumericBoundingWidth.Size = new Size(148, 43);
             dsNumericBoundingWidth.TabIndex = 15;
@@ -839,7 +1000,7 @@
             // 
             // dsNumericMaxWidth
             // 
-            dsNumericMaxWidth.Location = new Point(922, 168);
+            dsNumericMaxWidth.Location = new Point(935, 168);
             dsNumericMaxWidth.Name = "dsNumericMaxWidth";
             dsNumericMaxWidth.Size = new Size(148, 43);
             dsNumericMaxWidth.TabIndex = 11;
@@ -848,7 +1009,7 @@
             // 
             // dsNumericPercentage
             // 
-            dsNumericPercentage.Location = new Point(922, 121);
+            dsNumericPercentage.Location = new Point(935, 121);
             dsNumericPercentage.Name = "dsNumericPercentage";
             dsNumericPercentage.Size = new Size(148, 43);
             dsNumericPercentage.TabIndex = 7;
@@ -856,7 +1017,7 @@
             // 
             // dsNumericTargetHeight
             // 
-            dsNumericTargetHeight.Location = new Point(922, 74);
+            dsNumericTargetHeight.Location = new Point(935, 74);
             dsNumericTargetHeight.Name = "dsNumericTargetHeight";
             dsNumericTargetHeight.Size = new Size(148, 43);
             dsNumericTargetHeight.TabIndex = 3;
@@ -965,6 +1126,7 @@
             // 
             // ipGroupBoxAdvanced
             // 
+            ipGroupBoxAdvanced.Controls.Add(ipButtonAdvProcessingDefault);
             ipGroupBoxAdvanced.Controls.Add(ipComboBoxColorTemperature);
             ipGroupBoxAdvanced.Controls.Add(ipLabelColorTemperature);
             ipGroupBoxAdvanced.Controls.Add(ipCheckBoxNoiseReduction);
@@ -976,6 +1138,22 @@
             ipGroupBoxAdvanced.TabIndex = 1;
             ipGroupBoxAdvanced.TabStop = false;
             ipGroupBoxAdvanced.Text = "Advanced Processing";
+            // 
+            // ipButtonAdvProcessingDefault
+            // 
+            ipButtonAdvProcessingDefault.BackColor = Color.Transparent;
+            ipButtonAdvProcessingDefault.Cursor = Cursors.Hand;
+            ipButtonAdvProcessingDefault.FlatAppearance.BorderSize = 0;
+            ipButtonAdvProcessingDefault.FlatStyle = FlatStyle.Flat;
+            ipButtonAdvProcessingDefault.Font = new Font("Segoe Fluent Icons", 12F);
+            ipButtonAdvProcessingDefault.Location = new Point(642, -1);
+            ipButtonAdvProcessingDefault.Name = "ipButtonAdvProcessingDefault";
+            ipButtonAdvProcessingDefault.Size = new Size(42, 42);
+            ipButtonAdvProcessingDefault.TabIndex = 12;
+            ipButtonAdvProcessingDefault.TabStop = false;
+            ipButtonAdvProcessingDefault.Text = "";
+            ipButtonAdvProcessingDefault.UseVisualStyleBackColor = true;
+            ipButtonAdvProcessingDefault.Click += IpButtonAdvProcessingDefault_Click;
             // 
             // ipComboBoxColorTemperature
             // 
@@ -1021,6 +1199,7 @@
             // 
             // ipGroupBoxColorMode
             // 
+            ipGroupBoxColorMode.Controls.Add(ipButtonColorModeDefault);
             ipGroupBoxColorMode.Controls.Add(ipRadioAdaptivePalette);
             ipGroupBoxColorMode.Controls.Add(ipRadioColor256);
             ipGroupBoxColorMode.Controls.Add(ipRadioColor16);
@@ -1034,6 +1213,22 @@
             ipGroupBoxColorMode.TabIndex = 0;
             ipGroupBoxColorMode.TabStop = false;
             ipGroupBoxColorMode.Text = "Color Mode";
+            // 
+            // ipButtonColorModeDefault
+            // 
+            ipButtonColorModeDefault.BackColor = Color.Transparent;
+            ipButtonColorModeDefault.Cursor = Cursors.Hand;
+            ipButtonColorModeDefault.FlatAppearance.BorderSize = 0;
+            ipButtonColorModeDefault.FlatStyle = FlatStyle.Flat;
+            ipButtonColorModeDefault.Font = new Font("Segoe Fluent Icons", 12F);
+            ipButtonColorModeDefault.Location = new Point(642, -1);
+            ipButtonColorModeDefault.Name = "ipButtonColorModeDefault";
+            ipButtonColorModeDefault.Size = new Size(42, 42);
+            ipButtonColorModeDefault.TabIndex = 12;
+            ipButtonColorModeDefault.TabStop = false;
+            ipButtonColorModeDefault.Text = "";
+            ipButtonColorModeDefault.UseVisualStyleBackColor = true;
+            ipButtonColorModeDefault.Click += IpButtonColorModeDefault_Click;
             // 
             // ipRadioAdaptivePalette
             // 
@@ -1107,6 +1302,305 @@
             ipRadioFullColor.UseVisualStyleBackColor = true;
             ipRadioFullColor.CheckedChanged += ImageProcessingColorModeChanged;
             // 
+            // tabPageDedupe
+            // 
+            tabPageDedupe.Controls.Add(ddButtonDefault);
+            tabPageDedupe.Controls.Add(panel5);
+            tabPageDedupe.Controls.Add(ddLabelMinimumSaveIntervalUnit);
+            tabPageDedupe.Controls.Add(ddLabelMinimumSaveInterval);
+            tabPageDedupe.Controls.Add(ddLabelCompareMode);
+            tabPageDedupe.Controls.Add(ddLabelTimeoutUnit);
+            tabPageDedupe.Controls.Add(ddLabelDescription);
+            tabPageDedupe.Controls.Add(ddTextBoxExcludedRegions);
+            tabPageDedupe.Controls.Add(ddLabelExcludedRegions);
+            tabPageDedupe.Controls.Add(ddCheckBoxShowNotifications);
+            tabPageDedupe.Controls.Add(ddCheckBoxUpdateReferenceOnSave);
+            tabPageDedupe.Controls.Add(ddCheckBoxDiagnostics);
+            tabPageDedupe.Controls.Add(ddCheckBoxDryRun);
+            tabPageDedupe.Controls.Add(ddNumericTimeout);
+            tabPageDedupe.Controls.Add(ddNumericMinimumSaveInterval);
+            tabPageDedupe.Controls.Add(ddLabelTimeout);
+            tabPageDedupe.Controls.Add(ddCheckBoxPerActiveWindow);
+            tabPageDedupe.Controls.Add(ddComboBoxDynamicRegions);
+            tabPageDedupe.Controls.Add(ddComboBoxCompareMode);
+            tabPageDedupe.Controls.Add(ddLabelDynamicRegions);
+            tabPageDedupe.Controls.Add(ddLabelSensitivityValue);
+            tabPageDedupe.Controls.Add(ddTrackBarSensitivity);
+            tabPageDedupe.Controls.Add(ddLabelSensitivity);
+            tabPageDedupe.Controls.Add(ddToggleEnable);
+            tabPageDedupe.Controls.Add(ddLabelEnable);
+            tabPageDedupe.Location = new Point(8, 51);
+            tabPageDedupe.Name = "tabPageDedupe";
+            tabPageDedupe.Padding = new Padding(3);
+            tabPageDedupe.Size = new Size(1440, 701);
+            tabPageDedupe.TabIndex = 6;
+            tabPageDedupe.Text = "Duplicates";
+            tabPageDedupe.UseVisualStyleBackColor = true;
+            // 
+            // ddButtonDefault
+            // 
+            ddButtonDefault.BackColor = Color.Transparent;
+            ddButtonDefault.Cursor = Cursors.Hand;
+            ddButtonDefault.FlatAppearance.BorderSize = 0;
+            ddButtonDefault.FlatStyle = FlatStyle.Flat;
+            ddButtonDefault.Font = new Font("Segoe Fluent Icons", 12F);
+            ddButtonDefault.Location = new Point(738, 26);
+            ddButtonDefault.Name = "ddButtonDefault";
+            ddButtonDefault.Size = new Size(42, 42);
+            ddButtonDefault.TabIndex = 20;
+            ddButtonDefault.TabStop = false;
+            ddButtonDefault.Text = "";
+            ddButtonDefault.UseVisualStyleBackColor = true;
+            ddButtonDefault.Click += DdButtonDefault_Click;
+            // 
+            // panel5
+            // 
+            panel5.BorderStyle = BorderStyle.FixedSingle;
+            panel5.Controls.Add(panel6);
+            panel5.Location = new Point(804, 41);
+            panel5.Name = "panel5";
+            panel5.Size = new Size(1, 630);
+            panel5.TabIndex = 19;
+            // 
+            // panel6
+            // 
+            panel6.BorderStyle = BorderStyle.FixedSingle;
+            panel6.Location = new Point(0, -1);
+            panel6.Name = "panel6";
+            panel6.Size = new Size(1, 50);
+            panel6.TabIndex = 29;
+            // 
+            // ddLabelMinimumSaveIntervalUnit
+            // 
+            ddLabelMinimumSaveIntervalUnit.AutoSize = true;
+            ddLabelMinimumSaveIntervalUnit.Location = new Point(1291, 391);
+            ddLabelMinimumSaveIntervalUnit.Name = "ddLabelMinimumSaveIntervalUnit";
+            ddLabelMinimumSaveIntervalUnit.Size = new Size(62, 37);
+            ddLabelMinimumSaveIntervalUnit.TabIndex = 18;
+            ddLabelMinimumSaveIntervalUnit.Text = "min";
+            // 
+            // ddLabelMinimumSaveInterval
+            // 
+            ddLabelMinimumSaveInterval.AutoSize = true;
+            ddLabelMinimumSaveInterval.Location = new Point(825, 391);
+            ddLabelMinimumSaveInterval.Name = "ddLabelMinimumSaveInterval";
+            ddLabelMinimumSaveInterval.Size = new Size(210, 37);
+            ddLabelMinimumSaveInterval.TabIndex = 17;
+            ddLabelMinimumSaveInterval.Text = "Force save every";
+            // 
+            // ddLabelCompareMode
+            // 
+            ddLabelCompareMode.AutoSize = true;
+            ddLabelCompareMode.Location = new Point(33, 511);
+            ddLabelCompareMode.Name = "ddLabelCompareMode";
+            ddLabelCompareMode.Size = new Size(238, 37);
+            ddLabelCompareMode.TabIndex = 16;
+            ddLabelCompareMode.Text = "Comparison Mode";
+            // 
+            // ddLabelTimeoutUnit
+            // 
+            ddLabelTimeoutUnit.AutoSize = true;
+            ddLabelTimeoutUnit.Location = new Point(1291, 448);
+            ddLabelTimeoutUnit.Name = "ddLabelTimeoutUnit";
+            ddLabelTimeoutUnit.Size = new Size(51, 37);
+            ddLabelTimeoutUnit.TabIndex = 15;
+            ddLabelTimeoutUnit.Text = "ms";
+            // 
+            // ddLabelDescription
+            // 
+            ddLabelDescription.ForeColor = SystemColors.Highlight;
+            ddLabelDescription.Location = new Point(825, 29);
+            ddLabelDescription.Name = "ddLabelDescription";
+            ddLabelDescription.Size = new Size(589, 271);
+            ddLabelDescription.TabIndex = 14;
+            ddLabelDescription.Text = resources.GetString("ddLabelDescription.Text");
+            // 
+            // ddTextBoxExcludedRegions
+            // 
+            ddTextBoxExcludedRegions.AcceptsReturn = true;
+            ddTextBoxExcludedRegions.Location = new Point(33, 353);
+            ddTextBoxExcludedRegions.Multiline = true;
+            ddTextBoxExcludedRegions.Name = "ddTextBoxExcludedRegions";
+            ddTextBoxExcludedRegions.ScrollBars = ScrollBars.Vertical;
+            ddTextBoxExcludedRegions.Size = new Size(747, 130);
+            ddTextBoxExcludedRegions.TabIndex = 13;
+            ddTextBoxExcludedRegions.TextChanged += DdSettingChanged;
+            // 
+            // ddLabelExcludedRegions
+            // 
+            ddLabelExcludedRegions.AutoSize = true;
+            ddLabelExcludedRegions.Location = new Point(33, 301);
+            ddLabelExcludedRegions.Name = "ddLabelExcludedRegions";
+            ddLabelExcludedRegions.Size = new Size(591, 37);
+            ddLabelExcludedRegions.TabIndex = 12;
+            ddLabelExcludedRegions.Text = "Excluded regions (x,y,width,height) (one per line)";
+            // 
+            // ddCheckBoxShowNotifications
+            // 
+            ddCheckBoxShowNotifications.AutoSize = true;
+            ddCheckBoxShowNotifications.Location = new Point(825, 571);
+            ddCheckBoxShowNotifications.Name = "ddCheckBoxShowNotifications";
+            ddCheckBoxShowNotifications.Size = new Size(589, 41);
+            ddCheckBoxShowNotifications.TabIndex = 11;
+            ddCheckBoxShowNotifications.Text = "Show notifications when captures are skipped";
+            ddCheckBoxShowNotifications.UseVisualStyleBackColor = true;
+            ddCheckBoxShowNotifications.CheckedChanged += DdSettingChanged;
+            // 
+            // ddCheckBoxUpdateReferenceOnSave
+            // 
+            ddCheckBoxUpdateReferenceOnSave.AutoSize = true;
+            ddCheckBoxUpdateReferenceOnSave.Location = new Point(33, 571);
+            ddCheckBoxUpdateReferenceOnSave.Name = "ddCheckBoxUpdateReferenceOnSave";
+            ddCheckBoxUpdateReferenceOnSave.Size = new Size(553, 41);
+            ddCheckBoxUpdateReferenceOnSave.TabIndex = 11;
+            ddCheckBoxUpdateReferenceOnSave.Text = "Update baseline only after a saved capture";
+            ddCheckBoxUpdateReferenceOnSave.UseVisualStyleBackColor = true;
+            ddCheckBoxUpdateReferenceOnSave.CheckedChanged += DdSettingChanged;
+            // 
+            // ddCheckBoxDiagnostics
+            // 
+            ddCheckBoxDiagnostics.AutoSize = true;
+            ddCheckBoxDiagnostics.Location = new Point(825, 635);
+            ddCheckBoxDiagnostics.Name = "ddCheckBoxDiagnostics";
+            ddCheckBoxDiagnostics.Size = new Size(416, 41);
+            ddCheckBoxDiagnostics.TabIndex = 11;
+            ddCheckBoxDiagnostics.Text = "Enable comparison diagnostics";
+            ddCheckBoxDiagnostics.UseVisualStyleBackColor = true;
+            ddCheckBoxDiagnostics.CheckedChanged += DdSettingChanged;
+            // 
+            // ddCheckBoxDryRun
+            // 
+            ddCheckBoxDryRun.AutoSize = true;
+            ddCheckBoxDryRun.Location = new Point(825, 512);
+            ddCheckBoxDryRun.Name = "ddCheckBoxDryRun";
+            ddCheckBoxDryRun.Size = new Size(582, 41);
+            ddCheckBoxDryRun.TabIndex = 10;
+            ddCheckBoxDryRun.Text = "Dry run (report duplicates but still save them)";
+            ddCheckBoxDryRun.UseVisualStyleBackColor = true;
+            ddCheckBoxDryRun.CheckedChanged += DdSettingChanged;
+            // 
+            // ddNumericTimeout
+            // 
+            ddNumericTimeout.Increment = new decimal(new int[] { 50, 0, 0, 0 });
+            ddNumericTimeout.Location = new Point(1119, 446);
+            ddNumericTimeout.Maximum = new decimal(new int[] { 1000, 0, 0, 0 });
+            ddNumericTimeout.Minimum = new decimal(new int[] { 50, 0, 0, 0 });
+            ddNumericTimeout.Name = "ddNumericTimeout";
+            ddNumericTimeout.Size = new Size(151, 43);
+            ddNumericTimeout.TabIndex = 9;
+            ddNumericTimeout.Value = new decimal(new int[] { 250, 0, 0, 0 });
+            ddNumericTimeout.ValueChanged += DdSettingChanged;
+            // 
+            // ddNumericMinimumSaveInterval
+            // 
+            ddNumericMinimumSaveInterval.Location = new Point(1119, 389);
+            ddNumericMinimumSaveInterval.Maximum = new decimal(new int[] { 1140, 0, 0, 0 });
+            ddNumericMinimumSaveInterval.Name = "ddNumericMinimumSaveInterval";
+            ddNumericMinimumSaveInterval.Size = new Size(151, 43);
+            ddNumericMinimumSaveInterval.TabIndex = 9;
+            ddNumericMinimumSaveInterval.ValueChanged += DdSettingChanged;
+            // 
+            // ddLabelTimeout
+            // 
+            ddLabelTimeout.AutoSize = true;
+            ddLabelTimeout.Location = new Point(825, 446);
+            ddLabelTimeout.Name = "ddLabelTimeout";
+            ddLabelTimeout.Size = new Size(261, 37);
+            ddLabelTimeout.TabIndex = 8;
+            ddLabelTimeout.Text = "Comparison timeout";
+            // 
+            // ddCheckBoxPerActiveWindow
+            // 
+            ddCheckBoxPerActiveWindow.AutoSize = true;
+            ddCheckBoxPerActiveWindow.Location = new Point(33, 635);
+            ddCheckBoxPerActiveWindow.Name = "ddCheckBoxPerActiveWindow";
+            ddCheckBoxPerActiveWindow.Size = new Size(572, 41);
+            ddCheckBoxPerActiveWindow.TabIndex = 7;
+            ddCheckBoxPerActiveWindow.Text = "Track separate references for active windows";
+            ddCheckBoxPerActiveWindow.UseVisualStyleBackColor = true;
+            ddCheckBoxPerActiveWindow.CheckedChanged += DdSettingChanged;
+            // 
+            // ddComboBoxDynamicRegions
+            // 
+            ddComboBoxDynamicRegions.DropDownStyle = ComboBoxStyle.DropDownList;
+            ddComboBoxDynamicRegions.FormattingEnabled = true;
+            ddComboBoxDynamicRegions.Location = new Point(336, 216);
+            ddComboBoxDynamicRegions.Name = "ddComboBoxDynamicRegions";
+            ddComboBoxDynamicRegions.Size = new Size(444, 45);
+            ddComboBoxDynamicRegions.TabIndex = 6;
+            ddComboBoxDynamicRegions.SelectedIndexChanged += DdSettingChanged;
+            // 
+            // ddComboBoxCompareMode
+            // 
+            ddComboBoxCompareMode.DropDownStyle = ComboBoxStyle.DropDownList;
+            ddComboBoxCompareMode.FormattingEnabled = true;
+            ddComboBoxCompareMode.Location = new Point(325, 508);
+            ddComboBoxCompareMode.Name = "ddComboBoxCompareMode";
+            ddComboBoxCompareMode.Size = new Size(455, 45);
+            ddComboBoxCompareMode.TabIndex = 6;
+            ddComboBoxCompareMode.SelectedIndexChanged += DdSettingChanged;
+            // 
+            // ddLabelDynamicRegions
+            // 
+            ddLabelDynamicRegions.AutoSize = true;
+            ddLabelDynamicRegions.Location = new Point(33, 216);
+            ddLabelDynamicRegions.Name = "ddLabelDynamicRegions";
+            ddLabelDynamicRegions.Size = new Size(271, 37);
+            ddLabelDynamicRegions.TabIndex = 5;
+            ddLabelDynamicRegions.Text = "Dynamic screen areas";
+            // 
+            // ddLabelSensitivityValue
+            // 
+            ddLabelSensitivityValue.AutoSize = true;
+            ddLabelSensitivityValue.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            ddLabelSensitivityValue.Location = new Point(708, 119);
+            ddLabelSensitivityValue.Name = "ddLabelSensitivityValue";
+            ddLabelSensitivityValue.Size = new Size(72, 37);
+            ddLabelSensitivityValue.TabIndex = 4;
+            ddLabelSensitivityValue.Text = "50%";
+            // 
+            // ddTrackBarSensitivity
+            // 
+            ddTrackBarSensitivity.AutoSize = false;
+            ddTrackBarSensitivity.Location = new Point(190, 119);
+            ddTrackBarSensitivity.Maximum = 100;
+            ddTrackBarSensitivity.Name = "ddTrackBarSensitivity";
+            ddTrackBarSensitivity.Size = new Size(513, 56);
+            ddTrackBarSensitivity.TabIndex = 3;
+            ddTrackBarSensitivity.TickFrequency = 10;
+            ddTrackBarSensitivity.Value = 50;
+            ddTrackBarSensitivity.ValueChanged += DdSettingChanged;
+            // 
+            // ddLabelSensitivity
+            // 
+            ddLabelSensitivity.AutoSize = true;
+            ddLabelSensitivity.Location = new Point(33, 119);
+            ddLabelSensitivity.Name = "ddLabelSensitivity";
+            ddLabelSensitivity.Size = new Size(136, 37);
+            ddLabelSensitivity.TabIndex = 2;
+            ddLabelSensitivity.Text = "Sensitivity";
+            // 
+            // ddToggleEnable
+            // 
+            ddToggleEnable.Checked = false;
+            ddToggleEnable.Location = new Point(33, 29);
+            ddToggleEnable.Name = "ddToggleEnable";
+            ddToggleEnable.OffColor = Color.FromArgb(200, 200, 200);
+            ddToggleEnable.OnColor = Color.FromArgb(0, 120, 212);
+            ddToggleEnable.Size = new Size(75, 30);
+            ddToggleEnable.TabIndex = 1;
+            ddToggleEnable.ThumbColor = Color.White;
+            ddToggleEnable.CheckedChanged += DdSettingChanged;
+            // 
+            // ddLabelEnable
+            // 
+            ddLabelEnable.AutoSize = true;
+            ddLabelEnable.Location = new Point(129, 26);
+            ddLabelEnable.Name = "ddLabelEnable";
+            ddLabelEnable.Size = new Size(261, 37);
+            ddLabelEnable.TabIndex = 0;
+            ddLabelEnable.Text = "Save only if changed";
+            // 
             // tabPageRetention
             // 
             tabPageRetention.Controls.Add(rtLabelAutoCleanup);
@@ -1147,9 +1641,11 @@
             rtToggleSwitchAutoCleanup.Size = new Size(75, 30);
             rtToggleSwitchAutoCleanup.TabIndex = 1;
             rtToggleSwitchAutoCleanup.ThumbColor = Color.White;
+            rtToggleSwitchAutoCleanup.CheckedChanged += RetentionSettingChanged;
             // 
             // rtGroupBoxAction
             // 
+            rtGroupBoxAction.Controls.Add(rtButtonActionDefault);
             rtGroupBoxAction.Controls.Add(rtComboBoxAction);
             rtGroupBoxAction.Controls.Add(rtLabelAction);
             rtGroupBoxAction.Controls.Add(rtLabelBackupFolder);
@@ -1163,16 +1659,32 @@
             rtGroupBoxAction.TabStop = false;
             rtGroupBoxAction.Text = "Action";
             // 
+            // rtButtonActionDefault
+            // 
+            rtButtonActionDefault.BackColor = Color.Transparent;
+            rtButtonActionDefault.Cursor = Cursors.Hand;
+            rtButtonActionDefault.FlatAppearance.BorderSize = 0;
+            rtButtonActionDefault.FlatStyle = FlatStyle.Flat;
+            rtButtonActionDefault.Font = new Font("Segoe Fluent Icons", 12F);
+            rtButtonActionDefault.Location = new Point(719, -1);
+            rtButtonActionDefault.Name = "rtButtonActionDefault";
+            rtButtonActionDefault.Size = new Size(42, 42);
+            rtButtonActionDefault.TabIndex = 21;
+            rtButtonActionDefault.TabStop = false;
+            rtButtonActionDefault.Text = "";
+            rtButtonActionDefault.UseVisualStyleBackColor = true;
+            rtButtonActionDefault.Click += RtButtonActionDefault_Click;
+            // 
             // rtComboBoxAction
             // 
             rtComboBoxAction.DropDownStyle = ComboBoxStyle.DropDownList;
             rtComboBoxAction.Font = new Font("Segoe UI", 10F);
             rtComboBoxAction.FormattingEnabled = true;
-            rtComboBoxAction.Items.AddRange(new object[] { "Move to Recycle Bin", "Delete permanently", "Backup to another folder before deleting" });
             rtComboBoxAction.Location = new Point(144, 54);
             rtComboBoxAction.Name = "rtComboBoxAction";
             rtComboBoxAction.Size = new Size(597, 45);
             rtComboBoxAction.TabIndex = 1;
+            rtComboBoxAction.SelectedIndexChanged += RtComboBoxAction_SelectedIndexChanged;
             // 
             // rtLabelAction
             // 
@@ -1202,6 +1714,7 @@
             rtTextBoxBackupFolder.ReadOnly = true;
             rtTextBoxBackupFolder.Size = new Size(332, 43);
             rtTextBoxBackupFolder.TabIndex = 3;
+            rtTextBoxBackupFolder.TextChanged += RetentionSettingChanged;
             // 
             // rtButtonBrowseBackupFolder
             // 
@@ -1224,6 +1737,7 @@
             rtCheckBoxPerSessionSubfolder.TabIndex = 5;
             rtCheckBoxPerSessionSubfolder.Text = "Create a subfolder for each cleanup session";
             rtCheckBoxPerSessionSubfolder.UseVisualStyleBackColor = true;
+            rtCheckBoxPerSessionSubfolder.CheckedChanged += RetentionSettingChanged;
             // 
             // rtButtonCleanupNow
             // 
@@ -1238,12 +1752,13 @@
             // 
             // rtGroupBoxSelection
             // 
+            rtGroupBoxSelection.Controls.Add(rtButtonSelectionDefault);
             rtGroupBoxSelection.Controls.Add(rtNumericMaxFiles);
             rtGroupBoxSelection.Controls.Add(rtCheckBoxMaxDays);
             rtGroupBoxSelection.Controls.Add(rtNumericMaxDays);
-            rtGroupBoxSelection.Controls.Add(rtLabelDaysSuffix);
+            rtGroupBoxSelection.Controls.Add(rtLabelMaxDaysSuffix);
             rtGroupBoxSelection.Controls.Add(rtCheckBoxMaxFiles);
-            rtGroupBoxSelection.Controls.Add(rtLabelFilesSuffix);
+            rtGroupBoxSelection.Controls.Add(rtLabelMaxFilesSuffix);
             rtGroupBoxSelection.Controls.Add(rtCheckBoxIncludeSubfolders);
             rtGroupBoxSelection.Location = new Point(36, 90);
             rtGroupBoxSelection.Name = "rtGroupBoxSelection";
@@ -1251,6 +1766,22 @@
             rtGroupBoxSelection.TabIndex = 2;
             rtGroupBoxSelection.TabStop = false;
             rtGroupBoxSelection.Text = "Selection";
+            // 
+            // rtButtonSelectionDefault
+            // 
+            rtButtonSelectionDefault.BackColor = Color.Transparent;
+            rtButtonSelectionDefault.Cursor = Cursors.Hand;
+            rtButtonSelectionDefault.FlatAppearance.BorderSize = 0;
+            rtButtonSelectionDefault.FlatStyle = FlatStyle.Flat;
+            rtButtonSelectionDefault.Font = new Font("Segoe Fluent Icons", 12F);
+            rtButtonSelectionDefault.Location = new Point(719, -1);
+            rtButtonSelectionDefault.Name = "rtButtonSelectionDefault";
+            rtButtonSelectionDefault.Size = new Size(42, 42);
+            rtButtonSelectionDefault.TabIndex = 21;
+            rtButtonSelectionDefault.TabStop = false;
+            rtButtonSelectionDefault.Text = "";
+            rtButtonSelectionDefault.UseVisualStyleBackColor = true;
+            rtButtonSelectionDefault.Click += RtButtonSelectionDefault_Click;
             // 
             // rtNumericMaxFiles
             // 
@@ -1262,6 +1793,7 @@
             rtNumericMaxFiles.Size = new Size(143, 43);
             rtNumericMaxFiles.TabIndex = 4;
             rtNumericMaxFiles.Value = new decimal(new int[] { 500, 0, 0, 0 });
+            rtNumericMaxFiles.ValueChanged += RetentionSettingChanged;
             // 
             // rtCheckBoxMaxDays
             // 
@@ -1273,6 +1805,7 @@
             rtCheckBoxMaxDays.TabIndex = 0;
             rtCheckBoxMaxDays.Text = "Delete screenshots older than";
             rtCheckBoxMaxDays.UseVisualStyleBackColor = true;
+            rtCheckBoxMaxDays.CheckedChanged += RetentionSettingChanged;
             // 
             // rtNumericMaxDays
             // 
@@ -1284,16 +1817,17 @@
             rtNumericMaxDays.Size = new Size(143, 43);
             rtNumericMaxDays.TabIndex = 1;
             rtNumericMaxDays.Value = new decimal(new int[] { 30, 0, 0, 0 });
+            rtNumericMaxDays.ValueChanged += RetentionSettingChanged;
             // 
-            // rtLabelDaysSuffix
+            // rtLabelMaxDaysSuffix
             // 
-            rtLabelDaysSuffix.AutoSize = true;
-            rtLabelDaysSuffix.Font = new Font("Segoe UI", 10F);
-            rtLabelDaysSuffix.Location = new Point(607, 55);
-            rtLabelDaysSuffix.Name = "rtLabelDaysSuffix";
-            rtLabelDaysSuffix.Size = new Size(71, 37);
-            rtLabelDaysSuffix.TabIndex = 2;
-            rtLabelDaysSuffix.Text = "days";
+            rtLabelMaxDaysSuffix.AutoSize = true;
+            rtLabelMaxDaysSuffix.Font = new Font("Segoe UI", 10F);
+            rtLabelMaxDaysSuffix.Location = new Point(607, 55);
+            rtLabelMaxDaysSuffix.Name = "rtLabelMaxDaysSuffix";
+            rtLabelMaxDaysSuffix.Size = new Size(71, 37);
+            rtLabelMaxDaysSuffix.TabIndex = 2;
+            rtLabelMaxDaysSuffix.Text = "days";
             // 
             // rtCheckBoxMaxFiles
             // 
@@ -1305,16 +1839,17 @@
             rtCheckBoxMaxFiles.TabIndex = 3;
             rtCheckBoxMaxFiles.Text = "Retain only the newest";
             rtCheckBoxMaxFiles.UseVisualStyleBackColor = true;
+            rtCheckBoxMaxFiles.CheckedChanged += RetentionSettingChanged;
             // 
-            // rtLabelFilesSuffix
+            // rtLabelMaxFilesSuffix
             // 
-            rtLabelFilesSuffix.AutoSize = true;
-            rtLabelFilesSuffix.Font = new Font("Segoe UI", 10F);
-            rtLabelFilesSuffix.Location = new Point(607, 114);
-            rtLabelFilesSuffix.Name = "rtLabelFilesSuffix";
-            rtLabelFilesSuffix.Size = new Size(154, 37);
-            rtLabelFilesSuffix.TabIndex = 5;
-            rtLabelFilesSuffix.Text = "screenshots";
+            rtLabelMaxFilesSuffix.AutoSize = true;
+            rtLabelMaxFilesSuffix.Font = new Font("Segoe UI", 10F);
+            rtLabelMaxFilesSuffix.Location = new Point(607, 114);
+            rtLabelMaxFilesSuffix.Name = "rtLabelMaxFilesSuffix";
+            rtLabelMaxFilesSuffix.Size = new Size(154, 37);
+            rtLabelMaxFilesSuffix.TabIndex = 5;
+            rtLabelMaxFilesSuffix.Text = "screenshots";
             // 
             // rtCheckBoxIncludeSubfolders
             // 
@@ -1326,6 +1861,7 @@
             rtCheckBoxIncludeSubfolders.TabIndex = 6;
             rtCheckBoxIncludeSubfolders.Text = "Include subfolders";
             rtCheckBoxIncludeSubfolders.UseVisualStyleBackColor = true;
+            rtCheckBoxIncludeSubfolders.CheckedChanged += RetentionSettingChanged;
             // 
             // rtCheckBoxDryRun
             // 
@@ -1337,6 +1873,7 @@
             rtCheckBoxDryRun.TabIndex = 4;
             rtCheckBoxDryRun.Text = "Dry run mode (preview only, no deletion)";
             rtCheckBoxDryRun.UseVisualStyleBackColor = true;
+            rtCheckBoxDryRun.CheckedChanged += RetentionSettingChanged;
             // 
             // rtTextBoxCleanupResult
             // 
@@ -1384,6 +1921,9 @@
             // 
             // tabPageHotkeys
             // 
+            tabPageHotkeys.Controls.Add(hkLabelDescription);
+            tabPageHotkeys.Controls.Add(hkLabelWarning);
+            tabPageHotkeys.Controls.Add(hkButtonDefault);
             tabPageHotkeys.Controls.Add(hkLabelEnable);
             tabPageHotkeys.Controls.Add(hkToggleEnable);
             tabPageHotkeys.Controls.Add(hkLabelShortcut);
@@ -1399,14 +1939,50 @@
             tabPageHotkeys.Text = "Hotkeys";
             tabPageHotkeys.UseVisualStyleBackColor = true;
             // 
+            // hkLabelDescription
+            // 
+            hkLabelDescription.Location = new Point(850, 29);
+            hkLabelDescription.Name = "hkLabelDescription";
+            hkLabelDescription.Size = new Size(563, 129);
+            hkLabelDescription.TabIndex = 15;
+            hkLabelDescription.Text = "Use the hotkey shortcut at any time to save a screenhot.";
+            // 
+            // hkLabelWarning
+            // 
+            hkLabelWarning.BackColor = Color.Transparent;
+            hkLabelWarning.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            hkLabelWarning.ForeColor = SystemColors.MenuHighlight;
+            hkLabelWarning.Location = new Point(850, 519);
+            hkLabelWarning.Name = "hkLabelWarning";
+            hkLabelWarning.Size = new Size(563, 154);
+            hkLabelWarning.TabIndex = 14;
+            hkLabelWarning.Text = "Warning: A conflict was found during the last attempt to set the global hotkey shortcut. Please select another shortcut and try again.";
+            // 
+            // hkButtonDefault
+            // 
+            hkButtonDefault.BackColor = Color.Transparent;
+            hkButtonDefault.Cursor = Cursors.Hand;
+            hkButtonDefault.FlatAppearance.BorderSize = 0;
+            hkButtonDefault.FlatStyle = FlatStyle.Flat;
+            hkButtonDefault.Font = new Font("Segoe Fluent Icons", 12F);
+            hkButtonDefault.Location = new Point(776, 29);
+            hkButtonDefault.Name = "hkButtonDefault";
+            hkButtonDefault.Size = new Size(42, 42);
+            hkButtonDefault.TabIndex = 13;
+            hkButtonDefault.TabStop = false;
+            hkButtonDefault.Text = "\uE777";
+            hkButtonDefault.UseVisualStyleBackColor = true;
+            hkButtonDefault.Click += HkButtonDefault_Click;
+            // 
             // hkLabelEnable
             // 
             hkLabelEnable.AutoSize = true;
-            hkLabelEnable.Location = new Point(129, 27);
+            hkLabelEnable.Location = new Point(129, 26);
             hkLabelEnable.Name = "hkLabelEnable";
             hkLabelEnable.Size = new Size(280, 37);
             hkLabelEnable.TabIndex = 0;
             hkLabelEnable.Text = "Enable capture hotkey";
+            hkLabelEnable.Click += hkLabelEnable_Click;
             // 
             // hkToggleEnable
             // 
@@ -1454,9 +2030,9 @@
             hkLabelStatus.AutoSize = true;
             hkLabelStatus.Location = new Point(36, 191);
             hkLabelStatus.Name = "hkLabelStatus";
-            hkLabelStatus.Size = new Size(610, 37);
+            hkLabelStatus.Size = new Size(721, 37);
             hkLabelStatus.TabIndex = 5;
-            hkLabelStatus.Text = "Choose a shortcut with Ctrl, Alt, Shift, or Windows.";
+            hkLabelStatus.Text = "Choose a shortcut with a Ctrl, Alt, and/or Shift combination.";
             // 
             // hkListViewAvailable
             // 
@@ -1485,7 +2061,7 @@
             // buttonCancel
             // 
             buttonCancel.Font = new Font("Segoe UI", 10F);
-            buttonCancel.Location = new Point(1003, 798);
+            buttonCancel.Location = new Point(1003, 800);
             buttonCancel.Name = "buttonCancel";
             buttonCancel.Size = new Size(230, 70);
             buttonCancel.TabIndex = 0;
@@ -1500,7 +2076,7 @@
             buttonOk.FlatStyle = FlatStyle.Flat;
             buttonOk.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             buttonOk.ForeColor = Color.White;
-            buttonOk.Location = new Point(1242, 798);
+            buttonOk.Location = new Point(1242, 800);
             buttonOk.Margin = new Padding(6);
             buttonOk.Name = "buttonOk";
             buttonOk.Size = new Size(230, 70);
@@ -1557,6 +2133,12 @@
             ipGroupBoxAdvanced.PerformLayout();
             ipGroupBoxColorMode.ResumeLayout(false);
             ipGroupBoxColorMode.PerformLayout();
+            tabPageDedupe.ResumeLayout(false);
+            tabPageDedupe.PerformLayout();
+            panel5.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)ddNumericTimeout).EndInit();
+            ((System.ComponentModel.ISupportInitialize)ddNumericMinimumSaveInterval).EndInit();
+            ((System.ComponentModel.ISupportInitialize)ddTrackBarSensitivity).EndInit();
             tabPageRetention.ResumeLayout(false);
             tabPageRetention.PerformLayout();
             rtGroupBoxAction.ResumeLayout(false);
@@ -1574,7 +2156,6 @@
 
         private TabControl tabControlSettings;
         private TabPage tabPageWatermark;
-        private TabPage tabPageAnnotation;
         private Button buttonCancel;
         private Button buttonOk;
         private GroupBox wmGroupBoxUseText;
@@ -1600,6 +2181,7 @@
         private Label wmLabelWatermarkPosition;
         private ComboBox wmComboBoxWatermarkRotation;
         private Label wmLabelWatermarkRotation;
+        private TabPage tabPageAnnotation;
         private GroupBox anGroupBoxAnnotation;
         private ToggleSwitch anToggleUseAnnotation;
         private Label anLabelAnnotationFormat;
@@ -1655,15 +2237,13 @@
         private Label ipLabelColorTemperature;
         private CheckBox ipCheckBoxNoiseReduction;
         private CheckBox ipCheckBoxHighContrast;
-        private Label labelColorExFull;
         private TabPage tabPageRetention;
-        private TabPage tabPageHotkeys;
         private CheckBox rtCheckBoxMaxDays;
         private NumericUpDown rtNumericMaxDays;
-        private Label rtLabelDaysSuffix;
+        private Label rtLabelMaxDaysSuffix;
         private CheckBox rtCheckBoxMaxFiles;
         private NumericUpDown rtNumericMaxFiles;
-        private Label rtLabelFilesSuffix;
+        private Label rtLabelMaxFilesSuffix;
         private Label rtLabelAction;
         private ComboBox rtComboBoxAction;
         private Label rtLabelBackupFolder;
@@ -1681,6 +2261,7 @@
         private GroupBox rtGroupBoxAction;
         private ToggleSwitch rtToggleSwitchAutoCleanup;
         private Label rtLabelAutoCleanup;
+        private TabPage tabPageHotkeys;
         private Label hkLabelEnable;
         private ToggleSwitch hkToggleEnable;
         private Label hkLabelShortcut;
@@ -1690,5 +2271,45 @@
         private ListView hkListViewAvailable;
         private ColumnHeader hkColumnShortcut;
         private ColumnHeader hkColumnAvailability;
+        private TabPage tabPageDedupe;
+        private Label ddLabelEnable;
+        private ToggleSwitch ddToggleEnable;
+        private Label ddLabelSensitivity;
+        private TrackBar ddTrackBarSensitivity;
+        private Label ddLabelSensitivityValue;
+        private Label ddLabelDynamicRegions;
+        private ComboBox ddComboBoxDynamicRegions;
+        private CheckBox ddCheckBoxPerActiveWindow;
+        private Label ddLabelTimeout;
+        private NumericUpDown ddNumericTimeout;
+        private CheckBox ddCheckBoxDryRun;
+        private CheckBox ddCheckBoxShowNotifications;
+        private CheckBox ddCheckBoxUpdateReferenceOnSave;
+        private CheckBox ddCheckBoxDiagnostics;
+        private Label ddLabelExcludedRegions;
+        private TextBox ddTextBoxExcludedRegions;
+        private Label ddLabelDescription;
+        private ComboBox ddComboBoxCompareMode;
+        private NumericUpDown ddNumericMinimumSaveInterval;
+        private Label ddLabelTimeoutUnit;
+        private Label ddLabelCompareMode;
+        private Label ddLabelMinimumSaveIntervalUnit;
+        private Label ddLabelMinimumSaveInterval;
+        private Panel panel5;
+        private Panel panel6;
+        private Button anButtonDefault;
+        private Button wmButtonUseTextDefault;
+        private Button wmButtonUseImageDefault;
+        private Button wmButtonCommonDefault;
+        private Button dsButtonModesDefault;
+        private Button dsButtonProcessingDefault;
+        private Button ipButtonAdvProcessingDefault;
+        private Button ipButtonColorModeDefault;
+        private Button ddButtonDefault;
+        private Button rtButtonActionDefault;
+        private Button rtButtonSelectionDefault;
+        private Button hkButtonDefault;
+        private Label hkLabelWarning;
+        private Label hkLabelDescription;
     }
 }

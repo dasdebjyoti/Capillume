@@ -1,39 +1,45 @@
 # Capillume
 
-Capillume is a lightweight Windows screenshot automation tool. Capture your entire desktop or the active window on a schedule, save images in your preferred format, and keep the application available from the system tray.
+**Capillume** is a lightweight Windows screenshot automation tool. Capture your
+entire desktop or the active window on a schedule, save images in your preferred
+format, and keep the application available from the system tray.
 
 ## Features
 
 - Capture all connected displays or the active window.
-- Exclude the Capillume window from screenshots by default, or include it when needed.
-- Capture a screenshot immediately when scheduled capture starts.
+- Use **Capture Now**, a **global hotkey** or **scheduled capture**.
+- Include or exclude the Capillume window from screenshots
 - Configure the capture interval in minutes.
 - Save screenshots to a custom folder.
 - Save as PNG, JPG, BMP, or WebP.
 - Configure JPG and WebP image quality.
-- Downscale screenshots before saving using target height, resize percentage, max width, or bounding box modes.
-- Choose downscale quality and optional processing controls such as sharpen, skip smaller images, full-screen only, and lossy-formats only.
-- Process screenshots before saving with color modes, high contrast, noise reduction, and color temperature adjustments.
+- Downscale screenshots before saving using target height, resize percentage,
+  max width, or bounding box modes.
+- Choose downscale quality and optional processing controls such as sharpen,
+  skip smaller images, full-screen only, and lossy-formats only.
+- Process screenshots before saving with color modes, high contrast, noise
+  reduction, and color temperature adjustments.
 - Add text and/or image watermarks to captured screenshots.
 - Customize watermark text, font family, font size, and font style.
 - Select a watermark image from a PNG, JPG, JPEG, BMP, or GIF file.
 - Adjust watermark opacity and image scale.
-- Position watermarks at the top, center, or bottom of the screenshot, aligned left, center, or right.
+- Position watermarks at the top, center, or bottom of the screenshot, aligned
+  left, center, or right.
 - Rotate watermarks by 0°, 90°, 180°, or 270°.
-- Add dynamic annotations containing capture time, system, user, application, and process information.
+- Add dynamic annotations containing capture time, system, user, application,
+  and process information.
 - Automatically clean up screenshots by age and/or file count.
-- Move retained screenshots to the Recycle Bin, delete them permanently, or back them up before deletion.
+- Move retained screenshots to the Recycle Bin, delete them permanently, or back
+  them up before deletion.
+- Skip screenshots that are identical or nearly identical to the last saved capture.
 - Show desktop notifications after screenshots are saved.
 - Start automatically with Windows.
-- Use the **Capture Now** button in the main window for an immediate screenshot.
-- Use the **Capture Now** command from the system tray.
-- Configure an optional global keyboard shortcut to capture a screenshot while Capillume is minimized or another application is active.
 - Minimize to the system tray instead of closing the application.
-- Pause screenshot capture when Windows locks the session.
+- Pause screenshot capture when user locks the session.
 - Resume screenshot capture when the user unlocks the session.
 - Pause screenshot capture while Windows is sleeping or suspended.
 - Resume screenshot capture after Windows wakes up.
-- Stop scheduling new captures and close gracefully during Windows logoff or shutdown.
+- Close gracefully during Windows logoff or shutdown.
 - Complete an already-running synchronous capture before exiting.
 
 ## Requirements
@@ -43,7 +49,8 @@ Capillume is a lightweight Windows screenshot automation tool. Capture your enti
 
 ## Build and run
 
-Clone the repository and open `Capillume.slnx` in Visual Studio, or run the following commands from the repository directory:
+Clone the repository and open `Capillume.slnx` in Visual Studio, or run the
+following commands from the repository directory:
 
 ```powershell
 dotnet restore
@@ -60,12 +67,12 @@ dotnet build .\Capillume.csproj --configuration Release
 ```
 
 The Release build publishes a self-contained, single-file `win-x64` application
-under `bin\Release\net10.0-windows\publish\win-x64`. The published output includes
-`LICENSE.txt` and `README.txt` for distribution with the application.
+under `bin\Release\net10.0-windows\publish\win-x64`. The published output
+includes `LICENSE.txt` and `README.txt` for distribution with the application.
 
 ## Configuration
 
-Use the main window to configure:
+Use the main and advanced settings windows to configure:
 
 1. Whether scheduled screenshots are enabled.
 2. The capture interval.
@@ -77,9 +84,10 @@ Use the main window to configure:
 8. Annotation settings.
 9. Downscale settings.
 10. Image Processing settings.
-11. Retention and cleanup settings.
-12. Notifications and Windows startup behavior.
-13. An optional global capture hotkey.
+11. Duplicate detection settings.
+12. Retention and cleanup settings.
+13. Notifications and Windows startup behavior.
+14. Global capture hotkey.
 
 ### Watermarks
 
@@ -116,10 +124,12 @@ startup, and the global hotkey are disabled by default.
 
 ### Capture scope
 
-By default, Capillume does not include its own window in screenshots. Enable
-**Include Capillume in screenshots** to include it in both full-screen and
-active-window captures. For active-window capture, screenshots are not saved
-when the Capillume window is the active window while this option is disabled.
+By default, Capillume does not include its own window in screenshots. Disable
+**Exclude Capillume from screenshots** to include it in both Full Screen and
+Active Window captures. If it is disabled, the Desktop window capture is saved
+when the Capillume window is the active window and mode is set to Active Window.
+If it is disabled while the mode is set to Full Screen, no capture is saved when
+the Capillume window is only window on screen.
 
 ### Hotkeys
 
@@ -136,16 +146,16 @@ the settings are not applied and the previous shortcut remains active.
 
 ### About
 
-Open **About** from the main window or the system-tray menu to view the installed
-application version and open the Capillume GitHub repository.
+Open **About** from the main window or the system-tray menu to view the
+installed application version and open the Capillume GitHub repository.
 
 ### Annotations
 
-Go to **Annotation** tab in the Advanced Settings window to add dynamic information
-to each captured screenshot. Annotations are rendered at the bottom center and
-support custom text formats, font family, font size, font style, text color,
-optional background highlighting, and opacity. Use the annotation field menu to
-insert supported placeholders into the format.
+Go to **Annotation** tab in the Advanced Settings window to add dynamic
+information to each captured screenshot. Annotations are rendered at the bottom
+center and support custom text formats, font family, font size, font style, text
+color, optional background highlighting, and opacity. Use the annotation field
+menu to insert supported placeholders into the format.
 
 Use these fields in an annotation format:
 
@@ -177,9 +187,10 @@ size before saving. Enable downscaling and choose one mode:
 - **Max Width**: reduces width to a maximum value.
 - **Fit Within Bounding Box**: fits the image inside a width/height box.
 
-You can also choose resize quality (**High Quality/Bicubic**, **Balanced/Bilinear**,
-or **Fast/Nearest Neighbor**) and optionally enable sharpen-after-resize, skip
-smaller images, full-screen-only downscaling, or lossy-formats-only downscaling.
+You can also choose resize quality (**High Quality/Bicubic**,
+**Balanced/Bilinear**, or **Fast/Nearest Neighbor**) and optionally enable
+sharpen-after-resize, skip smaller images, full-screen-only downscaling, or
+lossy-formats-only downscaling.
 
 ### Image Processing
 
@@ -203,6 +214,46 @@ The Advanced Processing options are:
 Image processing is applied after downscaling and before the screenshot is saved.
 All image processing options are disabled by default.
 
+### Duplicate detection
+
+Go to the **Duplicates** tab in the Advanced Settings window to avoid saving
+captures that are identical or nearly identical to the last saved screenshot.
+Duplicate detection is disabled by default. When enabled, comparisons run in the
+background and fail open: if a comparison times out or encounters an error, the
+screenshot is saved rather than discarded.
+
+The available settings are:
+
+- **Compare mode**: Perceptual hash + SSIM (balanced default), Checksum + SSIM,
+  Pixel difference only, or SSIM only.
+- **Sensitivity**: controls how much visual change is required before a capture
+  is saved. Higher sensitivity saves smaller changes. The default is 50%.
+- **Dynamic regions**: compare all screen areas, exclude Windows taskbars, exclude
+  taskbars plus manual regions, or exclude manual regions only. Manual regions
+  use `x,y,width,height`, one rectangle per line, in virtual-desktop coordinates.
+- **Compare per active window**: keep a separate comparison reference for each
+  active window so switching applications does not compare unrelated content.
+- **Comparison timeout**: limits the time spent comparing a capture. The default
+  is 250 milliseconds.
+- **Dry run**: reports duplicate decisions without skipping any saves, which is
+  useful for tuning sensitivity.
+- **Show skipped notifications**: displays a tray notification when a duplicate
+  capture is skipped.
+- **Minimum time between saves**: optionally saves at least one capture after the
+  configured number of minutes, even when the screen has not changed.
+- **Update reference only when saved**: keeps the last saved screenshot as the
+  comparison reference. This is enabled by default.
+- **Diagnostics**: writes comparison details to Visual Studio Debug output.
+
+When duplicate detection skips a capture, the capture is not written to disk and
+the normal watermark, annotation, downscale, and image-processing save pipeline
+is not run for that capture. A new baseline is established when there is no
+compatible reference or when a capture is saved.
+
+Duplicate comparison runs against the captured image before watermarking,
+annotation, downscaling, or image processing. Those optional save-time effects
+therefore do not make an otherwise unchanged screen appear different.
+
 ### Retention
 
 Go to the **Retention** tab in the Advanced Settings window to control cleanup
@@ -214,7 +265,8 @@ the folder tree as well.
 Retention rules are applied in this order:
 
 1. Remove screenshots older than the configured maximum age.
-2. From the files that remain, retain only the newest configured number of screenshots.
+2. From the files that remain, retain only the newest configured number of
+   screenshots.
 
 The default retention settings are a 30-day maximum age and a 500-screenshot
 file-count limit. The age rule is enabled by default; the file-count rule is
@@ -225,9 +277,9 @@ available but disabled by default. Cleanup can:
 - Back up files to another folder before deleting them, optionally creating a
   separate subfolder for each cleanup session.
 
-Use **Cleanup Now** to preview or execute cleanup immediately. Enable **Dry run
-mode** to preview candidates and the estimated space to be freed without
-deleting or recycling files.
+Use **Cleanup Now** to preview or execute cleanup immediately. Enable
+**Dry run mode** to preview candidates and the estimated space to be freed
+without deleting or recycling files.
 
 ## Technology
 
@@ -251,3 +303,5 @@ See the repository for licensing information.
 ## Project
 
 [GitHub repository](https://github.com/dasdebjyoti/Capillume)
+
+[Website](https://dasdebjyoti.github.io/Capillume/)

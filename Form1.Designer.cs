@@ -34,7 +34,6 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            toolTipCaptureNow = new ToolTip(components);
             notifyIcon = new NotifyIcon(components);
             contextMenuStrip = new ContextMenuStrip(components);
             showToolStripMenuItem = new ToolStripMenuItem();
@@ -49,6 +48,7 @@
             pictureBoxLogo = new PictureBox();
             labelTitle = new Label();
             CaptureNow = new CaptureNowButton();
+            labelHotkeyHint = new Label();
             labelEnableScreenshots = new Label();
             toggleSwitchEnabled = new ToggleSwitch();
             toggleSwitchNotify = new ToggleSwitch();
@@ -66,7 +66,7 @@
             labelShowNotifications = new Label();
             labelStartWithWindows = new Label();
             labelStatus = new Label();
-            checkBoxIncludeCapillume = new CheckBox();
+            checkBoxExcludeCapillume = new CheckBox();
             groupBox2 = new GroupBox();
             panel5 = new Panel();
             panel6 = new Panel();
@@ -207,13 +207,23 @@
             CaptureNow.CornerRadius = 10;
             CaptureNow.Font = new Font("Segoe UI Semibold", 10F);
             CaptureNow.HoverBackColor = Color.FromArgb(16, 110, 190);
-            CaptureNow.Location = new Point(1155, 30);
+            CaptureNow.Location = new Point(1155, 20);
             CaptureNow.Name = "CaptureNow";
             CaptureNow.PressedBackColor = Color.FromArgb(0, 92, 158);
-            CaptureNow.Size = new Size(299, 86);
+            CaptureNow.Size = new Size(299, 100);
             CaptureNow.TabIndex = 2;
-            CaptureNow.Text = "&Capture Now";
+            CaptureNow.Text = "  &Capture Now";
             CaptureNow.Click += CaptureNow_Click;
+            // 
+            // labelHotkeyHint
+            // 
+            labelHotkeyHint.AutoSize = true;
+            labelHotkeyHint.Font = new Font("Segoe UI", 10F);
+            labelHotkeyHint.Location = new Point(754, 635);
+            labelHotkeyHint.Name = "labelHotkeyHint";
+            labelHotkeyHint.Size = new Size(316, 37);
+            labelHotkeyHint.TabIndex = 3;
+            labelHotkeyHint.Text = "Hotkey: Ctrl + Shift + F12";
             // 
             // labelEnableScreenshots
             // 
@@ -421,17 +431,18 @@
             labelStatus.Size = new Size(95, 37);
             labelStatus.TabIndex = 6;
             labelStatus.Text = "Ready.";
+            labelStatus.TextChanged += LabelStatus_TextChanged;
             // 
-            // checkBoxIncludeCapillume
+            // checkBoxExcludeCapillume
             // 
-            checkBoxIncludeCapillume.AutoSize = true;
-            checkBoxIncludeCapillume.Location = new Point(43, 189);
-            checkBoxIncludeCapillume.Name = "checkBoxIncludeCapillume";
-            checkBoxIncludeCapillume.Size = new Size(435, 41);
-            checkBoxIncludeCapillume.TabIndex = 6;
-            checkBoxIncludeCapillume.Text = "Include Capillume in screenshots";
-            checkBoxIncludeCapillume.UseVisualStyleBackColor = true;
-            checkBoxIncludeCapillume.CheckedChanged += CheckBoxIncludeCapillume_CheckedChanged;
+            checkBoxExcludeCapillume.AutoSize = true;
+            checkBoxExcludeCapillume.Location = new Point(43, 189);
+            checkBoxExcludeCapillume.Name = "checkBoxExcludeCapillume";
+            checkBoxExcludeCapillume.Size = new Size(473, 41);
+            checkBoxExcludeCapillume.TabIndex = 6;
+            checkBoxExcludeCapillume.Text = "Exclude Capillume from screenshots";
+            checkBoxExcludeCapillume.UseVisualStyleBackColor = true;
+            checkBoxExcludeCapillume.CheckedChanged += CheckBoxExcludeCapillume_CheckedChanged;
             // 
             // groupBox2
             // 
@@ -439,7 +450,7 @@
             groupBox2.Controls.Add(labelFileFormat);
             groupBox2.Controls.Add(comboBoxFormat);
             groupBox2.Controls.Add(labelQuality);
-            groupBox2.Controls.Add(checkBoxIncludeCapillume);
+            groupBox2.Controls.Add(checkBoxExcludeCapillume);
             groupBox2.Controls.Add(trackBarQuality);
             groupBox2.Controls.Add(labelQualityValue);
             groupBox2.Font = new Font("Segoe UI", 10F);
@@ -569,6 +580,7 @@
             AutoScaleDimensions = new SizeF(192F, 192F);
             AutoScaleMode = AutoScaleMode.Dpi;
             ClientSize = new Size(1480, 772);
+            Controls.Add(labelHotkeyHint);
             Controls.Add(buttonSettings);
             Controls.Add(groupBox3);
             Controls.Add(groupBox2);
@@ -604,7 +616,6 @@
         #endregion
 
         private NotifyIcon notifyIcon;
-        private ToolTip toolTipCaptureNow;
         private ContextMenuStrip contextMenuStrip;
         private ToolStripMenuItem showToolStripMenuItem;
         private ToolStripSeparator toolStripSeparator1;
@@ -643,7 +654,7 @@
         private Button buttonSave;
         private Label labelStartWithWindows;
         private Label labelStatus;
-        private CheckBox checkBoxIncludeCapillume;
+        private CheckBox checkBoxExcludeCapillume;
         private GroupBox groupBox2;
         private Panel panel5;
         private Panel panel6;
@@ -655,5 +666,6 @@
         private Panel panel4;
         private GroupBox groupBox1;
         private Button buttonSettings;
+        private Label labelHotkeyHint;
     }
 }

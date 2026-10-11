@@ -16,9 +16,9 @@
     <PackageTags>productivity, productivity-tools; proof-of-work; screen-capture; screenshot; screenshot-annotation; screenshot-application; screenshot-automation; screenshot-utility</PackageTags>
     <PackageIcon>icon.png</PackageIcon>
     <Title>Capillume Screenshot Automation</Title>
-    <AssemblyVersion>1.12.1.0</AssemblyVersion>
-    <FileVersion>1.12.1.0</FileVersion>
-    <Version>1.12.1</Version>
+    <AssemblyVersion>1.13.0.0</AssemblyVersion>
+    <FileVersion>1.13.0.0</FileVersion>
+    <Version>1.13.0</Version>
 
     <!-- Uncomment to force SkiaSharp to be bundled inside the published application exe -->
     <!-- Added DjD.20260823 -->
@@ -44,6 +44,12 @@
 
   <ItemGroup>
     <None Include=".github\copilot-instructions.md" />
+    <None Include="Capillume.Tests\Capillume.Tests.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Capillume.Tests\**\*.cs" />
+    <None Remove="Capillume.Tests\**\*" />
   </ItemGroup>
 
   <ItemGroup>
