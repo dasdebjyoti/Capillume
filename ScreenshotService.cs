@@ -18,12 +18,37 @@ namespace Capillume
         }
     }
 
+    public class ScreenshotDedupeDiagnosticEventArgs : EventArgs
+    {
+        public ScreenshotDedupeResult Result { get; }
+
+        public ScreenshotDedupeDiagnosticEventArgs(ScreenshotDedupeResult result)
+        {
+            Result = result;
+        }
+    }
+
+    public class ScreenshotSkippedEventArgs : EventArgs
+    {
+        public string Reason { get; }
+        public double PixelDifferencePercent { get; }
+
+        public ScreenshotSkippedEventArgs(string reason, double pixelDifferencePercent)
+        {
+            Reason = reason;
+            PixelDifferencePercent = pixelDifferencePercent;
+        }
+    }
+
     public class ScreenshotService : IDisposable
     {
         private System.Windows.Forms.Timer? _timer;
         private AppSettings _settings;
         private readonly IntPtr _capillumeWindowHandle;
         private readonly ScreenshotRetentionService _retentionService;
+        private readonly ScreenshotDedupeService _dedupeService = new();
+        private readonly SemaphoreSlim _dedupeGate = new(1, 1);
+        private readonly Dictionary<string, DateTime> _lastSavedByBaseline = new(StringComparer.Ordinal);
         private bool _disposed;
         private bool _isPaused;
 
@@ -58,6 +83,12 @@ namespace Capillume
         [DllImport("user32.dll")]
         private static extern bool SetForegroundWindow(IntPtr hWnd);
 
+        [DllImport("user32.dll")]
+        private static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
+
+        [DllImport("user32.dll")]
+        private static extern bool ClientToScreen(IntPtr hWnd, ref POINT lpPoint);
+
         private delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
 
         private const int SW_HIDE = 0;
@@ -73,8 +104,17 @@ namespace Capillume
             public int Bottom;
         }
 
+        [StructLayout(LayoutKind.Sequential)]
+        private struct POINT
+        {
+            public int X;
+            public int Y;
+        }
+
         //public event EventHandler<string>? ScreenshotCaptured;
         public event EventHandler<ScreenshotCapturedEventArgs>? ScreenshotCaptured;
+        public event EventHandler<ScreenshotSkippedEventArgs>? ScreenshotSkipped;
+        public event EventHandler<ScreenshotDedupeDiagnosticEventArgs>? DedupeDiagnostic;
         public event EventHandler<string>? ErrorOccurred;
 
         public ScreenshotService(AppSettings settings, IntPtr capillumeWindowHandle)
@@ -150,6 +190,7 @@ namespace Capillume
         public void UpdateSettings(AppSettings settings)
         {
             _settings = settings;
+            _dedupeService.Clear();
             if (_timer != null) _timer.Interval = _settings.IntervalMinutes * 60 * 1000;
         }
 
@@ -173,73 +214,153 @@ namespace Capillume
                 string imageFormat = _settings.ImageFormat;
                 int imageQuality = _settings.ImageQuality;
 
-                Bitmap? screenshot = null;
-                try
+                Bitmap? screenshot;
+                Rectangle comparisonBounds;
+                string baselineKey;
+                if (_settings.CaptureFullScreen)
                 {
-                    if (_settings.CaptureFullScreen)
-                    {
-                        screenshot = CaptureFullScreen();
-                    }
-                    else
-                    {
-                        screenshot = CaptureActiveWindow(captureWindowBelowCapillume);
-                    }
-
-                    if (screenshot == null)
-                    {
-                        ErrorOccurred?.Invoke(this, "Failed to capture screenshot.");
-                        return;
-                    }
-
-                    WatermarkRenderer.Apply(screenshot, _settings.Watermark, _settings.Annotation);
-
-                    string filePath = Path.Combine(saveFolder, GenerateFileName());
-
-                    Bitmap? processedScreenshot = null;
-                    Bitmap? imageProcessedScreenshot = null;
-                    try
-                    {
-                        processedScreenshot = CreateDownscaledBitmapIfNeeded(screenshot, _settings.CaptureFullScreen);
-                        imageProcessedScreenshot = ApplyImageProcessingIfNeeded(processedScreenshot ?? screenshot);
-
-                        Bitmap bitmapToSave = imageProcessedScreenshot ?? processedScreenshot ?? screenshot;
-                        if (imageProcessedScreenshot != null)
-                        {
-                            processedScreenshot?.Dispose();
-                            screenshot.Dispose();
-                        }
-                        else if (processedScreenshot != null)
-                        {
-                            screenshot.Dispose();
-                        }
-
-                        imageProcessedScreenshot = null;
-                        processedScreenshot = null;
-                        screenshot = null;
-
-                        QueueSaveScreenshot(
-                            bitmapToSave,
-                            filePath,
-                            saveFolder,
-                            imageFormat,
-                            imageQuality,
-                            sw);
-                    }
-                    finally
-                    {
-                        imageProcessedScreenshot?.Dispose();
-                        processedScreenshot?.Dispose();
-                    }
-
+                    screenshot = CaptureFullScreen();
+                    comparisonBounds = new Rectangle(Point.Empty, screenshot.Size);
+                    baselineKey = $"fullscreen:{comparisonBounds.Size}";
                 }
-                finally
+                else
                 {
-                    screenshot?.Dispose();
+                    screenshot = CaptureActiveWindow(captureWindowBelowCapillume, out comparisonBounds, out IntPtr windowHandle);
+                    baselineKey = _settings.Dedupe.ComparePerActiveWindow
+                        ? $"window:{windowHandle.ToInt64()}:{comparisonBounds.Size}"
+                        : "active-window";
                 }
+
+                if (screenshot == null)
+                {
+                    ErrorOccurred?.Invoke(this, "Failed to capture screenshot.");
+                    return;
+                }
+
+                _ = ProcessCapturedScreenshotAsync(
+                    screenshot,
+                    _settings.CaptureFullScreen,
+                    comparisonBounds,
+                    baselineKey,
+                    saveFolder,
+                    imageFormat,
+                    imageQuality,
+                    sw);
             }
             catch (Exception ex)
             {
                 ErrorOccurred?.Invoke(this, $"Error capturing screenshot: {ex.Message}");
+            }
+        }
+
+        private async Task ProcessCapturedScreenshotAsync(
+            Bitmap screenshot,
+            bool isFullScreenCapture,
+            Rectangle comparisonBounds,
+            string baselineKey,
+            string saveFolder,
+            string imageFormat,
+            int imageQuality,
+            System.Diagnostics.Stopwatch stopwatch)
+        {
+            try
+            {
+                DedupeSettings dedupe = _settings.Dedupe;
+                ScreenshotDedupeResult? dedupeResult = null;
+                bool gateEntered = false;
+                if (dedupe.Enabled)
+                {
+                    using var timeout = new CancellationTokenSource(dedupe.TimeoutMilliseconds);
+                    try
+                    {
+                        gateEntered = await _dedupeGate.WaitAsync(dedupe.TimeoutMilliseconds, timeout.Token).ConfigureAwait(false);
+                        if (gateEntered)
+                        {
+                            dedupeResult = await Task.Run(() => _dedupeService.Compare(
+                                new ScreenshotDedupeRequest
+                                {
+                                    Bitmap = screenshot,
+                                    BaselineKey = baselineKey,
+                                    ComparisonBounds = comparisonBounds,
+                                    ExcludedRegions = GetExcludedRegions(isFullScreenCapture, dedupe)
+                                }, dedupe, timeout.Token), timeout.Token).ConfigureAwait(false);
+
+                            if (dedupe.EnableDiagnostics)
+                            {
+                                DedupeDiagnostic?.Invoke(this, new ScreenshotDedupeDiagnosticEventArgs(dedupeResult));
+                            }
+
+                            bool forceSave = dedupe.MinimumMinutesBetweenSaves > 0 &&
+                                (!_lastSavedByBaseline.TryGetValue(baselineKey, out DateTime lastSaved) ||
+                                 DateTime.UtcNow - lastSaved >= TimeSpan.FromMinutes(dedupe.MinimumMinutesBetweenSaves));
+                            if (dedupeResult.Decision == ScreenshotDedupeDecision.SkipDuplicate && !dedupe.DryRun && !forceSave)
+                            {
+                                if (!dedupe.UpdateReferenceOnlyOnSave)
+                                {
+                                    _dedupeService.Commit(dedupeResult);
+                                }
+                                ScreenshotSkipped?.Invoke(this, new ScreenshotSkippedEventArgs(dedupeResult.Reason, dedupeResult.PixelDifferencePercent));
+                                return;
+                            }
+
+                            _dedupeService.Commit(dedupeResult);
+                            _lastSavedByBaseline[baselineKey] = DateTime.UtcNow;
+                        }
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        // A dedupe timeout fails open so the capture is not lost.
+                    }
+                    catch (Exception ex)
+                    {
+                        ErrorOccurred?.Invoke(this, $"Dedupe comparison failed; saving screenshot: {ex.Message}");
+                    }
+                    finally
+                    {
+                        if (gateEntered)
+                        {
+                            _dedupeGate.Release();
+                        }
+                    }
+                }
+
+                WatermarkRenderer.Apply(screenshot, _settings.Watermark, _settings.Annotation);
+                string filePath = Path.Combine(saveFolder, GenerateFileName());
+                Bitmap? processedScreenshot = null;
+                Bitmap? imageProcessedScreenshot = null;
+                try
+                {
+                    processedScreenshot = CreateDownscaledBitmapIfNeeded(screenshot, isFullScreenCapture);
+                    imageProcessedScreenshot = ApplyImageProcessingIfNeeded(processedScreenshot ?? screenshot);
+                    Bitmap bitmapToSave = imageProcessedScreenshot ?? processedScreenshot ?? screenshot;
+                    if (imageProcessedScreenshot != null)
+                    {
+                        processedScreenshot?.Dispose();
+                        screenshot.Dispose();
+                    }
+                    else if (processedScreenshot != null)
+                    {
+                        screenshot.Dispose();
+                    }
+
+                    imageProcessedScreenshot = null;
+                    processedScreenshot = null;
+                    screenshot = null!;
+                    QueueSaveScreenshot(bitmapToSave, filePath, saveFolder, imageFormat, imageQuality, stopwatch);
+                }
+                finally
+                {
+                    imageProcessedScreenshot?.Dispose();
+                    processedScreenshot?.Dispose();
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorOccurred?.Invoke(this, $"Error processing screenshot: {ex.Message}");
+            }
+            finally
+            {
+                screenshot?.Dispose();
             }
         }
 
@@ -299,9 +420,9 @@ namespace Capillume
             int width = maxX - minX;
             int height = maxY - minY;
 
-            List<IntPtr> hiddenWindows = _settings.IncludeCapillume
-                ? new List<IntPtr>()
-                : HideCapillumeWindows();
+            List<IntPtr> hiddenWindows = _settings.ExcludeCapillume
+                ? HideCapillumeWindows()
+                : new List<IntPtr>();
 
             try
             {
@@ -319,21 +440,84 @@ namespace Capillume
             }
         }
 
-        private Bitmap? CaptureActiveWindow(bool captureWindowBelowCapillume)
+        private IReadOnlyCollection<Rectangle> GetExcludedRegions(bool isFullScreenCapture, DedupeSettings settings)
         {
+            if (!isFullScreenCapture || settings.DynamicRegionMode == DedupeDynamicRegionMode.IncludeAll)
+            {
+                return Array.Empty<Rectangle>();
+            }
+
+            int minX = Screen.AllScreens.Min(screen => screen.Bounds.Left);
+            int minY = Screen.AllScreens.Min(screen => screen.Bounds.Top);
+            var regions = new List<Rectangle>();
+
+            if (settings.DynamicRegionMode is DedupeDynamicRegionMode.ExcludeTaskbars or DedupeDynamicRegionMode.ExcludeTaskbarsAndManualRegions)
+            {
+                foreach (Screen screen in Screen.AllScreens)
+                {
+                    Rectangle bounds = screen.Bounds;
+                    Rectangle working = screen.WorkingArea;
+                    Rectangle taskbar = GetTaskbarRegion(bounds, working);
+                    if (!taskbar.IsEmpty)
+                    {
+                        taskbar.Offset(-minX, -minY);
+                        regions.Add(taskbar);
+                    }
+                }
+            }
+
+            if (settings.DynamicRegionMode is DedupeDynamicRegionMode.ExcludeTaskbarsAndManualRegions or DedupeDynamicRegionMode.ManualRegionsOnly)
+            {
+                foreach (Rectangle region in settings.ExcludeRegions)
+                {
+                    Rectangle translated = region;
+                    translated.Offset(-minX, -minY);
+                    regions.Add(translated);
+                }
+            }
+
+            return regions;
+        }
+
+        private static Rectangle GetTaskbarRegion(Rectangle bounds, Rectangle workingArea)
+        {
+            if (workingArea.Top > bounds.Top)
+            {
+                return Rectangle.FromLTRB(bounds.Left, bounds.Top, bounds.Right, workingArea.Top);
+            }
+
+            if (workingArea.Bottom < bounds.Bottom)
+            {
+                return Rectangle.FromLTRB(bounds.Left, workingArea.Bottom, bounds.Right, bounds.Bottom);
+            }
+
+            if (workingArea.Left > bounds.Left)
+            {
+                return Rectangle.FromLTRB(bounds.Left, bounds.Top, workingArea.Left, bounds.Bottom);
+            }
+
+            return workingArea.Right < bounds.Right
+                ? Rectangle.FromLTRB(workingArea.Right, bounds.Top, bounds.Right, bounds.Bottom)
+                : Rectangle.Empty;
+        }
+
+        private Bitmap? CaptureActiveWindow(bool captureWindowBelowCapillume, out Rectangle comparisonBounds, out IntPtr capturedWindowHandle)
+        {
+            comparisonBounds = Rectangle.Empty;
             IntPtr handle = GetForegroundWindow();
+            capturedWindowHandle = handle;
             if (handle == IntPtr.Zero)
             {
                 return null;
             }
 
             bool hideCapillume = false;
-            if (!_settings.IncludeCapillume && captureWindowBelowCapillume)
+            if (_settings.ExcludeCapillume && captureWindowBelowCapillume)
             {
                 handle = FindWindowBelow(_capillumeWindowHandle);
                 hideCapillume = true;
             }
-            else if (!_settings.IncludeCapillume && IsCapillumeWindow(handle))
+            else if (_settings.ExcludeCapillume && IsCapillumeWindow(handle))
             {
                 handle = FindWindowBelow(handle);
                 hideCapillume = true;
@@ -369,6 +553,9 @@ namespace Capillume
                     graphics.CopyFromScreen(rect.Left, rect.Top, 0, 0, new System.Drawing.Size(width, height));
                 }
 
+                comparisonBounds = GetClientComparisonBounds(handle, rect, bitmap.Size);
+                capturedWindowHandle = handle;
+
                 return bitmap;
             }
             finally
@@ -379,6 +566,28 @@ namespace Capillume
                     SetForegroundWindow(_capillumeWindowHandle);
                 }
             }
+        }
+
+        private static Rectangle GetClientComparisonBounds(IntPtr handle, RECT windowRect, Size bitmapSize)
+        {
+            if (!GetClientRect(handle, out RECT clientRect))
+            {
+                return new Rectangle(Point.Empty, bitmapSize);
+            }
+
+            var clientOrigin = new POINT { X = clientRect.Left, Y = clientRect.Top };
+            if (!ClientToScreen(handle, ref clientOrigin))
+            {
+                return new Rectangle(Point.Empty, bitmapSize);
+            }
+
+            Rectangle result = new(
+                clientOrigin.X - windowRect.Left,
+                clientOrigin.Y - windowRect.Top,
+                clientRect.Right - clientRect.Left,
+                clientRect.Bottom - clientRect.Top);
+            result.Intersect(new Rectangle(Point.Empty, bitmapSize));
+            return result.IsEmpty ? new Rectangle(Point.Empty, bitmapSize) : result;
         }
 
         private static bool TryGetVisibleWindowRect(IntPtr handle, out RECT rect)
@@ -508,14 +717,14 @@ namespace Capillume
 
         private static Size CalculateTargetSize(Size sourceSize, DownscaleSettings settings)
         {
-            double scale = settings.Mode switch
+            double scale = settings.ResizeMode switch
             {
-                DownscaleMode.TargetHeight => settings.TargetHeight / (double)sourceSize.Height,
-                DownscaleMode.Percentage => settings.ResizePercentage / 100.0,
-                DownscaleMode.MaxWidth => settings.MaxWidth / (double)sourceSize.Width,
-                DownscaleMode.BoundingBox => Math.Min(
-                    settings.BoundingBoxWidth / (double)sourceSize.Width,
-                    settings.BoundingBoxHeight / (double)sourceSize.Height),
+                DownscaleResizeMode.TargetHeight => settings.ResizeTargetHeight / (double)sourceSize.Height,
+                DownscaleResizeMode.Percentage => settings.ResizePercentage / 100.0,
+                DownscaleResizeMode.MaxWidth => settings.ResizeMaxWidth / (double)sourceSize.Width,
+                DownscaleResizeMode.BoundingBox => Math.Min(
+                    settings.ResizeBoundingBoxWidth / (double)sourceSize.Width,
+                    settings.ResizeBoundingBoxHeight / (double)sourceSize.Height),
                 _ => 1.0
             };
 
@@ -630,10 +839,10 @@ namespace Capillume
         private Bitmap? ApplyImageProcessingIfNeeded(Bitmap source)
         {
             ImageProcessingSettings settings = _settings.ImageProcessing ?? new ImageProcessingSettings();
-            bool hasTransform = settings.ColorMode != ImageColorMode.FullColor
+            bool hasTransform = settings.ColorMode != ImageProcessColorMode.FullColor
                 || settings.HighContrast
                 || settings.NoiseReduction
-                || settings.ColorTemperature != ColorTemperatureMode.Neutral;
+                || settings.ColorTemperature != ImageProcessColorTempMode.Neutral;
 
             if (!hasTransform)
             {
@@ -647,14 +856,14 @@ namespace Capillume
                 ApplyBoxBlur3x3InPlace(processed);
             }
 
-            if (settings.ColorMode == ImageColorMode.AdaptivePalette)
+            if (settings.ColorMode == ImageProcessColorMode.AdaptivePalette)
             {
                 if (settings.HighContrast)
                 {
                     ApplyHighContrastInPlace(processed);
                 }
 
-                if (settings.ColorTemperature != ColorTemperatureMode.Neutral)
+                if (settings.ColorTemperature != ImageProcessColorTempMode.Neutral)
                 {
                     ApplyColorTemperatureInPlace(processed, settings.ColorTemperature);
                 }
@@ -662,8 +871,8 @@ namespace Capillume
                 ApplyAdaptivePaletteQuantizationInPlace(processed, 256);
             }
             else if (settings.HighContrast
-                || settings.ColorTemperature != ColorTemperatureMode.Neutral
-                || settings.ColorMode != ImageColorMode.FullColor)
+                || settings.ColorTemperature != ImageProcessColorTempMode.Neutral
+                || settings.ColorMode != ImageProcessColorMode.FullColor)
             {
                 ApplyPixelTransformsInPlace(processed, settings);
             }
@@ -680,23 +889,23 @@ namespace Capillume
             return copy;
         }
 
-        private static void ApplyColorModeInPlace(Bitmap bitmap, ImageColorMode mode)
+        private static void ApplyColorModeInPlace(Bitmap bitmap, ImageProcessColorMode mode)
         {
             switch (mode)
             {
-                case ImageColorMode.Grayscale:
+                case ImageProcessColorMode.Grayscale:
                     ApplyGrayscaleInPlace(bitmap);
                     break;
-                case ImageColorMode.Monochrome1Bit:
+                case ImageProcessColorMode.Monochrome1Bit:
                     ApplyMonochromeInPlace(bitmap);
                     break;
-                case ImageColorMode.Color16:
+                case ImageProcessColorMode.Color16:
                     ApplyFixedPaletteQuantizationInPlace(bitmap, 2, 2, 4);
                     break;
-                case ImageColorMode.Color256:
+                case ImageProcessColorMode.Color256:
                     ApplyFixedPaletteQuantizationInPlace(bitmap, 8, 8, 4);
                     break;
-                case ImageColorMode.AdaptivePalette:
+                case ImageProcessColorMode.AdaptivePalette:
                     ApplyAdaptivePaletteQuantizationInPlace(bitmap, 256);
                     break;
                 default:
@@ -708,8 +917,8 @@ namespace Capillume
         {
             (double redMultiplier, double greenMultiplier, double blueMultiplier) = settings.ColorTemperature switch
             {
-                ColorTemperatureMode.Warm => (1.08, 1.0, 0.92),
-                ColorTemperatureMode.Cool => (0.92, 1.0, 1.08),
+                ImageProcessColorTempMode.Warm => (1.08, 1.0, 0.92),
+                ImageProcessColorTempMode.Cool => (0.92, 1.0, 1.08),
                 _ => (1.0, 1.0, 1.0)
             };
 
@@ -736,7 +945,7 @@ namespace Capillume
                             buffer[pixelIndex] = AdjustContrast(buffer[pixelIndex], 1.25, 128.0);
                         }
 
-                        if (settings.ColorTemperature != ColorTemperatureMode.Neutral)
+                        if (settings.ColorTemperature != ImageProcessColorTempMode.Neutral)
                         {
                             buffer[pixelIndex + 2] = (byte)Math.Clamp(
                                 (int)Math.Round(buffer[pixelIndex + 2] * redMultiplier), 0, 255);
@@ -748,7 +957,7 @@ namespace Capillume
 
                         switch (settings.ColorMode)
                         {
-                            case ImageColorMode.Grayscale:
+                            case ImageProcessColorMode.Grayscale:
                             {
                                 byte gray = (byte)((299 * buffer[pixelIndex + 2]
                                     + 587 * buffer[pixelIndex + 1]
@@ -758,7 +967,7 @@ namespace Capillume
                                 buffer[pixelIndex + 2] = gray;
                                 break;
                             }
-                            case ImageColorMode.Monochrome1Bit:
+                            case ImageProcessColorMode.Monochrome1Bit:
                             {
                                 byte gray = (byte)((299 * buffer[pixelIndex + 2]
                                     + 587 * buffer[pixelIndex + 1]
@@ -769,12 +978,12 @@ namespace Capillume
                                 buffer[pixelIndex + 2] = monochrome;
                                 break;
                             }
-                            case ImageColorMode.Color16:
+                            case ImageProcessColorMode.Color16:
                                 buffer[pixelIndex + 2] = QuantizeChannel(buffer[pixelIndex + 2], 2);
                                 buffer[pixelIndex + 1] = QuantizeChannel(buffer[pixelIndex + 1], 2);
                                 buffer[pixelIndex] = QuantizeChannel(buffer[pixelIndex], 4);
                                 break;
-                            case ImageColorMode.Color256:
+                            case ImageProcessColorMode.Color256:
                                 buffer[pixelIndex + 2] = QuantizeChannel(buffer[pixelIndex + 2], 8);
                                 buffer[pixelIndex + 1] = QuantizeChannel(buffer[pixelIndex + 1], 8);
                                 buffer[pixelIndex] = QuantizeChannel(buffer[pixelIndex], 4);
@@ -1046,12 +1255,12 @@ namespace Capillume
             return (byte)Math.Clamp(value, 0, 255);
         }
 
-        private static void ApplyColorTemperatureInPlace(Bitmap bitmap, ColorTemperatureMode mode)
+        private static void ApplyColorTemperatureInPlace(Bitmap bitmap, ImageProcessColorTempMode mode)
         {
             (double redMultiplier, double greenMultiplier, double blueMultiplier) = mode switch
             {
-                ColorTemperatureMode.Warm => (1.08, 1.0, 0.92),
-                ColorTemperatureMode.Cool => (0.92, 1.0, 1.08),
+                ImageProcessColorTempMode.Warm => (1.08, 1.0, 0.92),
+                ImageProcessColorTempMode.Cool => (0.92, 1.0, 1.08),
                 _ => (1.0, 1.0, 1.0)
             };
 
@@ -1273,6 +1482,8 @@ namespace Capillume
             {
                 Stop();
                 _retentionService.Dispose();
+                _dedupeService.Dispose();
+                _dedupeGate.Dispose();
                 _disposed = true;
             }
         }

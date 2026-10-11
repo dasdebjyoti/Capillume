@@ -1,9 +1,23 @@
 ﻿CAPILLUME
 Screenshot Automation for Windows
-===============================
+=================================
 
 Capillume automatically captures screenshots and saves them to a folder of your
 choice. It can capture all connected displays or the currently active window.
+
+BEFORE YOU START
+----------------
+If you see the message "Error saving screenshot: Could not find file ..."
+Windows Security or another antivirus program may be blocking Capillume from
+saving screenshots. Check the antivirus logs and settings to allow Capillume
+to write to the destination folder.
+
+In Windows Security, go to Virus & threat protection > Controlled folder access
+> Manage Controlled folder access > Allow an app through Controlled folder
+access, and add the Capillume executable to the allowed list. If you are using
+another antivirus program, check its documentation for how to allow Capillume
+to write to the drive.
+
 
 WHO CAPILLUME IS FOR
 --------------------
@@ -49,7 +63,7 @@ GETTING STARTED
 3. Select whether scheduled screenshots are enabled.
 4. Set the capture interval in minutes.
 5. Choose Full Screen or Active Window capture.
-6. Choose whether to include the Capillume window in screenshots.
+6. Choose whether to exclude the Capillume window in screenshots.
 7. Select the folder where screenshots should be saved.
 8. Select the image format.
 9. Configure watermarks if needed.
@@ -57,9 +71,10 @@ GETTING STARTED
 11. Configure downscaling if needed.
 12. Configure image processing if needed.
 13. Configure retention and cleanup if needed.
-14. Configure an optional global capture hotkey.
-15. Click Save.
-16. Use Capture Now at any time to save an immediate screenshot.
+14. Configure duplicate detection if needed.
+15. Configure an optional global capture hotkey.
+16. Click Save.
+17. Use Capture Now at any time to save an immediate screenshot.
 
 The default screenshot folder is:
 
@@ -82,11 +97,14 @@ Full Screen
 Active Window
     Captures the currently active window.
 
-Include Capillume in screenshots
-    By default, Capillume does not include its own window in screenshots. Enable
-    Include Capillume in screenshots to include it in both Full Screen and
-    Active Window captures. If it is disabled, no screenshot is saved when the
-    Capillume window is the active window.
+Exclude Capillume from screenshots
+    By default, Capillume does not include its own window in screenshots.
+    Disable Exclude Capillume from screenshots to include it in both Full
+    Screen and Active Window captures. If it is disabled, the Desktop window
+    capture is saved when the Capillume window is the active window and mode is
+    set to Active Window. If it is disabled while the mode is set to Full
+    Screen, no capture is saved when the Capillume window is only window
+    on screen.
 
 Capture Now
     Click the Capture Now button in the main window to take an immediate
@@ -129,7 +147,8 @@ files.
 WATERMARKS
 ----------
 
-You can configure text and image watermarks from the Watermark tab in the Advanced Settings window.
+You can configure text and image watermarks from the Watermark tab in the
+Advanced Settings window.
 
 Text watermarks support:
 
@@ -227,6 +246,51 @@ Advanced Processing options:
 - High contrast: Increase tonal contrast.
 - Noise reduction: Apply a light blur to reduce small image variations.
 - Color temperature: Choose Neutral, Warm, or Cool.
+
+DUPLICATE DETECTION
+-------------------
+
+Use the Duplicates tab in the Advanced Settings window to avoid saving captures
+that are identical or nearly identical to the last saved screenshot. Duplicate
+detection is disabled by default.
+
+When enabled, comparisons run in the background. If a comparison reaches its
+timeout or fails, Capillume saves the screenshot rather than discarding it.
+
+Available settings:
+
+- Compare mode:
+  - Perceptual hash + SSIM (balanced default).
+  - Checksum + SSIM.
+  - Pixel difference only.
+  - SSIM only.
+- Sensitivity: Controls how much visual change is required before saving. Higher
+  sensitivity saves smaller changes. The default is 50%.
+- Dynamic regions: Compare all screen areas, exclude Windows taskbars, exclude
+  taskbars and manual regions, or exclude manual regions only. Manual regions
+  use x,y,width,height, one rectangle per line, in virtual-desktop coordinates.
+- Compare per active window: Keeps a separate comparison reference for each
+  active window so switching applications does not compare unrelated content.
+- Comparison timeout: Limits how long Capillume waits for a comparison. The
+  default is 250 milliseconds.
+- Dry run: Reports duplicate decisions but never skips a save. Use this to tune
+  sensitivity safely.
+- Show skipped notifications: Displays a tray notification when a duplicate is
+  skipped.
+- Minimum time between saves: Optionally saves at least one capture after the
+  configured number of minutes, even when the screen is unchanged.
+- Update reference only when saved: Keeps the last saved screenshot as the
+  comparison reference. This is enabled by default.
+- Diagnostics: Writes comparison details to Visual Studio Debug output.
+
+When a capture is identified as a duplicate, it is not written to disk and the
+watermark, annotation, downscale, and image-processing save pipeline is not run
+for that capture. A new comparison reference is established when there is no
+compatible reference or when a capture is saved.
+
+Duplicate comparison runs against the captured image before watermarking,
+annotation, downscaling, or image processing. Those optional save-time effects
+therefore do not make an otherwise unchanged screen appear different.
 
 RETENTION AND CLEANUP
 ---------------------
@@ -350,7 +414,9 @@ Error saving screenshot: Could not find file ...
 SUPPORT
 -------
 
-Project:
-https://github.com/dasdebjyoti/Capillume
+Website:
+https://dasdebjyoti.github.io/Capillume/
+
+Repository: https://github.com/dasdebjyoti/Capillume
 
 Copyright © 2026 Capillume.

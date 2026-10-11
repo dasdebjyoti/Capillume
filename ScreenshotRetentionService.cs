@@ -153,7 +153,7 @@ namespace Capillume
                 {
                     if (string.IsNullOrWhiteSpace(settings.BackupFolder))
                     {
-                        throw new InvalidOperationException("Select a backup folder before using the backup retention action.");
+                        throw new InvalidOperationException("Select a backup folder to use the backup retention action.");
                     }
 
                     backupFolderUsed = settings.PerSessionSubfolder

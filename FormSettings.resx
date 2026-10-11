@@ -117,4 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ddLabelDescription.Text" xml:space="preserve">
+    <value>The Duplicates feature compares each new screenshot against the previous one and saves it only when meaningful visual changes are detected. Use the options in this tab to control how differences are measured, adjust sensitivity, and exclude dynamic areas such as the taskbar clock.</value>
+  </data>
 </root>

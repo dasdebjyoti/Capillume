@@ -149,7 +149,7 @@ namespace Capillume
                 .Replace("{{OS}}", Environment.OSVersion.VersionString, StringComparison.Ordinal)
                 .Replace("{{APP}}", Application.ProductName, StringComparison.Ordinal)
                 //.Replace("{{VERSION}}", Application.ProductVersion, StringComparison.Ordinal)
-                .Replace("{{VERSION}}", Assembly.GetExecutingAssembly().GetName().Version.ToString(), StringComparison.Ordinal)
+                .Replace("{{VERSION}}", Assembly.GetExecutingAssembly().GetName().Version?.ToString(), StringComparison.Ordinal)
                 .Replace("{{PID}}", Environment.ProcessId.ToString(), StringComparison.Ordinal);
         }
 

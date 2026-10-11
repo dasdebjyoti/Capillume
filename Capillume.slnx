@@ -1,5 +1,6 @@
 <Solution>
   <Project Path="Capillume.csproj" />
+  <Project Path="Capillume.Tests\Capillume.Tests.csproj" />
   <Project Path="CapillumeInstaller/CapillumeInstaller.vdproj" Type="Installer">
     <BuildDependency Project="Capillume.csproj" />
     <Build />

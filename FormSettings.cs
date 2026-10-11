@@ -1,5 +1,7 @@
-﻿using System.Reflection;
+﻿using System.Drawing.Drawing2D;
+using System.Reflection;
 using System.Text;
+using static System.Windows.Forms.DataFormats;
 //using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 
 namespace Capillume
@@ -123,6 +125,7 @@ namespace Capillume
         private readonly ImageProcessingSettings _originalImageProcessingSettings;
         private readonly RetentionSettings _originalRetentionSettings;
         private readonly HotkeySettings _originalHotkeySettings;
+        private readonly DedupeSettings _originalDedupeSettings;
 
         private readonly WatermarkSettings _watermarkSettings;
         private readonly AnnotationSettings _annotationSettings;
@@ -130,6 +133,7 @@ namespace Capillume
         private readonly ImageProcessingSettings _imageProcessingSettings;
         private readonly RetentionSettings _retentionSettings;
         private readonly HotkeySettings _hotkeySettings;
+        private readonly DedupeSettings _dedupeSettings;
         private readonly GlobalHotkeyManager _globalHotkeyManager;
 
         private Icon? _appIcon;
@@ -144,15 +148,15 @@ namespace Capillume
         private bool _isRetentionOperationRunning;
         private int _hotkeyListSortColumn;
         private SortOrder _hotkeyListSortOrder = SortOrder.Ascending;
+        private readonly List<ToolStripDropDown> _ownedMenus = [];
 
         private readonly record struct HotkeyCandidate(Keys Modifiers, Keys Key);
-
-        private readonly Label dsLabelDefaultSize1 = new();
         public WatermarkSettings WatermarkSettings => _watermarkSettings;
         public AnnotationSettings AnnotationSettings => _annotationSettings;
         public DownscaleSettings DownscaleSettings => _downscaleSettings;
         public ImageProcessingSettings ImageProcessingSettings => _imageProcessingSettings;
         public RetentionSettings RetentionSettings => _retentionSettings;
+        public DedupeSettings DedupeSettings => _dedupeSettings;
         public HotkeySettings HotkeySettings => _hotkeySettings;
 
         public bool WatermarkSettingsChanged => !AreEqual(_originalWatermarkSettings, _watermarkSettings);
@@ -160,6 +164,7 @@ namespace Capillume
         public bool DownscaleSettingsChanged => !AreEqual(_originalDownscaleSettings, _downscaleSettings);
         public bool ImageProcessingSettingsChanged => !AreEqual(_originalImageProcessingSettings, _imageProcessingSettings);
         public bool RetentionSettingsChanged => !AreEqual(_originalRetentionSettings, _retentionSettings);
+        public bool DedupeSettingsChanged => !AreEqual(_originalDedupeSettings, _dedupeSettings);
         public bool HotkeySettingsChanged => !AreEqual(_originalHotkeySettings, _hotkeySettings);
 
         public FormSettings(
@@ -169,10 +174,15 @@ namespace Capillume
             ImageProcessingSettings imageProcessingSettings,
             RetentionSettings retentionSettings,
             HotkeySettings hotkeySettings,
+            DedupeSettings dedupeSettings,
             string saveFolder,
             GlobalHotkeyManager? globalHotkeyManager)
         {
             InitializeComponent();
+
+            tabControlSettings.Padding = new Point(16, 8);
+            tabControlSettings.DrawMode = TabDrawMode.OwnerDrawFixed;
+            tabControlSettings.DrawItem += TabControlSettings_DrawItem;
 
             _saveFolder = saveFolder;
             _originalWatermarkSettings = Clone(watermarkSettings);
@@ -181,31 +191,169 @@ namespace Capillume
             _originalImageProcessingSettings = Clone(imageProcessingSettings);
             _originalRetentionSettings = Clone(retentionSettings);
             _originalHotkeySettings = Clone(hotkeySettings);
+            _originalDedupeSettings = Clone(dedupeSettings);
             _watermarkSettings = Clone(watermarkSettings);
             _annotationSettings = Clone(annotationSettings);
             _downscaleSettings = Clone(downscaleSettings);
             _imageProcessingSettings = Clone(imageProcessingSettings);
             _retentionSettings = Clone(retentionSettings);
             _hotkeySettings = Clone(hotkeySettings);
+            _dedupeSettings = Clone(dedupeSettings);
             _globalHotkeyManager = globalHotkeyManager
                 ?? throw new ArgumentNullException(nameof(globalHotkeyManager));
-
-            ToolTip toolTip = new ToolTip();
-            toolTip.SetToolTip(dsLabelQuality, "Controls how the image is resized.\nHigher‑quality methods produce smoother results.");
-            toolTip.SetToolTip(dsCheckBoxSharpen, "Adds a light sharpening pass to improve clarity after resizing.");
-            toolTip.SetToolTip(dsCheckBoxSkipSmaller, "Avoids resizing when the screenshot is already smaller than the target size.");
-            toolTip.SetToolTip(rtToggleSwitchAutoCleanup, "Runs screenshot file cleanup after each screenshot is saved.");
-            toolTip.SetToolTip(rtCheckBoxDryRun, "Preview what would be removed without actually deleting any files.");
-            toolTip.SetToolTip(rtCheckBoxIncludeSubfolders, "Also evaluate screenshots inside subfolders of the save location.");
-            toolTip.SetToolTip(rtCheckBoxPerSessionSubfolder, "Organize each cleanup backup in a separate timestamped folder.");
 
             InitializeIcon();
             InitializeTabWatermark();
             InitializeTabAnnotation();
             InitializeTabDownscale();
             InitializeTabImageProcessing();
+            InitializeTabDedupe();
             InitializeTabRetention();
             InitializeTabHotkeys();
+            ApplyDefaultButtonIcon();
+
+            ToolTip toolTip = new();
+            ConfigureTooltips(toolTip);
+        }
+
+        bool FluentAvailable()
+        {
+            return FontFamily.Families.Any(f =>
+                f.Name.Equals("Segoe Fluent Icons", StringComparison.OrdinalIgnoreCase));
+        }
+
+        void ApplyDefaultButtonIcon()
+        {
+            Font font;
+            string glyph;
+
+            if (FluentAvailable())
+            {
+                font = new Font("Segoe Fluent Icons", 12F);
+                glyph = "\uE777"; // "\uE777"
+            }
+            else
+            {
+                // Fallback for Windows 10 MDL2
+                font = new Font("Segoe MDL2 Assets", 12F);
+                glyph = "\uE72C"; // "\uE72C"
+            }
+
+            wmButtonCommonDefault.Font = font;
+            wmButtonUseImageDefault.Font = font;
+            wmButtonUseTextDefault.Font = font;
+            anButtonDefault.Font = font;
+            dsButtonProcessingDefault.Font = font;
+            dsButtonModesDefault.Font = font;
+            ipButtonAdvProcessingDefault.Font = font;
+            ipButtonColorModeDefault.Font = font;
+            ddButtonDefault.Font = font;
+            rtButtonActionDefault.Font = font;
+            rtButtonActionDefault.Font = font;
+            rtButtonSelectionDefault.Font = font;
+            hkButtonDefault.Font = font;
+
+            wmButtonCommonDefault.Text = glyph;
+            wmButtonUseImageDefault.Text = glyph;
+            wmButtonUseTextDefault.Text = glyph;
+            anButtonDefault.Text = glyph;
+            dsButtonProcessingDefault.Text = glyph;
+            dsButtonModesDefault.Text = glyph;
+            ipButtonAdvProcessingDefault.Text = glyph;
+            ipButtonColorModeDefault.Text = glyph;
+            ddButtonDefault.Text = glyph;
+            rtButtonActionDefault.Text = glyph;
+            rtButtonSelectionDefault.Text = glyph;
+            hkButtonDefault.Text = glyph;
+        }
+
+        private void ConfigureTooltips(ToolTip toolTip)
+        {
+            toolTip.AutoPopDelay = Constants.TooltipAutoPopDelay;
+            toolTip.InitialDelay = Constants.TooltipInitialDelay;
+            toolTip.ReshowDelay = Constants.TooltipReshowDelay;
+            toolTip.ShowAlways = Constants.TooltipShowAlways;
+
+            // Tooltips for Watermark tab
+            toolTip.SetToolTip(wmButtonUseTextDefault, "Reset watermark text settings to their default values.");
+            toolTip.SetToolTip(wmButtonUseImageDefault, "Reset watermark image settings to their default values.");
+            toolTip.SetToolTip(wmButtonCommonDefault, "Reset watermark common settings to their default values.");
+
+            // Tooltips for Annotation tab
+            toolTip.SetToolTip(anButtonDefault, "Reset annotation settings to their default values.");
+
+            // Tooltips for Downscale tab
+            toolTip.SetToolTip(dsButtonModesDefault, "Reset resize settings to their default values.");
+            toolTip.SetToolTip(dsButtonProcessingDefault, "Reset image processing settings to their default values.");
+            toolTip.SetToolTip(dsLabelQuality, "Controls how the image is resized.\nHigher‑quality methods produce smoother results.");
+            toolTip.SetToolTip(dsCheckBoxSharpen, "Adds a light sharpening pass to improve clarity after resizing.");
+            toolTip.SetToolTip(dsCheckBoxSkipSmaller, "Avoids resizing when the screenshot is already smaller than the target size.");
+
+            // Tooltips for Image Processing tab
+            toolTip.SetToolTip(ipButtonColorModeDefault, "Reset color mode to its default value.");
+            toolTip.SetToolTip(ipButtonAdvProcessingDefault, "Reset advanced processing settings to their default values.");
+
+            // Tooltips for Duplicates tab
+            toolTip.SetToolTip(ddButtonDefault, "Reset duplicate settings to their default values.");
+            toolTip.SetToolTip(ddLabelEnable, "Enables or disables duplicate detection. When disabled, every capture is saved.");
+            toolTip.SetToolTip(ddToggleEnable, toolTip.GetToolTip(ddLabelEnable));
+            toolTip.SetToolTip(ddLabelSensitivity,
+                "Controls how much visual change is required before a capture is considered meaningfully different.");
+            toolTip.SetToolTip(ddTrackBarSensitivity,
+                "Move right for higher sensitivity: smaller visual changes are more likely to be saved.\n" +
+                "Move left to ignore more minor changes such as clocks, cursors, and animations.");
+            toolTip.SetToolTip(ddLabelDynamicRegions,
+                "Choose which screen areas are ignored during full-screen comparison.");
+            toolTip.SetToolTip(ddComboBoxDynamicRegions,
+                "Include all screen areas compares everything.\n" +
+                "Exclude Windows taskbars ignores taskbar and clock changes on every monitor.\n" +
+                "The manual options also apply the rectangles which you enter in the Excluded regions box.");
+            toolTip.SetToolTip(ddCheckBoxPerActiveWindow,
+                "When selected, each active window gets its own comparison reference.\n" +
+                "This prevents switching between applications from making unrelated windows appear duplicated.");
+            toolTip.SetToolTip(ddLabelTimeout,
+                "Limits how long Dedupe may wait while comparing a capture.\n" +
+                "If the timeout expires, Capillume saves the screenshow file anyway.");
+            toolTip.SetToolTip(ddNumericTimeout,
+                "Comparison timeout in milliseconds. A shorter value keeps capture responsive;\n" +
+                "if the timeout is reached, Capillume fails open and saves the screenshot.");
+            toolTip.SetToolTip(ddCheckBoxDryRun,
+                "Reports duplicates but never skips a save.\n" +
+                "Use this to tune sensitivity safely before enabling suppression.");
+            toolTip.SetToolTip(ddCheckBoxShowNotifications,
+                "Displays a tray notification when Dedupe skips a capture because no meaningful change was detected.");
+            toolTip.SetToolTip(ddLabelExcludedRegions,
+                "Enter screen rectangles to ignore during full-screen comparison.\n" +
+                "Coordinates use the virtual desktop origin.");
+            toolTip.SetToolTip(ddTextBoxExcludedRegions,
+                "Enter one region per line in the format x,y,width,height (for example: 0,1040,1920,40).\n" +
+                "These areas are ignored when a manual‑region mode is enabled, so any changes inside them\n" +
+                "won’t trigger a new screenshot file.");
+            toolTip.SetToolTip(ddComboBoxCompareMode,
+                "Perceptual hash + SSIM is the balanced default.\n" +
+                "Checksum + SSIM quickly rejects exact matches.\n" +
+                "Pixel difference only is fastest and simplest.\n" +
+                "SSIM only provides the most structural comparison but uses more processing time.");
+            toolTip.SetToolTip(ddNumericMinimumSaveInterval,
+                "Optional maximum time between saved captures. Set to 0 to disable.\n" +
+                "When set, Capillume saves at least one capture after this many minutes even if the screen is unchanged.");
+            toolTip.SetToolTip(ddCheckBoxUpdateReferenceOnSave,
+                "Recommended: keep enabled so a skipped duplicate does not become the new reference.\n" +
+                "Disable only if you want every capture to advance the comparison reference.");
+            toolTip.SetToolTip(ddCheckBoxDiagnostics,
+                "Writes Dedupe decision details such as hash distance, SSIM score, pixel difference,\n" +
+                "and the reason to the Visual Studio Debug output.");
+
+            // Tooltips for Retention tab
+            toolTip.SetToolTip(rtButtonSelectionDefault, "Reset selection settings to their default values.");
+            toolTip.SetToolTip(rtButtonActionDefault, "Reset action settings to their default values.");
+            toolTip.SetToolTip(rtToggleSwitchAutoCleanup, "Runs screenshot file cleanup after each screenshot is saved.");
+            toolTip.SetToolTip(rtCheckBoxDryRun, "Preview what would be removed without actually deleting any files.");
+            toolTip.SetToolTip(rtCheckBoxIncludeSubfolders, "Also evaluate screenshots inside subfolders of the save location.");
+            toolTip.SetToolTip(rtCheckBoxPerSessionSubfolder, "Organize each cleanup backup in a separate timestamped folder.");
+
+            // Tooltips for Hotkeys tab
+            toolTip.SetToolTip(hkButtonDefault, "Reset hotkey settings to their default values.");
         }
 
         private void InitializeIcon()
@@ -231,49 +379,101 @@ namespace Capillume
             Icon = _appIcon;
         }
 
-        private void InitializeTabWatermark()
+        private enum WatermarkResetDefaultScope { None, Text, Image, Common, All }
+
+        private void InitializeTabWatermark(WatermarkResetDefaultScope resetDefaultScope = WatermarkResetDefaultScope.None)
         {
-            // Load settings into UI
-            _watermarkFont.Dispose();
-            _watermarkFont = new Font(
-                _watermarkSettings.WatermarkTextFontFamily,
-                _watermarkSettings.WatermarkTextFontSize,
-                _watermarkSettings.WatermarkTextFontStyle);
-
-            wmToggleUseText.Checked = _watermarkSettings.UseText;
-            wmToggleUseImage.Checked = _watermarkSettings.UseImage;
-            wmTextBoxWatermarkText.Text = _watermarkSettings.WatermarkText;
-            wmTextBoxWatermarkImagePath.Text = _watermarkSettings.WatermarkImagePath;
-
-            wmLabelFontDescription.Text = $"{_watermarkFont.Name}, {_watermarkFont.SizeInPoints:0.#} pt";
-
-            wmTrackBarWatermarkImageScale.Value = Math.Clamp(
-                _watermarkSettings.WatermarkImageScale,
-                Constants.WatermarkImageScaleMin,
-                Constants.WatermarkImageScaleMax);
-            wmLabelWatermarkImageScaleValue.Text = $"{wmTrackBarWatermarkImageScale.Value}%";
-
-            wmTrackBarOpacity.Value = Math.Clamp(
-                _watermarkSettings.WatermarkOpacity,
-                Constants.WatermarkOpacityMin,
-                Constants.WatermarkOpacityMax);
-            wmLabelOpacityValue.Text = $"{wmTrackBarOpacity.Value}%";
-
-            wmComboBoxWatermarkPosition.SelectedItem = _watermarkSettings.WatermarkPosition;
-            if (wmComboBoxWatermarkPosition.SelectedIndex < 0)
+            tabPageWatermark.SuspendLayout();
+            if (resetDefaultScope != WatermarkResetDefaultScope.None)
             {
-                wmComboBoxWatermarkPosition.SelectedItem = Constants.WatermarkPositionDefault;
+                // Reset settings object to defaults
+                if (resetDefaultScope == WatermarkResetDefaultScope.Text || resetDefaultScope == WatermarkResetDefaultScope.All)
+                {
+                    //_watermarkSettings.UseText = false;
+                    _watermarkSettings.WatermarkText = Constants.WatermarkTextDefault;
+                    _watermarkSettings.WatermarkTextFontFamily = Constants.WatermarkTextFontFamilyDefault;
+                    _watermarkSettings.WatermarkTextFontSize = Constants.WatermarkTextFontSizeDefault;
+                    _watermarkSettings.WatermarkTextFontStyle = Constants.WatermarkTextFontStyleDefault;
+                }
+                if (resetDefaultScope == WatermarkResetDefaultScope.Image || resetDefaultScope == WatermarkResetDefaultScope.All)
+                {
+                    //_watermarkSettings.UseImage = false;
+                    _watermarkSettings.WatermarkImagePath = Constants.WatermarkImagePathDefault;
+                    _watermarkSettings.WatermarkImageScale = Constants.WatermarkImageScaleDefault;
+                }
+                if (resetDefaultScope == WatermarkResetDefaultScope.Common || resetDefaultScope == WatermarkResetDefaultScope.All)
+                {
+                    _watermarkSettings.WatermarkOpacity = Constants.WatermarkOpacityDefault;
+                    _watermarkSettings.WatermarkPosition = Constants.WatermarkPositionDefault;
+                    _watermarkSettings.WatermarkRotation = Constants.WatermarkRotationDefault;
+                }
             }
 
-            wmComboBoxWatermarkRotation.SelectedIndex = Math.Clamp(_watermarkSettings.WatermarkRotation / 90, 0, 3);
+            // Load settings into UI
+            wmToggleUseImage.Checked = _watermarkSettings.UseImage;
+
+            if (resetDefaultScope == WatermarkResetDefaultScope.None || resetDefaultScope == WatermarkResetDefaultScope.Text)
+            {
+                _watermarkFont.Dispose();
+                _watermarkFont = new Font(
+                    _watermarkSettings.WatermarkTextFontFamily,
+                    _watermarkSettings.WatermarkTextFontSize,
+                    _watermarkSettings.WatermarkTextFontStyle);
+
+                wmToggleUseText.Checked = _watermarkSettings.UseText;
+                wmTextBoxWatermarkText.Text = _watermarkSettings.WatermarkText;
+                SetWatermarkTextDescription();
+            }
+
+            if (resetDefaultScope == WatermarkResetDefaultScope.None || resetDefaultScope == WatermarkResetDefaultScope.Image)
+            {
+                wmTextBoxWatermarkImagePath.Text = _watermarkSettings.WatermarkImagePath;
+                wmTrackBarWatermarkImageScale.Value = Math.Clamp(
+                    _watermarkSettings.WatermarkImageScale,
+                    Constants.WatermarkImageScaleMin,
+                    Constants.WatermarkImageScaleMax);
+                wmLabelWatermarkImageScaleValue.Text = $"{wmTrackBarWatermarkImageScale.Value}%";
+                UpdateWatermarkImagePreview();
+            }
+
+            if (resetDefaultScope == WatermarkResetDefaultScope.None || resetDefaultScope == WatermarkResetDefaultScope.Common)
+            {
+                wmTrackBarOpacity.Value = Math.Clamp(
+                    value: _watermarkSettings.WatermarkOpacity,
+                    min: Constants.WatermarkOpacityMin,
+                    max: Constants.WatermarkOpacityMax);
+
+                wmLabelOpacityValue.Text = $"{wmTrackBarOpacity.Value}%";
+
+                wmComboBoxWatermarkPosition.SelectedItem = _watermarkSettings.WatermarkPosition;
+                if (wmComboBoxWatermarkPosition.SelectedIndex < 0)
+                {
+                    wmComboBoxWatermarkPosition.SelectedItem = Constants.WatermarkPositionDefault;
+                }
+
+                wmComboBoxWatermarkRotation.SelectedIndex = Math.Clamp(_watermarkSettings.WatermarkRotation / 90, 0, 3);
+            }
 
             SetupWatermarkTextboxPlaceholder(wmTextBoxWatermarkText);
-            UpdateWatermarkImagePreview();
             UpdateWatermarkControlState();
+            tabPageWatermark.ResumeLayout(false);
         }
 
-        private void InitializeTabAnnotation()
+        private void InitializeTabAnnotation(bool resetToDefaults = false)
         {
+            tabPageAnnotation.SuspendLayout();
+            if (resetToDefaults)
+            {
+                // Reset settings object to defaults
+                _annotationSettings.AnnotationFormat = Constants.AnnotationFormatDefault;
+                _annotationSettings.AnnotationFontFamily = Constants.AnnotationFontFamilyDefault;
+                _annotationSettings.AnnotationFontSize = Constants.AnnotationFontSizeDefault;
+                _annotationSettings.AnnotationFontStyle = Constants.AnnotationFontStyleDefault;
+                _annotationSettings.AnnotationFontColorArgb = Constants.AnnotationFontColorArgbDefault;
+                _annotationSettings.AnnotationBackgroundColorArgb = Constants.AnnotationBackgroundColorArgbDefault;
+                _annotationSettings.AnnotationOpacity = Constants.AnnotationOpacityDefault;
+            }
+
             // Load settings into UI
             _annotationFont.Dispose();
             _annotationFont = new Font(
@@ -308,46 +508,39 @@ namespace Capillume
             UpdateAnnotationBackgroundButton();
             UpdateAnnotationPreview();
             UpdateAnnotationControlState();
+            tabPageAnnotation.ResumeLayout(false);
         }
 
-        private void InitializeTabDownscale()
+        private enum DownscaleResetDefaultScope { None, Resize, Processing, All }
+
+        private void InitializeTabDownscale(DownscaleResetDefaultScope resetDefaultScope = DownscaleResetDefaultScope.None)
         {
             tabPageDownscale.SuspendLayout();
-            //tabPageDownscale.Controls.Clear();
             tabPageDownscale.AutoScroll = true;
 
-            dsLabelDefaultSize.Text = GetDefaultCaptureSizeDescription();
-
-            //dsToggleEnable.AutoSize = true;
-            //dsToggleEnable.Location = new Point(16, 72);
-            //dsToggleEnable.Name = nameof(dsToggleEnable);
-            //dsToggleEnable.Text = "Enable screenshot downscale";
-            //dsToggleEnable.CheckedChanged += DownscaleSettingChanged;
-
-            dsComboBoxTargetHeight.Items.AddRange(DownscaleHeightPresets.Select(p => p.Label).Append("Custom").ToArray());
-            dsNumericTargetHeight.Minimum = Constants.DownscaleTargetHeightMin;
-            dsNumericTargetHeight.Maximum = Constants.DownscaleTargetHeightMax;
-            dsComboBoxPercentage.Items.AddRange(DownscalePercentagePresets.Select(p => $"{p}%").Append("Custom").ToArray());
-            dsNumericPercentage.Maximum = Constants.DownscalePercentageMax;
-            dsNumericPercentage.Minimum = Constants.DownscalePercentageMin;
-            dsComboBoxMaxWidth.Items.AddRange(DownscaleWidthPresets.Select(p => p.ToString()).Append("Custom").ToArray());
-            dsNumericMaxWidth.Maximum = Constants.DownscaleMaxWidthMax;
-            dsNumericMaxWidth.Minimum = Constants.DownscaleMaxWidthMin;
-            dsComboBoxBoundingBox.Items.AddRange(DownscaleBoundingBoxPresets.Select(p => p.Label).Append("Custom").ToArray());
-            dsNumericBoundingWidth.Maximum = Constants.DownscaleMaxWidthMax;
-            dsNumericBoundingWidth.Minimum = Constants.DownscaleMaxWidthMin;
-            dsNumericBoundingHeight.Maximum = Constants.DownscaleTargetHeightMax;
-            dsNumericBoundingHeight.Minimum = Constants.DownscaleTargetHeightMin;
-
-            dsComboBoxQuality.Items.AddRange(
-            [
-                "High Quality (Bicubic)",
-                "Balanced (Bilinear)",
-                "Fast (Nearest Neighbor)"
-            ]);
+            if (resetDefaultScope != DownscaleResetDefaultScope.None)
+            {
+                // Reset settings object to defaults
+                if (resetDefaultScope == DownscaleResetDefaultScope.Resize || resetDefaultScope == DownscaleResetDefaultScope.All)
+                {
+                    _downscaleSettings.ResizeMode = Constants.DownscaleResizeModeDefault;
+                    _downscaleSettings.ResizeTargetHeight = Constants.DownscaleResizeTargetHeightDefault;
+                    _downscaleSettings.ResizePercentage = Constants.DownscaleResizePercentageDefault;
+                    _downscaleSettings.ResizeMaxWidth = Constants.DownscaleResizeMaxWidthDefault;
+                    _downscaleSettings.ResizeBoundingBoxWidth = Constants.DownscaleResizeBoundingWidthDefault;
+                    _downscaleSettings.ResizeBoundingBoxHeight = Constants.DownscaleResizeBoundingHeightDefault;
+                }
+                if (resetDefaultScope == DownscaleResetDefaultScope.Processing || resetDefaultScope == DownscaleResetDefaultScope.All)
+                {
+                    _downscaleSettings.Quality = Constants.DownscaleQualityDefault;
+                    _downscaleSettings.SharpenAfterResize = Constants.DownscaleSharpenAfterResizeDefault;
+                    _downscaleSettings.SkipSmallerImages = Constants.DownscaleSkipSmallerImagesDefault;
+                    _downscaleSettings.FullScreenOnly = Constants.DownscaleFullScreenOnlyDefault;
+                    _downscaleSettings.LossyFormatsOnly = Constants.DownscaleLossyFormatsOnlyDefault;
+                }
+            }
 
             dsComboBoxQuality.SelectedIndexChanged += (_, _) => UpdateDownscaleSummary();
-
             dsCheckBoxSharpen.CheckedChanged += (_, _) => UpdateDownscaleSummary();
             dsCheckBoxSkipSmaller.CheckedChanged += (_, _) => UpdateDownscaleSummary();
             dsCheckBoxFullScreenOnly.CheckedChanged += (_, _) => UpdateDownscaleSummary();
@@ -355,92 +548,244 @@ namespace Capillume
 
             _isUpdatingDownscaleUi = true;
             dsToggleEnable.Checked = _downscaleSettings.Enabled;
-            dsNumericTargetHeight.Value = _downscaleSettings.TargetHeight;
-            dsNumericPercentage.Value = _downscaleSettings.ResizePercentage;
-            dsNumericMaxWidth.Value = _downscaleSettings.MaxWidth;
-            dsNumericBoundingWidth.Value = _downscaleSettings.BoundingBoxWidth;
-            dsNumericBoundingHeight.Value = _downscaleSettings.BoundingBoxHeight;
-            dsComboBoxQuality.SelectedIndex = (int)_downscaleSettings.Quality;
-            dsCheckBoxSharpen.Checked = _downscaleSettings.SharpenAfterResize;
-            dsCheckBoxSkipSmaller.Checked = _downscaleSettings.SkipSmallerImages;
-            dsCheckBoxFullScreenOnly.Checked = _downscaleSettings.FullScreenOnly;
-            dsCheckBoxLossyOnly.Checked = _downscaleSettings.LossyFormatsOnly;
-            SelectDownscaleMode(_downscaleSettings.Mode);
-            SyncDownscalePresetSelections();
+
+            if (resetDefaultScope == DownscaleResetDefaultScope.None || resetDefaultScope == DownscaleResetDefaultScope.Resize)
+            {
+                dsComboBoxTargetHeight.Items.Clear();
+                dsComboBoxTargetHeight.Items.AddRange(DownscaleHeightPresets.Select(p => p.Label).Append("Custom").ToArray());
+                dsNumericTargetHeight.Minimum = Constants.DownscaleResizeTargetHeightMin;
+                dsNumericTargetHeight.Maximum = Constants.DownscaleResizeTargetHeightMax;
+                dsComboBoxPercentage.Items.Clear();
+                dsComboBoxPercentage.Items.AddRange(DownscalePercentagePresets.Select(p => $"{p}%").Append("Custom").ToArray());
+                dsNumericPercentage.Maximum = Constants.DownscaleResizePercentageMax;
+                dsNumericPercentage.Minimum = Constants.DownscaleResizePercentageMin;
+                dsComboBoxMaxWidth.Items.Clear();
+                dsComboBoxMaxWidth.Items.AddRange(DownscaleWidthPresets.Select(p => p.ToString()).Append("Custom").ToArray());
+                dsNumericMaxWidth.Maximum = Constants.DownscaleResizeMaxWidthMax;
+                dsNumericMaxWidth.Minimum = Constants.DownscaleResizeMaxWidthMin;
+                dsComboBoxBoundingBox.Items.Clear();
+                dsComboBoxBoundingBox.Items.AddRange(DownscaleBoundingBoxPresets.Select(p => p.Label).Append("Custom").ToArray());
+                dsNumericBoundingWidth.Maximum = Constants.DownscaleResizeMaxWidthMax;
+                dsNumericBoundingWidth.Minimum = Constants.DownscaleResizeMaxWidthMin;
+                dsNumericBoundingHeight.Maximum = Constants.DownscaleResizeTargetHeightMax;
+                dsNumericBoundingHeight.Minimum = Constants.DownscaleResizeTargetHeightMin;
+
+                dsNumericTargetHeight.Value = _downscaleSettings.ResizeTargetHeight;
+                dsNumericPercentage.Value = _downscaleSettings.ResizePercentage;
+                dsNumericMaxWidth.Value = _downscaleSettings.ResizeMaxWidth;
+                dsNumericBoundingWidth.Value = _downscaleSettings.ResizeBoundingBoxWidth;
+                dsNumericBoundingHeight.Value = _downscaleSettings.ResizeBoundingBoxHeight;
+                SelectDownscaleMode(_downscaleSettings.ResizeMode);
+                SyncDownscalePresetSelections();
+            }
+
+            if (resetDefaultScope == DownscaleResetDefaultScope.None || resetDefaultScope == DownscaleResetDefaultScope.Processing)
+            {
+                dsComboBoxQuality.Items.Clear();
+                dsComboBoxQuality.Items.AddRange(
+                [
+                    "High Quality (Bicubic)",
+                    "Balanced (Bilinear)",
+                    "Fast (Nearest Neighbor)"
+                ]);
+
+                dsComboBoxQuality.SelectedIndex = (int)_downscaleSettings.Quality;
+                dsCheckBoxSharpen.Checked = _downscaleSettings.SharpenAfterResize;
+                dsCheckBoxSkipSmaller.Checked = _downscaleSettings.SkipSmallerImages;
+                dsCheckBoxFullScreenOnly.Checked = _downscaleSettings.FullScreenOnly;
+                dsCheckBoxLossyOnly.Checked = _downscaleSettings.LossyFormatsOnly;
+            }
             _isUpdatingDownscaleUi = false;
 
-            UpdateDownscaleControlState();
+            dsLabelDefaultSize.Text = GetDefaultCaptureSizeDescription();
             UpdateDownscaleSummary();
+            UpdateDownscaleControlState();
             tabPageDownscale.ResumeLayout(false);
         }
 
-        private void InitializeTabImageProcessing()
-        {
-            SelectImageColorMode(_imageProcessingSettings.ColorMode);
-            ipCheckBoxHighContrast.Checked = _imageProcessingSettings.HighContrast;
-            ipCheckBoxNoiseReduction.Checked = _imageProcessingSettings.NoiseReduction;
-            ipComboBoxColorTemperature.SelectedIndex = (int)_imageProcessingSettings.ColorTemperature;
+        private enum ImageProcessingResetDefaultScope { None, ColorMode, AdvProcessing, All }
 
-            if (ipComboBoxColorTemperature.SelectedIndex < 0)
+        private void InitializeTabImageProcessing(ImageProcessingResetDefaultScope resetDefaultScope = ImageProcessingResetDefaultScope.None)
+        {
+            tabPageImageProcessing.SuspendLayout();
+
+            if (resetDefaultScope != ImageProcessingResetDefaultScope.None)
             {
-                ipComboBoxColorTemperature.SelectedIndex = (int)ColorTemperatureMode.Neutral;
+                // Reset settings object to defaults
+                if (resetDefaultScope == ImageProcessingResetDefaultScope.ColorMode || resetDefaultScope == ImageProcessingResetDefaultScope.All)
+                {
+                    _imageProcessingSettings.ColorMode = Constants.ImageProcColorModeDefault;
+                }
+                if (resetDefaultScope == ImageProcessingResetDefaultScope.AdvProcessing || resetDefaultScope == ImageProcessingResetDefaultScope.All)
+                {
+                    _imageProcessingSettings.HighContrast = Constants.ImageProcHighContrastDefault;
+                    _imageProcessingSettings.NoiseReduction = Constants.ImageProcNoiseReductionDefault;
+                    _imageProcessingSettings.ColorTemperature = Constants.ImageProcColorTemperatureDefault;
+                }
             }
+
+            if (resetDefaultScope == ImageProcessingResetDefaultScope.None || resetDefaultScope == ImageProcessingResetDefaultScope.ColorMode)
+            {
+                SelectImageColorMode(_imageProcessingSettings.ColorMode);
+            }
+
+            if (resetDefaultScope == ImageProcessingResetDefaultScope.None || resetDefaultScope == ImageProcessingResetDefaultScope.AdvProcessing)
+            {
+                ipCheckBoxHighContrast.Checked = _imageProcessingSettings.HighContrast;
+                ipCheckBoxNoiseReduction.Checked = _imageProcessingSettings.NoiseReduction;
+                ipComboBoxColorTemperature.SelectedIndex = (int)_imageProcessingSettings.ColorTemperature;
+
+                if (ipComboBoxColorTemperature.SelectedIndex < 0)
+                {
+                    ipComboBoxColorTemperature.SelectedIndex = (int)ImageProcessColorTempMode.Neutral;
+                }
+            }
+
+            tabPageImageProcessing.ResumeLayout(false);
         }
 
-        private void InitializeTabRetention()
+        private void InitializeTabDedupe(bool resetToDefaults = false)
         {
-            rtToggleSwitchAutoCleanup.Checked = _retentionSettings.AutoCleanupEnabled;
-            rtCheckBoxMaxDays.Checked = _retentionSettings.MaxDaysEnabled;
-            rtNumericMaxDays.Value = Math.Clamp(
-                _retentionSettings.MaxDaysToRetain,
-                Constants.RetentionDaysMin,
-                Constants.RetentionDaysMax);
-            rtCheckBoxMaxFiles.Checked = _retentionSettings.MaxFilesEnabled;
-            rtNumericMaxFiles.Value = Math.Clamp(
-                _retentionSettings.MaxFilesToRetain,
-                Constants.RetentionFileCountMin,
-                Constants.RetentionFileCountMax);
-            rtComboBoxAction.SelectedIndex = (int)_retentionSettings.Action;
-            rtTextBoxBackupFolder.Text = _retentionSettings.BackupFolder;
-            rtCheckBoxPerSessionSubfolder.Checked = _retentionSettings.PerSessionSubfolder;
-            rtCheckBoxDryRun.Checked = _retentionSettings.DryRunMode;
-            rtCheckBoxIncludeSubfolders.Checked = _retentionSettings.IncludeSubfolders;
+            tabPageDedupe.SuspendLayout();
 
-            if (rtComboBoxAction.SelectedIndex < 0)
+            ddComboBoxDynamicRegions.Items.Clear();
+            ddComboBoxDynamicRegions.Items.AddRange(DedupeDynamicRegionModeHelper.Labels);
+
+            ddComboBoxCompareMode.Items.Clear();
+            ddComboBoxCompareMode.Items.AddRange(DedupeCompareModeHelper.Labels);
+
+            if (resetToDefaults)
             {
-                rtComboBoxAction.SelectedIndex = (int)RetentionAction.MoveToRecycleBin;
+                // Reset settings object to defaults
+                _dedupeSettings.CompareMode = Constants.DedupeCompareModeDefault;
+                _dedupeSettings.Sensitivity = Constants.DedupeSensitivityDefault;
+                _dedupeSettings.TimeoutMilliseconds = Constants.DedupeTimeoutMillisecondsDefault;
+                _dedupeSettings.DynamicRegionMode = Constants.DedupeDynamicRegionModeDefault;
+                _dedupeSettings.ExcludeRegions = Constants.DedupeExcludeRegionsDefault;
+                _dedupeSettings.ComparePerActiveWindow = Constants.DedupeComparePerActiveWindowDefault;
+                _dedupeSettings.UpdateReferenceOnlyOnSave = Constants.DedupeUpdateReferenceOnlyOnSaveDefault;
+                _dedupeSettings.MinimumMinutesBetweenSaves = Constants.DedupeMinimumMinutesBetweenSavesDefault;
+                _dedupeSettings.DryRun = Constants.DedupeDryRunDefault;
+                _dedupeSettings.ShowSkippedNotifications = Constants.DedupeShowSkippedNotificationsDefault;
+                _dedupeSettings.EnableDiagnostics = Constants.DedupeEnableDiagnosticsDefault;
             }
 
-            rtToggleSwitchAutoCleanup.CheckedChanged += RetentionSettingChanged;
-            rtCheckBoxMaxDays.CheckedChanged += RetentionSettingChanged;
-            rtNumericMaxDays.ValueChanged += RetentionSettingChanged;
-            rtCheckBoxMaxFiles.CheckedChanged += RetentionSettingChanged;
-            rtNumericMaxFiles.ValueChanged += RetentionSettingChanged;
-            rtComboBoxAction.SelectedIndexChanged += RtComboBoxAction_SelectedIndexChanged;
-            rtTextBoxBackupFolder.TextChanged += RetentionSettingChanged;
-            rtCheckBoxPerSessionSubfolder.CheckedChanged += RetentionSettingChanged;
-            rtCheckBoxDryRun.CheckedChanged += RetentionSettingChanged;
-            rtCheckBoxIncludeSubfolders.CheckedChanged += RetentionSettingChanged;
+            ddToggleEnable.Checked = _dedupeSettings.Enabled;
+            //ddComboBoxCompareMode.SelectedIndex = (int)_dedupeSettings.CompareMode;
+            ddComboBoxCompareMode.SelectedIndex = Array.FindIndex(DedupeCompareModeHelper.Items, item => item.Mode == _dedupeSettings.CompareMode);
+            ddTrackBarSensitivity.Value = _dedupeSettings.Sensitivity;
+            ddLabelSensitivityValue.Text = $"{_dedupeSettings.Sensitivity}%";
+            //ddComboBoxDynamicRegions.SelectedIndex = (int)_dedupeSettings.DynamicRegionMode;
+            ddComboBoxDynamicRegions.SelectedIndex = Array.FindIndex(DedupeDynamicRegionModeHelper.Items, item => item.Mode == _dedupeSettings.DynamicRegionMode);
+            ddCheckBoxPerActiveWindow.Checked = _dedupeSettings.ComparePerActiveWindow;
+            ddNumericTimeout.Value = _dedupeSettings.TimeoutMilliseconds;
+            ddCheckBoxDryRun.Checked = _dedupeSettings.DryRun;
+            ddCheckBoxShowNotifications.Checked = _dedupeSettings.ShowSkippedNotifications;
+            ddNumericMinimumSaveInterval.Value = _dedupeSettings.MinimumMinutesBetweenSaves;
+            ddCheckBoxUpdateReferenceOnSave.Checked = _dedupeSettings.UpdateReferenceOnlyOnSave;
+            ddCheckBoxDiagnostics.Checked = _dedupeSettings.EnableDiagnostics;
+            ddTextBoxExcludedRegions.Text = string.Join(
+                Environment.NewLine,
+                _dedupeSettings.ExcludeRegions.Select(region => $"{region.X},{region.Y},{region.Width},{region.Height}"));
+            UpdateDedupeControlState();
+            tabPageDedupe.ResumeLayout(false);
+        }
+
+        private enum RetentionResetDefaultScope { None, Selection, Action, All }
+
+        private void InitializeTabRetention(RetentionResetDefaultScope resetDefaultScope = RetentionResetDefaultScope.None)
+        {
+            tabPageRetention.SuspendLayout();
+
+            if (resetDefaultScope != RetentionResetDefaultScope.None)
+            {
+                // Reset settings object to defaults
+                if (resetDefaultScope == RetentionResetDefaultScope.Selection || resetDefaultScope == RetentionResetDefaultScope.All)
+                {
+                    _retentionSettings.MaxDaysEnabled = Constants.RetentionMaxDaysEnabledDefault;
+                    _retentionSettings.MaxDaysToRetain = Constants.RetentionDaysDefault;
+                    _retentionSettings.MaxFilesEnabled = Constants.RetentionMaxFilesEnabledDefault;
+                    _retentionSettings.MaxFilesToRetain = Constants.RetentionFileCountDefault;
+                    _retentionSettings.IncludeSubfolders = Constants.RetentionIncludeSubfoldersDefault;
+                }
+                if (resetDefaultScope == RetentionResetDefaultScope.Action || resetDefaultScope == RetentionResetDefaultScope.All)
+                {
+                    _retentionSettings.Action = Constants.RetentionActionDefault;
+                    //_retentionSettings.BackupFolder = Constants.RetentionBackupFolderDefault;
+                    _retentionSettings.PerSessionSubfolder = Constants.RetentionPerSessionSubfolderDefault;
+                    // DryRunMode is not part of the Action tab group, so don't reset.
+                    // It is not part of any GroupBox.
+                    //_retentionSettings.DryRunMode = Constants.RetentionDryRunModeDefault;
+                }
+            }
+
+            rtToggleSwitchAutoCleanup.Checked = _retentionSettings.AutoCleanupEnabled;
+            rtCheckBoxDryRun.Checked = _retentionSettings.DryRunMode;
+
+            if (resetDefaultScope == RetentionResetDefaultScope.None || resetDefaultScope == RetentionResetDefaultScope.Selection)
+            {
+                rtCheckBoxMaxDays.Checked = _retentionSettings.MaxDaysEnabled;
+                rtNumericMaxDays.Value = Math.Clamp(_retentionSettings.MaxDaysToRetain, Constants.RetentionDaysMin, Constants.RetentionDaysMax);
+                rtCheckBoxMaxFiles.Checked = _retentionSettings.MaxFilesEnabled;
+                rtNumericMaxFiles.Value = Math.Clamp(_retentionSettings.MaxFilesToRetain, Constants.RetentionFileCountMin, Constants.RetentionFileCountMax);
+                rtCheckBoxIncludeSubfolders.Checked = _retentionSettings.IncludeSubfolders;
+            }
+
+            if (resetDefaultScope == RetentionResetDefaultScope.None || resetDefaultScope == RetentionResetDefaultScope.Action)
+            {
+                rtComboBoxAction.Items.Clear();
+                rtComboBoxAction.Items.AddRange(RetentionActionHelper.Labels);
+                //rtComboBoxAction.SelectedIndex = (int)_retentionSettings.Action;
+                rtComboBoxAction.SelectedIndex = Array.FindIndex(RetentionActionHelper.Items, item => item.Mode == _retentionSettings.Action);
+                rtTextBoxBackupFolder.Text = _retentionSettings.BackupFolder;
+                rtCheckBoxPerSessionSubfolder.Checked = _retentionSettings.PerSessionSubfolder;
+            }
 
             UpdateRetentionControlState();
+            tabPageRetention.ResumeLayout(false);
         }
 
-        private void InitializeTabHotkeys()
+        private void InitializeTabHotkeys(bool resetToDefaults = false)
         {
+            tabPageHotkeys.SuspendLayout();
+
+            //if (_hotkeySettings.HasConflict)
+            //{
+            //    MessageBox.Show(
+            //        "The current hotkey combination is already in use by another application.\n" +
+            //        "Please choose a different combination.",
+            //        "Hotkey Conflict",
+            //        MessageBoxButtons.OK,
+            //        MessageBoxIcon.Warning);
+            //}
+
+            if (resetToDefaults)
+            {
+                // Reset settings object to defaults
+                _hotkeySettings.Modifiers = Constants.HotkeyModifiersDefault;
+                _hotkeySettings.Key = Constants.HotkeyKeyDefault;
+                hkToggleEnable.Checked = true;
+            }
+            else
+            {
+                hkToggleEnable.Checked = _hotkeySettings.Enabled;
+            }
+
             if (_hotkeySettings.Modifiers == Keys.None)
             {
-                _hotkeySettings.Modifiers = HotkeySettings.DefaultModifiers;
+                _hotkeySettings.Modifiers = Constants.HotkeyModifiersDefault;
             }
 
             if (_hotkeySettings.Key == Keys.None)
             {
-                _hotkeySettings.Key = HotkeySettings.DefaultKey;
+                _hotkeySettings.Key = Constants.HotkeyKeyDefault;
             }
 
-            hkToggleEnable.Checked = _hotkeySettings.Enabled;
             hkTextBoxShortcut.Text = FormatHotkey(_hotkeySettings.Modifiers, _hotkeySettings.Key);
             PopulateAvailableHotkeys();
             UpdateHotkeyControlState();
+
+            tabPageHotkeys.ResumeLayout(false);
         }
 
         private void ButtonOk_Click(object sender, EventArgs e)
@@ -477,6 +822,12 @@ namespace Capillume
 
             tabControlSettings.SelectedTab = tabPageHotkeys;
             if (!TryApplyHotkeySettings())
+            {
+                return;
+            }
+
+            tabControlSettings.SelectedTab = tabPageDedupe;
+            if (!TryApplyDedupeSettings())
             {
                 return;
             }
@@ -522,13 +873,90 @@ namespace Capillume
             return true;
         }
 
+        private void DdSettingChanged(object? sender, EventArgs e)
+        {
+            ddLabelSensitivityValue.Text = $"{ddTrackBarSensitivity.Value}%";
+            UpdateDedupeControlState();
+        }
+
+        private void UpdateDedupeControlState()
+        {
+            bool enabled = ddToggleEnable.Checked;
+            ddLabelSensitivity.Enabled = enabled;
+            ddTrackBarSensitivity.Enabled = enabled;
+            ddLabelSensitivityValue.Enabled = enabled;
+            ddLabelDynamicRegions.Enabled = enabled;
+            ddComboBoxDynamicRegions.Enabled = enabled;
+            ddCheckBoxPerActiveWindow.Enabled = enabled;
+            ddLabelTimeout.Enabled = enabled;
+            ddLabelTimeoutUnit.Enabled = enabled;
+            ddNumericTimeout.Enabled = enabled;
+            ddCheckBoxDryRun.Enabled = enabled;
+            ddCheckBoxShowNotifications.Enabled = enabled;
+            ddLabelExcludedRegions.Enabled = enabled;
+            ddTextBoxExcludedRegions.Enabled = enabled;
+            ddLabelCompareMode.Enabled = enabled;
+            ddComboBoxCompareMode.Enabled = enabled;
+            ddLabelMinimumSaveInterval.Enabled = enabled;
+            ddLabelMinimumSaveIntervalUnit.Enabled = enabled;
+            ddNumericMinimumSaveInterval.Enabled = enabled;
+            ddCheckBoxUpdateReferenceOnSave.Enabled = enabled;
+            ddCheckBoxDiagnostics.Enabled = enabled;
+        }
+
+        private bool TryApplyDedupeSettings()
+        {
+            if (!TryParseExcludedRegions(ddTextBoxExcludedRegions.Text, out List<Rectangle> regions, out string? error))
+            {
+                MessageBox.Show(error, "Dedupe", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                ddTextBoxExcludedRegions.Focus();
+                return false;
+            }
+
+            _dedupeSettings.Enabled = ddToggleEnable.Checked;
+            _dedupeSettings.Sensitivity = ddTrackBarSensitivity.Value;
+            //_dedupeSettings.CompareMode = (DedupeCompareMode)Math.Max(0, ddComboBoxCompareMode.SelectedIndex);
+            _dedupeSettings.CompareMode = DedupeCompareModeHelper.ToModeCode(ddComboBoxCompareMode.Text);
+            //_dedupeSettings.DynamicRegionMode = (DedupeDynamicRegionMode)Math.Max(0, ddComboBoxDynamicRegions.SelectedIndex);
+            _dedupeSettings.DynamicRegionMode = DedupeDynamicRegionModeHelper.ToModeCode(ddComboBoxDynamicRegions.Text);
+            _dedupeSettings.ComparePerActiveWindow = ddCheckBoxPerActiveWindow.Checked;
+            _dedupeSettings.TimeoutMilliseconds = (int)ddNumericTimeout.Value;
+            _dedupeSettings.DryRun = ddCheckBoxDryRun.Checked;
+            _dedupeSettings.ShowSkippedNotifications = ddCheckBoxShowNotifications.Checked;
+            _dedupeSettings.MinimumMinutesBetweenSaves = (int)ddNumericMinimumSaveInterval.Value;
+            _dedupeSettings.UpdateReferenceOnlyOnSave = ddCheckBoxUpdateReferenceOnSave.Checked;
+            _dedupeSettings.EnableDiagnostics = ddCheckBoxDiagnostics.Checked;
+            _dedupeSettings.ExcludeRegions = regions;
+            return true;
+        }
+
+        private static bool TryParseExcludedRegions(string text, out List<Rectangle> regions, out string? error)
+        {
+            regions = [];
+            error = null;
+            foreach (string line in text.Split(["\r\n", "\n"], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+            {
+                string[] values = line.Split(',', StringSplitOptions.TrimEntries);
+                if (values.Length != 4 || !int.TryParse(values[0], out int x) || !int.TryParse(values[1], out int y) ||
+                    !int.TryParse(values[2], out int width) || !int.TryParse(values[3], out int height) || width <= 0 || height <= 0)
+                {
+                    error = $"Invalid excluded region '{line}'. Use x,y,width,height on each line.";
+                    return false;
+                }
+
+                regions.Add(new Rectangle(x, y, width, height));
+            }
+
+            return true;
+        }
+
         private bool TryApplyHotkeySettings()
         {
             if (hkToggleEnable.Checked &&
                 (_hotkeySettings.Modifiers == Keys.None || _hotkeySettings.Key == Keys.None))
             {
                 MessageBox.Show(
-                    "Choose a shortcut with at least one modifier and a key.",
+                    Constants.HotKeyMsgNoModifier,
                     "Hotkeys",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Warning);
@@ -581,6 +1009,15 @@ namespace Capillume
 
         private void UpdateHotkeyControlState()
         {
+            if (HotkeySettings.HasConflict)
+            {
+                hkLabelWarning.Visible = true;
+            }
+            else
+            {
+                hkLabelWarning.Visible = false;
+            }
+
             hkLabelShortcut.Enabled = hkToggleEnable.Checked;
             hkTextBoxShortcut.Enabled = hkToggleEnable.Checked;
             hkButtonClear.Enabled = hkToggleEnable.Checked || _hotkeySettings.Key != Keys.None;
@@ -591,7 +1028,7 @@ namespace Capillume
             }
             else if (GetCurrentHotkeyAvailability() == "In use")
             {
-                hkLabelStatus.Text = "Shortcut is already taken.";
+                hkLabelStatus.Text = "Shortcut is already taken. Choose another shortcut";
             }
             else
             {
@@ -782,12 +1219,12 @@ namespace Capillume
         private bool TryApplyDownscaleSettings()
         {
             _downscaleSettings.Enabled = dsToggleEnable.Checked;
-            _downscaleSettings.Mode = GetSelectedDownscaleMode();
-            _downscaleSettings.TargetHeight = (int)dsNumericTargetHeight.Value;
+            _downscaleSettings.ResizeMode = GetSelectedDownscaleMode();
+            _downscaleSettings.ResizeTargetHeight = (int)dsNumericTargetHeight.Value;
             _downscaleSettings.ResizePercentage = (int)dsNumericPercentage.Value;
-            _downscaleSettings.MaxWidth = (int)dsNumericMaxWidth.Value;
-            _downscaleSettings.BoundingBoxWidth = (int)dsNumericBoundingWidth.Value;
-            _downscaleSettings.BoundingBoxHeight = (int)dsNumericBoundingHeight.Value;
+            _downscaleSettings.ResizeMaxWidth = (int)dsNumericMaxWidth.Value;
+            _downscaleSettings.ResizeBoundingBoxWidth = (int)dsNumericBoundingWidth.Value;
+            _downscaleSettings.ResizeBoundingBoxHeight = (int)dsNumericBoundingHeight.Value;
             _downscaleSettings.Quality = (DownscaleQuality)dsComboBoxQuality.SelectedIndex;
             _downscaleSettings.SharpenAfterResize = dsCheckBoxSharpen.Checked;
             _downscaleSettings.SkipSmallerImages = dsCheckBoxSkipSmaller.Checked;
@@ -801,10 +1238,10 @@ namespace Capillume
             _imageProcessingSettings.ColorMode = GetSelectedImageColorMode();
             _imageProcessingSettings.HighContrast = ipCheckBoxHighContrast.Checked;
             _imageProcessingSettings.NoiseReduction = ipCheckBoxNoiseReduction.Checked;
-            _imageProcessingSettings.ColorTemperature = (ColorTemperatureMode)Math.Clamp(
+            _imageProcessingSettings.ColorTemperature = (ImageProcessColorTempMode)Math.Clamp(
                 ipComboBoxColorTemperature.SelectedIndex,
-                (int)ColorTemperatureMode.Neutral,
-                (int)ColorTemperatureMode.Cool);
+                (int)ImageProcessColorTempMode.Neutral,
+                (int)ImageProcessColorTempMode.Cool);
             return true;
         }
 
@@ -823,10 +1260,11 @@ namespace Capillume
             _retentionSettings.MaxDaysToRetain = (int)rtNumericMaxDays.Value;
             _retentionSettings.MaxFilesEnabled = rtCheckBoxMaxFiles.Checked;
             _retentionSettings.MaxFilesToRetain = (int)rtNumericMaxFiles.Value;
-            _retentionSettings.Action = (RetentionAction)Math.Clamp(
-                rtComboBoxAction.SelectedIndex,
-                (int)RetentionAction.MoveToRecycleBin,
-                (int)RetentionAction.BackupThenDelete);
+            //_retentionSettings.Action = (RetentionAction)Math.Clamp(
+            //    rtComboBoxAction.SelectedIndex,
+            //    (int)RetentionAction.MoveToRecycleBin,
+            //    (int)RetentionAction.BackupThenDelete);
+            _retentionSettings.Action = GetSelectedRetentionAction(); // RetentionActionHelper.ToModeCode(rtComboBoxAction.Text);
             _retentionSettings.BackupFolder = rtTextBoxBackupFolder.Text.Trim();
             _retentionSettings.PerSessionSubfolder = rtCheckBoxPerSessionSubfolder.Checked;
             _retentionSettings.DryRunMode = rtCheckBoxDryRun.Checked;
@@ -834,44 +1272,44 @@ namespace Capillume
             return true;
         }
 
-        private void SelectImageColorMode(ImageColorMode mode)
+        private void SelectImageColorMode(ImageProcessColorMode mode)
         {
-            ipRadioFullColor.Checked = mode == ImageColorMode.FullColor;
-            ipRadioGrayscale.Checked = mode == ImageColorMode.Grayscale;
-            ipRadioMonochrome1Bit.Checked = mode == ImageColorMode.Monochrome1Bit;
-            ipRadioColor16.Checked = mode == ImageColorMode.Color16;
-            ipRadioColor256.Checked = mode == ImageColorMode.Color256;
-            ipRadioAdaptivePalette.Checked = mode == ImageColorMode.AdaptivePalette;
+            ipRadioFullColor.Checked = mode == ImageProcessColorMode.FullColor;
+            ipRadioGrayscale.Checked = mode == ImageProcessColorMode.Grayscale;
+            ipRadioMonochrome1Bit.Checked = mode == ImageProcessColorMode.Monochrome1Bit;
+            ipRadioColor16.Checked = mode == ImageProcessColorMode.Color16;
+            ipRadioColor256.Checked = mode == ImageProcessColorMode.Color256;
+            ipRadioAdaptivePalette.Checked = mode == ImageProcessColorMode.AdaptivePalette;
         }
 
-        private ImageColorMode GetSelectedImageColorMode()
+        private ImageProcessColorMode GetSelectedImageColorMode()
         {
             if (ipRadioGrayscale.Checked)
             {
-                return ImageColorMode.Grayscale;
+                return ImageProcessColorMode.Grayscale;
             }
 
             if (ipRadioMonochrome1Bit.Checked)
             {
-                return ImageColorMode.Monochrome1Bit;
+                return ImageProcessColorMode.Monochrome1Bit;
             }
 
             if (ipRadioColor16.Checked)
             {
-                return ImageColorMode.Color16;
+                return ImageProcessColorMode.Color16;
             }
 
             if (ipRadioColor256.Checked)
             {
-                return ImageColorMode.Color256;
+                return ImageProcessColorMode.Color256;
             }
 
             if (ipRadioAdaptivePalette.Checked)
             {
-                return ImageColorMode.AdaptivePalette;
+                return ImageProcessColorMode.AdaptivePalette;
             }
 
-            return ImageColorMode.FullColor;
+            return ImageProcessColorMode.FullColor;
         }
 
         private void ImageProcessingColorModeChanged(object? sender, EventArgs e)
@@ -1056,35 +1494,35 @@ namespace Capillume
             _isUpdatingDownscaleUi = previousState;
         }
 
-        private void SelectDownscaleMode(DownscaleMode mode)
+        private void SelectDownscaleMode(DownscaleResizeMode mode)
         {
             bool previousState = _isUpdatingDownscaleUi;
             _isUpdatingDownscaleUi = true;
-            dsRadioTargetHeight.Checked = mode == DownscaleMode.TargetHeight;
-            dsRadioPercentage.Checked = mode == DownscaleMode.Percentage;
-            dsRadioMaxWidth.Checked = mode == DownscaleMode.MaxWidth;
-            dsRadioBoundingBox.Checked = mode == DownscaleMode.BoundingBox;
+            dsRadioTargetHeight.Checked = mode == DownscaleResizeMode.TargetHeight;
+            dsRadioPercentage.Checked = mode == DownscaleResizeMode.Percentage;
+            dsRadioMaxWidth.Checked = mode == DownscaleResizeMode.MaxWidth;
+            dsRadioBoundingBox.Checked = mode == DownscaleResizeMode.BoundingBox;
             _isUpdatingDownscaleUi = previousState;
         }
 
-        private DownscaleMode GetSelectedDownscaleMode()
+        private DownscaleResizeMode GetSelectedDownscaleMode()
         {
             if (dsRadioPercentage.Checked)
             {
-                return DownscaleMode.Percentage;
+                return DownscaleResizeMode.Percentage;
             }
 
             if (dsRadioMaxWidth.Checked)
             {
-                return DownscaleMode.MaxWidth;
+                return DownscaleResizeMode.MaxWidth;
             }
 
             if (dsRadioBoundingBox.Checked)
             {
-                return DownscaleMode.BoundingBox;
+                return DownscaleResizeMode.BoundingBox;
             }
 
-            return DownscaleMode.TargetHeight;
+            return DownscaleResizeMode.TargetHeight;
         }
 
         private void UpdateDownscaleControlState()
@@ -1093,16 +1531,16 @@ namespace Capillume
             dsGroupBoxModes.Enabled = enabled;
             dsGroupBoxProcessing.Enabled = enabled;
 
-            DownscaleMode selectedMode = GetSelectedDownscaleMode();
-            dsComboBoxTargetHeight.Enabled = enabled && selectedMode == DownscaleMode.TargetHeight;
-            dsNumericTargetHeight.Enabled = enabled && selectedMode == DownscaleMode.TargetHeight;
-            dsComboBoxPercentage.Enabled = enabled && selectedMode == DownscaleMode.Percentage;
-            dsNumericPercentage.Enabled = enabled && selectedMode == DownscaleMode.Percentage;
-            dsComboBoxMaxWidth.Enabled = enabled && selectedMode == DownscaleMode.MaxWidth;
-            dsNumericMaxWidth.Enabled = enabled && selectedMode == DownscaleMode.MaxWidth;
-            dsComboBoxBoundingBox.Enabled = enabled && selectedMode == DownscaleMode.BoundingBox;
-            dsNumericBoundingWidth.Enabled = enabled && selectedMode == DownscaleMode.BoundingBox;
-            dsNumericBoundingHeight.Enabled = enabled && selectedMode == DownscaleMode.BoundingBox;
+            DownscaleResizeMode selectedMode = GetSelectedDownscaleMode();
+            dsComboBoxTargetHeight.Enabled = enabled && selectedMode == DownscaleResizeMode.TargetHeight;
+            dsNumericTargetHeight.Enabled = enabled && selectedMode == DownscaleResizeMode.TargetHeight;
+            dsComboBoxPercentage.Enabled = enabled && selectedMode == DownscaleResizeMode.Percentage;
+            dsNumericPercentage.Enabled = enabled && selectedMode == DownscaleResizeMode.Percentage;
+            dsComboBoxMaxWidth.Enabled = enabled && selectedMode == DownscaleResizeMode.MaxWidth;
+            dsNumericMaxWidth.Enabled = enabled && selectedMode == DownscaleResizeMode.MaxWidth;
+            dsComboBoxBoundingBox.Enabled = enabled && selectedMode == DownscaleResizeMode.BoundingBox;
+            dsNumericBoundingWidth.Enabled = enabled && selectedMode == DownscaleResizeMode.BoundingBox;
+            dsNumericBoundingHeight.Enabled = enabled && selectedMode == DownscaleResizeMode.BoundingBox;
         }
 
         private void UpdateDownscaleSummary()
@@ -1115,10 +1553,10 @@ namespace Capillume
 
             string resizeDescription = GetSelectedDownscaleMode() switch
             {
-                DownscaleMode.TargetHeight => $"Resize to {dsNumericTargetHeight.Value:N0}px height.",
-                DownscaleMode.Percentage => $"Resize to {dsNumericPercentage.Value}% of the captured size.",
-                DownscaleMode.MaxWidth => $"Reduce to {dsNumericMaxWidth.Value:N0}px width.",
-                DownscaleMode.BoundingBox => $"Fit within {dsNumericBoundingWidth.Value:N0} × {dsNumericBoundingHeight.Value:N0}.",
+                DownscaleResizeMode.TargetHeight => $"Resize to {dsNumericTargetHeight.Value:N0}px height.",
+                DownscaleResizeMode.Percentage => $"Resize to {dsNumericPercentage.Value}% of the captured size.",
+                DownscaleResizeMode.MaxWidth => $"Reduce to {dsNumericMaxWidth.Value:N0}px width.",
+                DownscaleResizeMode.BoundingBox => $"Fit within {dsNumericBoundingWidth.Value:N0} × {dsNumericBoundingHeight.Value:N0}.",
                 _ => string.Empty
             };
 
@@ -1167,15 +1605,19 @@ namespace Capillume
         {
             bool backupSelected = GetSelectedRetentionAction() == RetentionAction.BackupThenDelete;
             bool hasSaveFolder = !string.IsNullOrWhiteSpace(_saveFolder);
-            bool controlsEnabled = !_isRetentionOperationRunning;
+            bool controlsEnabled = !_isRetentionOperationRunning && rtToggleSwitchAutoCleanup.Checked;
 
-            rtToggleSwitchAutoCleanup.Enabled = controlsEnabled;
+            //rtToggleSwitchAutoCleanup.Enabled = controlsEnabled;
+            rtButtonSelectionDefault.Enabled = controlsEnabled;
             rtCheckBoxMaxDays.Enabled = controlsEnabled;
             rtNumericMaxDays.Enabled = controlsEnabled && rtCheckBoxMaxDays.Checked;
-            rtLabelDaysSuffix.Enabled = controlsEnabled && rtCheckBoxMaxDays.Checked;
+            rtLabelMaxDaysSuffix.Enabled = controlsEnabled && rtCheckBoxMaxDays.Checked;
             rtCheckBoxMaxFiles.Enabled = controlsEnabled;
             rtNumericMaxFiles.Enabled = controlsEnabled && rtCheckBoxMaxFiles.Checked;
-            rtLabelFilesSuffix.Enabled = controlsEnabled && rtCheckBoxMaxFiles.Checked;
+            rtLabelMaxFilesSuffix.Enabled = controlsEnabled && rtCheckBoxMaxFiles.Checked;
+            rtCheckBoxIncludeSubfolders.Enabled = controlsEnabled;
+
+            rtButtonActionDefault.Enabled = controlsEnabled;
             rtLabelAction.Enabled = controlsEnabled;
             rtComboBoxAction.Enabled = controlsEnabled;
             rtLabelBackupFolder.Enabled = controlsEnabled && backupSelected;
@@ -1183,21 +1625,21 @@ namespace Capillume
             rtButtonBrowseBackupFolder.Enabled = controlsEnabled && backupSelected;
             rtCheckBoxPerSessionSubfolder.Enabled = controlsEnabled && backupSelected;
             rtCheckBoxDryRun.Enabled = controlsEnabled;
-            rtCheckBoxIncludeSubfolders.Enabled = controlsEnabled;
             rtButtonCleanupNow.Enabled = controlsEnabled && hasSaveFolder;
 
             if (!hasSaveFolder && !_isRetentionOperationRunning)
             {
-                rtTextBoxCleanupResult.Text = "Select a screenshot save folder on the main window before running cleanup.";
+                rtTextBoxCleanupResult.Text = "Select a folder to save screenshots on the main window before running cleanup.";
             }
         }
 
         private RetentionAction GetSelectedRetentionAction()
         {
-            return (RetentionAction)Math.Clamp(
-                rtComboBoxAction.SelectedIndex,
-                (int)RetentionAction.MoveToRecycleBin,
-                (int)RetentionAction.BackupThenDelete);
+            //return (RetentionAction)Math.Clamp(
+            //    rtComboBoxAction.SelectedIndex,
+            //    (int)RetentionAction.MoveToRecycleBin,
+            //    (int)RetentionAction.BackupThenDelete);
+            return RetentionActionHelper.ToModeCode(rtComboBoxAction.Text);
         }
 
         private async void RtButtonCleanupNow_Click(object sender, EventArgs e)
@@ -1356,10 +1798,18 @@ namespace Capillume
             {
                 _watermarkFont.Dispose();
                 _watermarkFont = (Font)dialog.Font.Clone();
-                wmLabelFontDescription.Text = $"{_watermarkFont.Name}, {_watermarkFont.SizeInPoints:0.#} pt";
-                float originalSize = wmLabelFontDescription.Font.Size;
-                wmLabelFontDescription.Font = new Font(_watermarkFont.FontFamily, originalSize, _watermarkFont.Style);
+                //wmLabelFontDescription.Text = $"{_watermarkFont.Name}, {_watermarkFont.SizeInPoints:0.#} pt";
+                //float originalSize = wmLabelFontDescription.Font.Size;
+                //wmLabelFontDescription.Font = new Font(_watermarkFont.FontFamily, originalSize, _watermarkFont.Style);
+                SetWatermarkTextDescription();
             }
+        }
+
+        private void SetWatermarkTextDescription()
+        {
+            wmLabelFontDescription.Text = $"{_watermarkFont.Name}, {_watermarkFont.SizeInPoints:0.#} pt";
+            float originalSize = wmLabelFontDescription.Font.Size;
+            wmLabelFontDescription.Font = new Font(_watermarkFont.FontFamily, originalSize, _watermarkFont.Style);
         }
 
         private void WmButtonBrowseWatermarkImage_Click(object sender, EventArgs e)
@@ -1386,6 +1836,66 @@ namespace Capillume
             UpdateWatermarkImagePreview();
         }
 
+        private void WmButtonUseTextDefault_Click(object sender, EventArgs e)
+        {
+            InitializeTabWatermark(WatermarkResetDefaultScope.Text);
+        }
+
+        private void WmButtonUseImageDefault_Click(object sender, EventArgs e)
+        {
+            InitializeTabWatermark(WatermarkResetDefaultScope.Image);
+        }
+
+        private void WmButtonCommonDefault_Click(object sender, EventArgs e)
+        {
+            InitializeTabWatermark(WatermarkResetDefaultScope.Common);
+        }
+
+        private void AnButtonDefault_Click(object sender, EventArgs e)
+        {
+            InitializeTabAnnotation(resetToDefaults: true);
+        }
+
+        private void DsButtonModesDefault_Click(object sender, EventArgs e)
+        {
+            InitializeTabDownscale(DownscaleResetDefaultScope.Resize);
+        }
+
+        private void DsButtonProcessingDefault_Click(object sender, EventArgs e)
+        {
+            InitializeTabDownscale(DownscaleResetDefaultScope.Processing);
+        }
+
+        private void IpButtonColorModeDefault_Click(object sender, EventArgs e)
+        {
+            InitializeTabImageProcessing(ImageProcessingResetDefaultScope.ColorMode);
+        }
+
+        private void IpButtonAdvProcessingDefault_Click(object sender, EventArgs e)
+        {
+            InitializeTabImageProcessing(ImageProcessingResetDefaultScope.AdvProcessing);
+        }
+
+        private void DdButtonDefault_Click(object sender, EventArgs e)
+        {
+            InitializeTabDedupe(resetToDefaults: true);
+        }
+
+        private void RtButtonSelectionDefault_Click(object sender, EventArgs e)
+        {
+            InitializeTabRetention(resetDefaultScope: RetentionResetDefaultScope.Selection);
+        }
+
+        private void RtButtonActionDefault_Click(object sender, EventArgs e)
+        {
+            InitializeTabRetention(resetDefaultScope: RetentionResetDefaultScope.Action);
+        }
+
+        private void HkButtonDefault_Click(object sender, EventArgs e)
+        {
+            InitializeTabHotkeys(resetToDefaults: true);
+        }
+
         private void AnToggleUseAnnotation_CheckedChanged(object sender, EventArgs e)
         {
             UpdateAnnotationControlState();
@@ -1393,6 +1903,7 @@ namespace Capillume
 
         private void AnComboBoxAnnotationFormat_TextChanged(object sender, EventArgs e)
         {
+            UpdateAnnotationControlState();
             UpdateAnnotationPreview();
         }
 
@@ -1671,12 +2182,35 @@ namespace Capillume
             }
         }
 
+        private void AnComboBoxAnnotationFormat_MouseUp(object sender, MouseEventArgs e)
+        {
+            UpdateAnnotationSelection();
+        }
+
+        private void AnComboBoxAnnotationFormat_KeyUp(object sender, KeyEventArgs e)
+        {
+            UpdateAnnotationSelection();
+        }
+
+        private void AnComboBoxAnnotationFormat_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            UpdateAnnotationSelection();
+        }
+
+        private void UpdateAnnotationSelection()
+        {
+            _annotationSelectionStart = Math.Max(0, anComboBoxAnnotationFormat.SelectionStart);
+            _annotationSelectionLength = Math.Max(0, anComboBoxAnnotationFormat.SelectionLength);
+        }
+
         private void AnButtonAnnotationFields_Click(object sender, EventArgs e)
         {
-            _annotationSelectionStart = anComboBoxAnnotationFormat.SelectionStart;
-            _annotationSelectionLength = anComboBoxAnnotationFormat.SelectionLength;
+            var menu = new ContextMenuStrip(/*components*/);
+            if (!_ownedMenus.Contains(menu))
+            {
+                _ownedMenus.Add(menu);
+            }
 
-            var menu = new ContextMenuStrip(components);
             foreach (string field in AnnotationFields)
             {
                 var menuItem = new ToolStripMenuItem(field);
@@ -1695,7 +2229,7 @@ namespace Capillume
 
             anComboBoxAnnotationFormat.SelectionStart = _annotationSelectionStart + field.Length;
             anComboBoxAnnotationFormat.SelectionLength = 0;
-            anComboBoxAnnotationFormat.Focus();
+            //anComboBoxAnnotationFormat.Focus();
         }
 
         private void SetAnnotationBackgroundColor(Color? color)
@@ -1711,13 +2245,18 @@ namespace Capillume
             bool imageEnabled = wmToggleUseImage.Checked;
             bool commonEnabled = textEnabled || imageEnabled;
 
+            wmButtonUseTextDefault.Enabled = textEnabled;
             wmTextBoxWatermarkText.Enabled = textEnabled;
             wmButtonChooseFont.Enabled = textEnabled;
             wmLabelFontDescription.Enabled = textEnabled;
+
+            wmButtonUseImageDefault.Enabled = imageEnabled;
             wmTextBoxWatermarkImagePath.Enabled = imageEnabled;
             wmButtonBrowseWatermarkImage.Enabled = imageEnabled;
             wmTrackBarWatermarkImageScale.Enabled = imageEnabled;
             wmLabelWatermarkImageScaleValue.Enabled = imageEnabled;
+
+            wmButtonCommonDefault.Enabled = commonEnabled;
             wmLabelOpacity.Enabled = commonEnabled;
             wmTrackBarOpacity.Enabled = commonEnabled;
             wmLabelOpacityValue.Enabled = commonEnabled;
@@ -1730,6 +2269,7 @@ namespace Capillume
         private void UpdateAnnotationControlState()
         {
             bool enabled = anToggleUseAnnotation.Checked;
+            anButtonDefault.Enabled = enabled;
             anLabelAnnotationFormat.Enabled = enabled;
             anComboBoxAnnotationFormat.Enabled = enabled;
             anButtonAnnotationFields.Enabled = enabled;
@@ -1883,12 +2423,12 @@ namespace Capillume
             return new DownscaleSettings
             {
                 Enabled = settings.Enabled,
-                Mode = settings.Mode,
-                TargetHeight = settings.TargetHeight,
+                ResizeMode = settings.ResizeMode,
+                ResizeTargetHeight = settings.ResizeTargetHeight,
                 ResizePercentage = settings.ResizePercentage,
-                MaxWidth = settings.MaxWidth,
-                BoundingBoxWidth = settings.BoundingBoxWidth,
-                BoundingBoxHeight = settings.BoundingBoxHeight,
+                ResizeMaxWidth = settings.ResizeMaxWidth,
+                ResizeBoundingBoxWidth = settings.ResizeBoundingBoxWidth,
+                ResizeBoundingBoxHeight = settings.ResizeBoundingBoxHeight,
                 Quality = settings.Quality,
                 SharpenAfterResize = settings.SharpenAfterResize,
                 SkipSmallerImages = settings.SkipSmallerImages,
@@ -1931,7 +2471,27 @@ namespace Capillume
             {
                 Enabled = settings.Enabled,
                 Modifiers = settings.Modifiers,
-                Key = settings.Key
+                Key = settings.Key,
+                HasConflict = settings.HasConflict
+            };
+        }
+
+        private static DedupeSettings Clone(DedupeSettings settings)
+        {
+            return new DedupeSettings
+            {
+                Enabled = settings.Enabled,
+                CompareMode = settings.CompareMode,
+                Sensitivity = settings.Sensitivity,
+                TimeoutMilliseconds = settings.TimeoutMilliseconds,
+                DynamicRegionMode = settings.DynamicRegionMode,
+                ExcludeRegions = [.. settings.ExcludeRegions],
+                ComparePerActiveWindow = settings.ComparePerActiveWindow,
+                UpdateReferenceOnlyOnSave = settings.UpdateReferenceOnlyOnSave,
+                MinimumMinutesBetweenSaves = settings.MinimumMinutesBetweenSaves,
+                DryRun = settings.DryRun,
+                ShowSkippedNotifications = settings.ShowSkippedNotifications,
+                EnableDiagnostics = settings.EnableDiagnostics
             };
         }
 
@@ -1965,12 +2525,12 @@ namespace Capillume
         private static bool AreEqual(DownscaleSettings left, DownscaleSettings right)
         {
             return left.Enabled == right.Enabled
-                && left.Mode == right.Mode
-                && left.TargetHeight == right.TargetHeight
+                && left.ResizeMode == right.ResizeMode
+                && left.ResizeTargetHeight == right.ResizeTargetHeight
                 && left.ResizePercentage == right.ResizePercentage
-                && left.MaxWidth == right.MaxWidth
-                && left.BoundingBoxWidth == right.BoundingBoxWidth
-                && left.BoundingBoxHeight == right.BoundingBoxHeight
+                && left.ResizeMaxWidth == right.ResizeMaxWidth
+                && left.ResizeBoundingBoxWidth == right.ResizeBoundingBoxWidth
+                && left.ResizeBoundingBoxHeight == right.ResizeBoundingBoxHeight
                 && left.Quality == right.Quality
                 && left.SharpenAfterResize == right.SharpenAfterResize
                 && left.SkipSmallerImages == right.SkipSmallerImages
@@ -2005,5 +2565,86 @@ namespace Capillume
                 && left.Modifiers == right.Modifiers
                 && left.Key == right.Key;
         }
+
+        private static bool AreEqual(DedupeSettings left, DedupeSettings right)
+        {
+            return left.Enabled == right.Enabled
+                && left.CompareMode == right.CompareMode
+                && left.Sensitivity == right.Sensitivity
+                && left.TimeoutMilliseconds == right.TimeoutMilliseconds
+                && left.DynamicRegionMode == right.DynamicRegionMode
+                && left.ComparePerActiveWindow == right.ComparePerActiveWindow
+                && left.UpdateReferenceOnlyOnSave == right.UpdateReferenceOnlyOnSave
+                && left.MinimumMinutesBetweenSaves == right.MinimumMinutesBetweenSaves
+                && left.DryRun == right.DryRun
+                && left.ShowSkippedNotifications == right.ShowSkippedNotifications
+                && left.EnableDiagnostics == right.EnableDiagnostics
+                && left.ExcludeRegions.SequenceEqual(right.ExcludeRegions);
+        }
+
+        private void hkLabelEnable_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void TabControlSettings_DrawItem(object? sender, DrawItemEventArgs e)
+        {
+            Color accent = Color.FromArgb(0, 120, 215);     // Windows accent blue
+            Color hover = Color.FromArgb(230, 235, 255);    // Subtle hover
+            Color normal = Color.FromArgb(245, 245, 245);   // Background
+            Color text = Color.FromArgb(32, 32, 32);        // Fluent primary text
+            Color muted = Color.FromArgb(96, 96, 96);       // Unselected text. Fluent Gray 80
+
+            var tab = tabControlSettings.TabPages[e.Index];
+            bool isSelected = (e.Index == tabControlSettings.SelectedIndex);
+
+            Rectangle bounds = e.Bounds;
+            bounds.Inflate(-2, -2);
+
+            // Hover detection
+            bool isHover = bounds.Contains(tabControlSettings.PointToClient(Cursor.Position));
+
+            // Background
+            Color backColor = isSelected ? normal : (isHover ? hover : normal);
+            using (var brush = new SolidBrush(backColor))
+                e.Graphics.FillRectangle(brush, bounds);
+
+            // Text
+            Font baseFont = e.Font ?? tabControlSettings.Font;
+            Font font = isSelected ? new Font(baseFont, FontStyle.Bold) : baseFont;
+
+            Color textColor = isSelected ? text : muted;
+
+            TextRenderer.DrawText(
+                e.Graphics,
+                tab.Text,
+                font,
+                bounds,
+                textColor,
+                TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter
+            );
+
+            // Fluent accent underline
+            if (isSelected)
+            {
+                using var pen = new Pen(accent, 3);
+                int y = bounds.Bottom - 2;
+                e.Graphics.DrawLine(pen, bounds.Left + 12, y, bounds.Right - 12, y);
+            }
+
+        }
+
+        private GraphicsPath RoundedRect(Rectangle bounds, int radius)
+        {
+            int d = radius * 2;
+            GraphicsPath path = new GraphicsPath();
+            path.AddArc(bounds.X, bounds.Y, d, d, 180, 90);
+            path.AddArc(bounds.Right - d, bounds.Y, d, d, 270, 90);
+            path.AddArc(bounds.Right - d, bounds.Bottom - d, d, d, 0, 90);
+            path.AddArc(bounds.X, bounds.Bottom - d, d, d, 90, 90);
+            path.CloseFigure();
+            return path;
+        }
+
     }
 }

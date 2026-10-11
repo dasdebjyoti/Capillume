@@ -2,6 +2,14 @@ using System.Runtime.InteropServices;
 
 namespace Capillume
 {
+    public enum HotkeyError
+    {
+        None,
+        Disabled,
+        NoModifier,
+        Conflict    // Hotkey is used by another application
+    }
+
     public sealed class GlobalHotkeyManager : IDisposable
     {
         private const int HotkeyId = 0xCA11;
@@ -65,9 +73,9 @@ namespace Capillume
         public bool IsRegistered => _isRegistered;
         public int HotkeyMessageId => HotkeyId;
 
-        public bool TryRegister(HotkeySettings settings, out string error)
+        public bool TryRegister(HotkeySettings settings, out HotkeyError error /*out string error*/)
         {
-            error = string.Empty;
+            error = HotkeyError.None; // string.Empty;
             Unregister();
 
             if (!settings.Enabled)
@@ -75,16 +83,15 @@ namespace Capillume
                 return true;
             }
 
-            if (!TryGetModifierFlags(settings.Modifiers, out uint modifierFlags)
-                || settings.Key == Keys.None)
+            if (!TryGetModifierFlags(settings.Modifiers, out uint modifierFlags) || settings.Key == Keys.None)
             {
-                error = "Choose a shortcut with at least one modifier and a key.";
+                error = HotkeyError.NoModifier; // settings.MsgNoModifier;
                 return false;
             }
 
             if (!RegisterHotKey(_windowHandle, HotkeyId, modifierFlags, (uint)(settings.Key & Keys.KeyCode)))
             {
-                error = "This shortcut is already in use by Windows or another application.";
+                error = HotkeyError.Conflict; // settings.MsgConflict;
                 return false;
             }
 
@@ -180,7 +187,9 @@ namespace Capillume
 
             if ((normalizedModifiers & Keys.LWin) != Keys.None)
             {
-                flags |= ModWin;
+                // Windows key cannot be used in global shortcuts
+                // flags |= ModWin;
+                return false;
             }
 
             return flags != 0;

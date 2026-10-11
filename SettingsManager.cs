@@ -8,44 +8,7 @@ using System.Text.Json;
 
 namespace Capillume
 {
-    public static class Constants
-    {
-        public const string ScreenshotsFoldername = "Capillume Screenshots";
-        public const string StatusReady = "Ready.";
-        public const int ScreenshotImageQualityMin = 1;
-        public const int ScreenshotImageQualityMax = 100;
-        public const int ScreenshotImageQualityDefault = 70;
-        public const int WatermarkOpacityMin = 1;
-        public const int WatermarkOpacityMax = 100;
-        public const int WatermarkOpacityDefault = 50;
-        public const int WatermarkImageScaleMin = 1;
-        public const int WatermarkImageScaleMax = 100;
-        public const int WatermarkImageScaleDefault = 50;
-        public const string WatermarkPositionDefault = "Top Right";
-        public const int AnnotationOpacityMin = 1;
-        public const int AnnotationOpacityMax = 100;
-        public const int AnnotationOpacityDefault = 80;
-        public const string AnnotationFormatDefault = "{{OS}} | {{DATETIME}}";
-        public const int DownscaleTargetHeightMin = 100;
-        public const int DownscaleTargetHeightMax = 10000;
-        public const int DownscaleTargetHeightDefault = 1080;
-        public const int DownscalePercentageMin = 1;
-        public const int DownscalePercentageMax = 100;
-        public const int DownscalePercentageDefault = 75;
-        public const int DownscaleMaxWidthMin = 100;
-        public const int DownscaleMaxWidthMax = 10000;
-        public const int DownscaleMaxWidthDefault = 1920;
-        public const int DownscaleBoundingWidthDefault = 1920;
-        public const int DownscaleBoundingHeightDefault = 1080;
-        public const int RetentionDaysMin = 1;
-        public const int RetentionDaysMax = 3650;
-        public const int RetentionDaysDefault = 30;
-        public const int RetentionFileCountMin = 1;
-        public const int RetentionFileCountMax = 1000000;
-        public const int RetentionFileCountDefault = 500;
-    }
-
-    public enum DownscaleMode
+    public enum DownscaleResizeMode
     {
         TargetHeight,
         Percentage,
@@ -60,7 +23,7 @@ namespace Capillume
         Fast
     }
 
-    public enum ImageColorMode
+    public enum ImageProcessColorMode
     {
         FullColor,
         Grayscale,
@@ -70,11 +33,101 @@ namespace Capillume
         AdaptivePalette
     }
 
-    public enum ColorTemperatureMode
+    public enum ImageProcessColorTempMode
     {
         Neutral,
         Warm,
         Cool
+    }
+
+    public enum DedupeCompareMode
+    {
+        PerceptualThenSsim,
+        ChecksumThenSsim,
+        PixelDifferenceOnly,
+        SsimOnly
+    }
+
+    public static class DedupeCompareModeHelper
+    {
+        // Unified mapping: enum + display label
+        public static readonly (DedupeCompareMode Mode, string Label)[] Items =
+        [
+            (DedupeCompareMode.PerceptualThenSsim, "Perceptual hash + SSIM"),
+            (DedupeCompareMode.ChecksumThenSsim, "Checksum + SSIM"),
+            (DedupeCompareMode.PixelDifferenceOnly, "Pixel difference only"),
+            (DedupeCompareMode.SsimOnly, "SSIM only")
+        ];
+
+        // Convert enum → display string
+        public static string ToModeString(DedupeCompareMode mode)
+        {
+            foreach (var item in Items)
+                if (item.Mode == mode)
+                    return item.Label;
+
+            throw new ArgumentOutOfRangeException(nameof(mode));
+        }
+
+        // Convert display string → enum
+        public static DedupeCompareMode ToModeCode(string label)
+        {
+            foreach (var item in Items)
+                if (item.Label == label)
+                    return item.Mode;
+
+            // Label not found → return default
+            return Constants.DedupeCompareModeDefault;
+            //throw new ArgumentException($"Invalid dynamic region mode label: {label}");
+        }
+
+        // Convenience: get all labels for ComboBox
+        public static string[] Labels => Items.Select(i => i.Label).ToArray();
+    }
+
+    public enum DedupeDynamicRegionMode
+    {
+        IncludeAll,
+        ExcludeTaskbars,
+        ExcludeTaskbarsAndManualRegions,
+        ManualRegionsOnly
+    }
+
+    public static class DedupeDynamicRegionModeHelper
+    {
+        // Unified mapping: enum + display label
+        public static readonly (DedupeDynamicRegionMode Mode, string Label)[] Items =
+        [
+            (DedupeDynamicRegionMode.IncludeAll, "Include all screen areas"),
+            (DedupeDynamicRegionMode.ExcludeTaskbars, "Exclude Windows taskbars"),
+            (DedupeDynamicRegionMode.ExcludeTaskbarsAndManualRegions, "Exclude taskbars and manual regions"),
+            (DedupeDynamicRegionMode.ManualRegionsOnly, "Exclude manual regions only")
+        ];
+
+        // Convert enum → display string
+        public static string ToModeString(DedupeDynamicRegionMode mode)
+        {
+            foreach (var item in Items)
+                if (item.Mode == mode)
+                    return item.Label;
+
+            throw new ArgumentOutOfRangeException(nameof(mode));
+        }
+
+        // Convert display string → enum
+        public static DedupeDynamicRegionMode ToModeCode(string label)
+        {
+            foreach (var item in Items)
+                if (item.Label == label)
+                    return item.Mode;
+
+            // Label not found → return default
+            return Constants.DedupeDynamicRegionModeDefault;
+            //throw new ArgumentException($"Invalid dynamic region mode label: {label}");
+        }
+
+        // Convenience: get all labels for ComboBox
+        public static string[] Labels => Items.Select(i => i.Label).ToArray();
     }
 
     public enum RetentionAction
@@ -84,100 +137,267 @@ namespace Capillume
         BackupThenDelete
     }
 
+    public static class RetentionActionHelper
+    {
+        // Unified mapping: enum + display label
+        public static readonly (RetentionAction Mode, string Label)[] Items =
+        [
+            (RetentionAction.MoveToRecycleBin, "Move to Recycle Bin"),
+            (RetentionAction.DeletePermanently, "Delete permanently"),
+            (RetentionAction.BackupThenDelete, "Backup to folder, then delete")
+        ];
+
+        // Convert enum → display string
+        public static string ToModeString(RetentionAction mode)
+        {
+            foreach (var item in Items)
+                if (item.Mode == mode)
+                    return item.Label;
+
+            throw new ArgumentOutOfRangeException(nameof(mode));
+        }
+
+        // Convert display string → enum
+        public static RetentionAction ToModeCode(string label)
+        {
+            foreach (var item in Items)
+                if (item.Label == label)
+                    return item.Mode;
+
+            // Label not found → return default
+            return Constants.RetentionActionDefault;
+            //throw new ArgumentException($"Invalid dynamic region mode label: {label}");
+        }
+
+        // Convenience: get all labels for ComboBox
+        public static string[] Labels => Items.Select(i => i.Label).ToArray();
+    }
+
+    public static class Constants
+    {
+        // App-wide constants and defaults
+        public const int TooltipAutoPopDelay = 8000;
+        public const int TooltipInitialDelay = 500;
+        public const int TooltipReshowDelay = 200;
+        public const bool TooltipShowAlways = false;
+
+        // Main window constants and default
+        public const string ScreenshotsFoldername = "Capillume Screenshots";
+        public const string MainStatusReady = "Ready.";
+        public const string MainStatusSettingsUnsaved = "Unsaved changes - click Save Settings.";
+        public const string MainStatusSettingsSaved = "Settings saved successfully.";
+        public const bool MainScreenshotEnabledDefault = true;
+        public const bool MainShowNotificationsDefault = false;
+        public const bool MainStartWithWindowsDefault = false;
+        public const int MainIntervalMinutesDefault = 10;
+        public const bool MainCaptureFullScreenDefault = true;
+        public const bool MainExcludeCapillumeDefault = true;
+        public const int ScreenshotImageQualityMin = 1;
+        public const int ScreenshotImageQualityMax = 100;
+        public const int ScreenshotImageQualityDefault = 70;
+        public const bool ScreenshotAutoStartWithWindowsDefault = false;
+
+        // Watermark constants and defaults
+        public static readonly string WatermarkTextDefault = "Capillume"; //string.Empty;
+        public static readonly string WatermarkTextFontFamilyDefault = SystemFonts.DefaultFont.FontFamily.Name; //"Segoe UI";
+        public static readonly float WatermarkTextFontSizeDefault = (float)Math.Ceiling(SystemFonts.DefaultFont.Size + 10);
+        public const FontStyle WatermarkTextFontStyleDefault = FontStyle.Regular;
+        public static readonly string WatermarkImagePathDefault = string.Empty;
+        public const int WatermarkImageScaleMin = 1;
+        public const int WatermarkImageScaleMax = 100;
+        public const int WatermarkImageScaleDefault = 50;
+        public const int WatermarkOpacityMin = 1;
+        public const int WatermarkOpacityMax = 100;
+        public const int WatermarkOpacityDefault = 50;
+        public const string WatermarkPositionDefault = "Top Right";
+        public const int WatermarkRotationDefault = 0; // 0, 90, 180, 270
+
+        // Annotation constants and defaults
+        public const string AnnotationFormatDefault = "{{OS}} | {{DATETIME}}";
+        public static readonly string AnnotationFontFamilyDefault = SystemFonts.DefaultFont.FontFamily.Name; //"Segoe UI";
+        public static readonly float AnnotationFontSizeDefault = (float)Math.Ceiling(SystemFonts.DefaultFont.Size + 8); //10;
+        public const FontStyle AnnotationFontStyleDefault = FontStyle.Regular;
+        public static readonly int AnnotationFontColorArgbDefault = Color.Black.ToArgb();
+        public static readonly int AnnotationBackgroundColorArgbDefault = Color.White.ToArgb();
+        public const int AnnotationOpacityDefault = 80;
+        public const int AnnotationOpacityMin = 1;
+        public const int AnnotationOpacityMax = 100;
+
+        // Downscale constants and defaults
+        public const DownscaleResizeMode DownscaleResizeModeDefault = DownscaleResizeMode.TargetHeight;
+        public const int DownscaleResizeTargetHeightMin = 100;
+        public const int DownscaleResizeTargetHeightMax = 10000;
+        public const int DownscaleResizeTargetHeightDefault = 1080;
+        public const int DownscaleResizePercentageMin = 1;
+        public const int DownscaleResizePercentageMax = 100;
+        public const int DownscaleResizePercentageDefault = 75;
+        public const int DownscaleResizeMaxWidthMin = 100;
+        public const int DownscaleResizeMaxWidthMax = 10000;
+        public const int DownscaleResizeMaxWidthDefault = 1920;
+        public const int DownscaleResizeBoundingWidthDefault = 1920;
+        public const int DownscaleResizeBoundingHeightDefault = 1080;
+        public const DownscaleQuality DownscaleQualityDefault = DownscaleQuality.HighQuality;
+        public const bool DownscaleSharpenAfterResizeDefault = false;
+        public const bool DownscaleSkipSmallerImagesDefault = true;
+        public const bool DownscaleFullScreenOnlyDefault = false;
+        public const bool DownscaleLossyFormatsOnlyDefault = false;
+
+        // Image Processing constants and defaults
+        public const ImageProcessColorMode ImageProcColorModeDefault = ImageProcessColorMode.FullColor;
+        public const bool ImageProcHighContrastDefault = false;
+        public const bool ImageProcNoiseReductionDefault = false;
+        public const ImageProcessColorTempMode ImageProcColorTemperatureDefault = ImageProcessColorTempMode.Neutral;
+
+        // Dedupe/Duplicate constants and defaults
+        public const DedupeCompareMode DedupeCompareModeDefault = DedupeCompareMode.PerceptualThenSsim;
+        public const int DedupeSensitivityDefault = 50;
+        public const int DedupeTimeoutMillisecondsDefault = 250;
+        public const DedupeDynamicRegionMode DedupeDynamicRegionModeDefault = DedupeDynamicRegionMode.ExcludeTaskbars;
+        public static readonly List<Rectangle> DedupeExcludeRegionsDefault = [];
+        public const bool DedupeComparePerActiveWindowDefault = true;
+        public const bool DedupeUpdateReferenceOnlyOnSaveDefault = true;
+        public const int DedupeMinimumMinutesBetweenSavesDefault = 0;
+        public const bool DedupeDryRunDefault = false;
+        public const bool DedupeShowSkippedNotificationsDefault = false;
+        public const bool DedupeEnableDiagnosticsDefault = false;
+
+        // Retention constants and defaults
+        public const bool RetentionMaxDaysEnabledDefault = true;
+        public const int RetentionDaysMin = 1;
+        public const int RetentionDaysMax = 3650;
+        public const int RetentionDaysDefault = 30;
+        public const bool RetentionMaxFilesEnabledDefault = false;
+        public const int RetentionFileCountMin = 1;
+        public const int RetentionFileCountMax = 1000000;
+        public const int RetentionFileCountDefault = 500;
+        public const bool RetentionIncludeSubfoldersDefault = false;
+        public const RetentionAction RetentionActionDefault = RetentionAction.MoveToRecycleBin;
+        public static readonly string RetentionBackupFolderDefault = string.Empty;
+        public const bool RetentionPerSessionSubfolderDefault = false;
+        public const bool RetentionDryRunModeDefault = true;
+
+        // Hotkey constants and defaults
+        public static readonly Keys HotkeyModifiersDefault = Keys.Control | Keys.Shift;
+        public static readonly Keys HotkeyKeyDefault = Keys.F12;
+        public const string HotKeyMsgNoModifier = "Choose a shortcut with at least one modifier and a key.";
+        public const string HotKeyMsgConflict =
+            "Your selected hotkey is already in use by another application.\n" +
+            "Please choose another hotkey in Advanced Settings → Hotkeys.\n\n" +
+            "You previous hotkey (if any) has been restored.";
+        public const string HotKeyMsgConflictNoRestore =
+            "Your selected hotkey is already in use by another application.\n" +
+            "Please choose another hotkey in Advanced Settings → Hotkeys.\n\n" +
+            "No previous hotkey was restored. Hotkey disabled.";
+    }
+
     public class AppSettings
     {
-        public bool IsScreenshotEnabled { get; set; } = false;
-        public bool ShowNotifications { get; set; } = false;
-        public bool StartWithWindows { get; set; } = false;
-        public int IntervalMinutes { get; set; } = 10;
-        public bool CaptureFullScreen { get; set; } = true;
-        public bool IncludeCapillume { get; set; } = false;
+        public bool IsScreenshotEnabled { get; set; } = Constants.MainScreenshotEnabledDefault;
+        public bool ShowNotifications { get; set; } = Constants.MainShowNotificationsDefault;
+        public bool StartWithWindows { get; set; } = Constants.MainStartWithWindowsDefault;
+        public int IntervalMinutes { get; set; } = Constants.MainIntervalMinutesDefault;
+        public bool CaptureFullScreen { get; set; } = Constants.MainCaptureFullScreenDefault;
+        public bool ExcludeCapillume { get; set; } = Constants.MainExcludeCapillumeDefault;
         public string SaveFolder { get; set; } = string.Empty;
         public string ImageFormat { get; set; } = "JPG";
         public int ImageQuality { get; set; } = Constants.ScreenshotImageQualityDefault; // 70;
-        public bool AutoStartWithWindows { get; set; } = false;
+        public bool AutoStartWithWindows { get; set; } = Constants.ScreenshotAutoStartWithWindowsDefault;
         public WatermarkSettings Watermark { get; set; } = new();
         public AnnotationSettings Annotation { get; set; } = new();
         public DownscaleSettings Downscale { get; set; } = new();
         public ImageProcessingSettings ImageProcessing { get; set; } = new();
         public RetentionSettings Retention { get; set; } = new();
         public HotkeySettings Hotkeys { get; set; } = new();
-    }
-
-    public class HotkeySettings
-    {
-        public static Keys DefaultModifiers => Keys.Control | Keys.Shift;
-        public static Keys DefaultKey => Keys.F12;
-
-        public bool Enabled { get; set; } = false;
-        public Keys Modifiers { get; set; } = DefaultModifiers;
-        public Keys Key { get; set; } = DefaultKey;
+        public DedupeSettings Dedupe { get; set; } = new();
     }
 
     public class WatermarkSettings
     {
         public bool UseText { get; set; } = false;
         public bool UseImage { get; set; } = false;
-        public string WatermarkText { get; set; } = "Capillume"; // string.Empty;
-        public string WatermarkTextFontFamily { get; set; } = SystemFonts.DefaultFont.FontFamily.Name; //"Segoe UI";
-        public float WatermarkTextFontSize { get; set; } = 24; // SystemFonts.DefaultFont.Size;
-        public FontStyle WatermarkTextFontStyle { get; set; } = FontStyle.Regular;
-        public string WatermarkImagePath { get; set; } = string.Empty;
+        public string WatermarkText { get; set; } = Constants.WatermarkTextDefault;
+        public string WatermarkTextFontFamily { get; set; } = Constants.WatermarkTextFontFamilyDefault;
+        public float WatermarkTextFontSize { get; set; } = Constants.WatermarkTextFontSizeDefault; //24;
+        public FontStyle WatermarkTextFontStyle { get; set; } = Constants.WatermarkTextFontStyleDefault;
+        public string WatermarkImagePath { get; set; } = Constants.WatermarkImagePathDefault;
         public int WatermarkImageScale { get; set; } = Constants.WatermarkImageScaleDefault; // 50
         public int WatermarkOpacity { get; set; } = Constants.WatermarkOpacityDefault; // 50
         public string WatermarkPosition { get; set; } = Constants.WatermarkPositionDefault;
-        public int WatermarkRotation { get; set; } = 0; // 0, 90, 180, 270
+        public int WatermarkRotation { get; set; } = Constants.WatermarkRotationDefault; // 0, 90, 180, 270
     }
 
     public class AnnotationSettings
     {
-        //public bool Enabled { get; set; }
         public bool UseAnnotation { get; set; } = false;
         public string AnnotationFormat { get; set; } = Constants.AnnotationFormatDefault;
-        public string AnnotationFontFamily { get; set; } = SystemFonts.DefaultFont.FontFamily.Name; //"Segoe UI";
-        public float AnnotationFontSize { get; set; } = (float)Math.Ceiling(SystemFonts.DefaultFont.Size + 8); //10;
-        public FontStyle AnnotationFontStyle { get; set; } = FontStyle.Regular;
-        public int AnnotationFontColorArgb { get; set; } = Color.Black.ToArgb();
-        public int? AnnotationBackgroundColorArgb { get; set; } = Color.White.ToArgb();
-        public int AnnotationOpacity { get; set; } = Constants.AnnotationOpacityDefault; // 80
+        public string AnnotationFontFamily { get; set; } = Constants.AnnotationFontFamilyDefault;
+        public float AnnotationFontSize { get; set; } = Constants.AnnotationFontSizeDefault;
+        public FontStyle AnnotationFontStyle { get; set; } = Constants.AnnotationFontStyleDefault;
+        public int AnnotationFontColorArgb { get; set; } = Constants.AnnotationFontColorArgbDefault;
+        public int? AnnotationBackgroundColorArgb { get; set; } = Constants.AnnotationBackgroundColorArgbDefault;
+        public int AnnotationOpacity { get; set; } = Constants.AnnotationOpacityDefault;
     }
 
     public class DownscaleSettings
     {
         public bool Enabled { get; set; } = false;
-        public DownscaleMode Mode { get; set; } = DownscaleMode.TargetHeight;
-        public int TargetHeight { get; set; } = Constants.DownscaleTargetHeightDefault;
-        public int ResizePercentage { get; set; } = Constants.DownscalePercentageDefault;
-        public int MaxWidth { get; set; } = Constants.DownscaleMaxWidthDefault;
-        public int BoundingBoxWidth { get; set; } = Constants.DownscaleBoundingWidthDefault;
-        public int BoundingBoxHeight { get; set; } = Constants.DownscaleBoundingHeightDefault;
-        public DownscaleQuality Quality { get; set; } = DownscaleQuality.HighQuality;
-        public bool SharpenAfterResize { get; set; } = false;
-        public bool SkipSmallerImages { get; set; } = true;
-        public bool FullScreenOnly { get; set; } = false;
-        public bool LossyFormatsOnly { get; set; } = false;
+        public DownscaleResizeMode ResizeMode { get; set; } = Constants.DownscaleResizeModeDefault;
+        public int ResizeTargetHeight { get; set; } = Constants.DownscaleResizeTargetHeightDefault;
+        public int ResizePercentage { get; set; } = Constants.DownscaleResizePercentageDefault;
+        public int ResizeMaxWidth { get; set; } = Constants.DownscaleResizeMaxWidthDefault;
+        public int ResizeBoundingBoxWidth { get; set; } = Constants.DownscaleResizeBoundingWidthDefault;
+        public int ResizeBoundingBoxHeight { get; set; } = Constants.DownscaleResizeBoundingHeightDefault;
+        public DownscaleQuality Quality { get; set; } = Constants.DownscaleQualityDefault;
+        public bool SharpenAfterResize { get; set; } = Constants.DownscaleSharpenAfterResizeDefault;
+        public bool SkipSmallerImages { get; set; } = Constants.DownscaleSkipSmallerImagesDefault;
+        public bool FullScreenOnly { get; set; } = Constants.DownscaleFullScreenOnlyDefault;
+        public bool LossyFormatsOnly { get; set; } = Constants.DownscaleLossyFormatsOnlyDefault;
     }
 
     public class ImageProcessingSettings
     {
-        public ImageColorMode ColorMode { get; set; } = ImageColorMode.FullColor;
-        public bool HighContrast { get; set; } = false;
-        public bool NoiseReduction { get; set; } = false;
-        public ColorTemperatureMode ColorTemperature { get; set; } = ColorTemperatureMode.Neutral;
+        public ImageProcessColorMode ColorMode { get; set; } = Constants.ImageProcColorModeDefault;
+        public bool HighContrast { get; set; } = Constants.ImageProcHighContrastDefault;
+        public bool NoiseReduction { get; set; } = Constants.ImageProcNoiseReductionDefault;
+        public ImageProcessColorTempMode ColorTemperature { get; set; } = Constants.ImageProcColorTemperatureDefault;
+    }
+
+    public class DedupeSettings
+    {
+        public bool Enabled { get; set; } = true;
+        public DedupeCompareMode CompareMode { get; set; } = Constants.DedupeCompareModeDefault;
+        public int Sensitivity { get; set; } = Constants.DedupeSensitivityDefault;
+        public int TimeoutMilliseconds { get; set; } = Constants.DedupeTimeoutMillisecondsDefault;
+        public DedupeDynamicRegionMode DynamicRegionMode { get; set; } = Constants.DedupeDynamicRegionModeDefault;
+        public List<Rectangle> ExcludeRegions { get; set; } = Constants.DedupeExcludeRegionsDefault;
+        public bool ComparePerActiveWindow { get; set; } = Constants.DedupeComparePerActiveWindowDefault;
+        public bool UpdateReferenceOnlyOnSave { get; set; } = Constants.DedupeUpdateReferenceOnlyOnSaveDefault;
+        public int MinimumMinutesBetweenSaves { get; set; } = Constants.DedupeMinimumMinutesBetweenSavesDefault;
+        public bool DryRun { get; set; } = Constants.DedupeDryRunDefault;
+        public bool ShowSkippedNotifications { get; set; } = Constants.DedupeShowSkippedNotificationsDefault;
+        public bool EnableDiagnostics { get; set; } = Constants.DedupeEnableDiagnosticsDefault;
     }
 
     public class RetentionSettings
     {
         public bool AutoCleanupEnabled { get; set; } = false;
-        public bool MaxDaysEnabled { get; set; } = true;
+        public bool MaxDaysEnabled { get; set; } = Constants.RetentionMaxDaysEnabledDefault;
         public int MaxDaysToRetain { get; set; } = Constants.RetentionDaysDefault;
-        public bool MaxFilesEnabled { get; set; } = false;
+        public bool MaxFilesEnabled { get; set; } = Constants.RetentionMaxFilesEnabledDefault;
         public int MaxFilesToRetain { get; set; } = Constants.RetentionFileCountDefault;
-        public RetentionAction Action { get; set; } = RetentionAction.MoveToRecycleBin;
-        public string BackupFolder { get; set; } = string.Empty;
-        public bool PerSessionSubfolder { get; set; } = false;
-        public bool DryRunMode { get; set; } = false;
-        public bool IncludeSubfolders { get; set; } = false;
+        public bool IncludeSubfolders { get; set; } = Constants.RetentionIncludeSubfoldersDefault;
+        public RetentionAction Action { get; set; } = Constants.RetentionActionDefault;
+        public string BackupFolder { get; set; } = Constants.RetentionBackupFolderDefault;
+        public bool PerSessionSubfolder { get; set; } = Constants.RetentionPerSessionSubfolderDefault;
+        public bool DryRunMode { get; set; } = Constants.RetentionDryRunModeDefault;
+    }
+
+    public class HotkeySettings
+    {
+        public bool Enabled { get; set; } = true;
+        public Keys Modifiers { get; set; } = Constants.HotkeyModifiersDefault;
+        public Keys Key { get; set; } = Constants.HotkeyKeyDefault;
+        public bool HasConflict { get; set; } = false;
     }
 
     public static class SettingsManager
@@ -291,31 +511,31 @@ namespace Capillume
             settings.Annotation.AnnotationOpacity = Math.Clamp(settings.Annotation.AnnotationOpacity, Constants.AnnotationOpacityMin, Constants.AnnotationOpacityMax);
 
             settings.Downscale ??= new DownscaleSettings();
-            if (!Enum.IsDefined(settings.Downscale.Mode))
+            if (!Enum.IsDefined(settings.Downscale.ResizeMode))
             {
-                settings.Downscale.Mode = DownscaleMode.TargetHeight;
+                settings.Downscale.ResizeMode = DownscaleResizeMode.TargetHeight;
             }
 
-            settings.Downscale.TargetHeight = Math.Clamp(
-                settings.Downscale.TargetHeight,
-                Constants.DownscaleTargetHeightMin,
-                Constants.DownscaleTargetHeightMax);
+            settings.Downscale.ResizeTargetHeight = Math.Clamp(
+                settings.Downscale.ResizeTargetHeight,
+                Constants.DownscaleResizeTargetHeightMin,
+                Constants.DownscaleResizeTargetHeightMax);
             settings.Downscale.ResizePercentage = Math.Clamp(
                 settings.Downscale.ResizePercentage,
-                Constants.DownscalePercentageMin,
-                Constants.DownscalePercentageMax);
-            settings.Downscale.MaxWidth = Math.Clamp(
-                settings.Downscale.MaxWidth,
-                Constants.DownscaleMaxWidthMin,
-                Constants.DownscaleMaxWidthMax);
-            settings.Downscale.BoundingBoxWidth = Math.Clamp(
-                settings.Downscale.BoundingBoxWidth,
-                Constants.DownscaleMaxWidthMin,
-                Constants.DownscaleMaxWidthMax);
-            settings.Downscale.BoundingBoxHeight = Math.Clamp(
-                settings.Downscale.BoundingBoxHeight,
-                Constants.DownscaleTargetHeightMin,
-                Constants.DownscaleTargetHeightMax);
+                Constants.DownscaleResizePercentageMin,
+                Constants.DownscaleResizePercentageMax);
+            settings.Downscale.ResizeMaxWidth = Math.Clamp(
+                settings.Downscale.ResizeMaxWidth,
+                Constants.DownscaleResizeMaxWidthMin,
+                Constants.DownscaleResizeMaxWidthMax);
+            settings.Downscale.ResizeBoundingBoxWidth = Math.Clamp(
+                settings.Downscale.ResizeBoundingBoxWidth,
+                Constants.DownscaleResizeMaxWidthMin,
+                Constants.DownscaleResizeMaxWidthMax);
+            settings.Downscale.ResizeBoundingBoxHeight = Math.Clamp(
+                settings.Downscale.ResizeBoundingBoxHeight,
+                Constants.DownscaleResizeTargetHeightMin,
+                Constants.DownscaleResizeTargetHeightMax);
 
             if (!Enum.IsDefined(settings.Downscale.Quality))
             {
@@ -333,28 +553,53 @@ namespace Capillume
                 Constants.RetentionFileCountMax);
             settings.Retention.BackupFolder ??= string.Empty;
 
-            if (!Enum.IsDefined(settings.Retention.Action))
+            //if (!Enum.IsDefined(settings.Retention.Action))
+            //{
+            //    settings.Retention.Action = RetentionAction.MoveToRecycleBin;
+            //}
+            if (!RetentionActionHelper.Items.Any(i => i.Mode == settings.Retention.Action))
             {
                 settings.Retention.Action = RetentionAction.MoveToRecycleBin;
             }
 
+
             settings.Hotkeys ??= new HotkeySettings();
             settings.Hotkeys.Modifiers &= Keys.Modifiers;
             settings.Hotkeys.Key &= Keys.KeyCode;
-            if (settings.Hotkeys.Modifiers == Keys.None)
+            if (!Enum.IsDefined(typeof(Keys), settings.Hotkeys.Modifiers))
             {
-                settings.Hotkeys.Modifiers = HotkeySettings.DefaultModifiers;
+                settings.Hotkeys.Modifiers = Constants.HotkeyModifiersDefault;
             }
 
-            if (settings.Hotkeys.Key == Keys.None)
+            if (!Enum.IsDefined(typeof(Keys), settings.Hotkeys.Key))
             {
-                settings.Hotkeys.Key = HotkeySettings.DefaultKey;
+                settings.Hotkeys.Key = Constants.HotkeyKeyDefault;
             }
 
             if (settings.Hotkeys.Modifiers == Keys.None || settings.Hotkeys.Key == Keys.None)
             {
                 settings.Hotkeys.Enabled = false;
             }
+
+            settings.Dedupe ??= new DedupeSettings();
+            if (!Enum.IsDefined(settings.Dedupe.CompareMode))
+            {
+                settings.Dedupe.CompareMode = DedupeCompareMode.PerceptualThenSsim;
+            }
+
+            if (!Enum.IsDefined(settings.Dedupe.DynamicRegionMode))
+            {
+                settings.Dedupe.DynamicRegionMode = DedupeDynamicRegionMode.ExcludeTaskbars;
+            }
+
+            settings.Dedupe.Sensitivity = Math.Clamp(settings.Dedupe.Sensitivity, 0, 100);
+            settings.Dedupe.TimeoutMilliseconds = Math.Clamp(settings.Dedupe.TimeoutMilliseconds, 50, 1000);
+            settings.Dedupe.MinimumMinutesBetweenSaves = Math.Clamp(settings.Dedupe.MinimumMinutesBetweenSaves, 0, 1440);
+            settings.Dedupe.ExcludeRegions ??= [];
+            settings.Dedupe.ExcludeRegions = settings.Dedupe.ExcludeRegions
+                .Where(region => region.Width > 0 && region.Height > 0)
+                .Take(20)
+                .ToList();
         }
 
         public static void SetAutoStart(bool enable)
