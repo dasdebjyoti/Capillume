@@ -161,9 +161,11 @@
             rtButtonActionDefault = new Button();
             rtComboBoxAction = new ComboBox();
             rtLabelAction = new Label();
+            rtCheckBoxPerSessionSubfolderArrow = new Label();
             rtLabelBackupFolder = new Label();
             rtTextBoxBackupFolder = new TextBox();
             rtButtonBrowseBackupFolder = new Button();
+            rtCheckBoxPerSessionSubfolderCompress = new CheckBox();
             rtCheckBoxPerSessionSubfolder = new CheckBox();
             rtButtonCleanupNow = new Button();
             rtGroupBoxSelection = new GroupBox();
@@ -1648,9 +1650,11 @@
             rtGroupBoxAction.Controls.Add(rtButtonActionDefault);
             rtGroupBoxAction.Controls.Add(rtComboBoxAction);
             rtGroupBoxAction.Controls.Add(rtLabelAction);
+            rtGroupBoxAction.Controls.Add(rtCheckBoxPerSessionSubfolderArrow);
             rtGroupBoxAction.Controls.Add(rtLabelBackupFolder);
             rtGroupBoxAction.Controls.Add(rtTextBoxBackupFolder);
             rtGroupBoxAction.Controls.Add(rtButtonBrowseBackupFolder);
+            rtGroupBoxAction.Controls.Add(rtCheckBoxPerSessionSubfolderCompress);
             rtGroupBoxAction.Controls.Add(rtCheckBoxPerSessionSubfolder);
             rtGroupBoxAction.Location = new Point(36, 353);
             rtGroupBoxAction.Name = "rtGroupBoxAction";
@@ -1696,6 +1700,16 @@
             rtLabelAction.TabIndex = 0;
             rtLabelAction.Text = "Action";
             // 
+            // rtCheckBoxPerSessionSubfolderArrow
+            // 
+            rtCheckBoxPerSessionSubfolderArrow.AutoSize = true;
+            rtCheckBoxPerSessionSubfolderArrow.Font = new Font("Segoe UI", 10F);
+            rtCheckBoxPerSessionSubfolderArrow.Location = new Point(291, 181);
+            rtCheckBoxPerSessionSubfolderArrow.Name = "rtCheckBoxPerSessionSubfolderArrow";
+            rtCheckBoxPerSessionSubfolderArrow.Size = new Size(54, 37);
+            rtCheckBoxPerSessionSubfolderArrow.TabIndex = 2;
+            rtCheckBoxPerSessionSubfolderArrow.Text = "➡";
+            // 
             // rtLabelBackupFolder
             // 
             rtLabelBackupFolder.AutoSize = true;
@@ -1727,15 +1741,27 @@
             rtButtonBrowseBackupFolder.UseVisualStyleBackColor = true;
             rtButtonBrowseBackupFolder.Click += RtButtonBrowseBackupFolder_Click;
             // 
+            // rtCheckBoxPerSessionSubfolderCompress
+            // 
+            rtCheckBoxPerSessionSubfolderCompress.AutoSize = true;
+            rtCheckBoxPerSessionSubfolderCompress.Font = new Font("Segoe UI", 10F);
+            rtCheckBoxPerSessionSubfolderCompress.Location = new Point(380, 180);
+            rtCheckBoxPerSessionSubfolderCompress.Name = "rtCheckBoxPerSessionSubfolderCompress";
+            rtCheckBoxPerSessionSubfolderCompress.Size = new Size(166, 41);
+            rtCheckBoxPerSessionSubfolderCompress.TabIndex = 5;
+            rtCheckBoxPerSessionSubfolderCompress.Text = "Compress";
+            rtCheckBoxPerSessionSubfolderCompress.UseVisualStyleBackColor = true;
+            rtCheckBoxPerSessionSubfolderCompress.CheckedChanged += RetentionSettingChanged;
+            // 
             // rtCheckBoxPerSessionSubfolder
             // 
             rtCheckBoxPerSessionSubfolder.AutoSize = true;
             rtCheckBoxPerSessionSubfolder.Font = new Font("Segoe UI", 10F);
             rtCheckBoxPerSessionSubfolder.Location = new Point(29, 180);
             rtCheckBoxPerSessionSubfolder.Name = "rtCheckBoxPerSessionSubfolder";
-            rtCheckBoxPerSessionSubfolder.Size = new Size(560, 41);
+            rtCheckBoxPerSessionSubfolder.Size = new Size(245, 41);
             rtCheckBoxPerSessionSubfolder.TabIndex = 5;
-            rtCheckBoxPerSessionSubfolder.Text = "Create a subfolder for each cleanup session";
+            rtCheckBoxPerSessionSubfolder.Text = "Create subfolder";
             rtCheckBoxPerSessionSubfolder.UseVisualStyleBackColor = true;
             rtCheckBoxPerSessionSubfolder.CheckedChanged += RetentionSettingChanged;
             // 
@@ -1970,7 +1996,7 @@
             hkButtonDefault.Size = new Size(42, 42);
             hkButtonDefault.TabIndex = 13;
             hkButtonDefault.TabStop = false;
-            hkButtonDefault.Text = "\uE777";
+            hkButtonDefault.Text = "";
             hkButtonDefault.UseVisualStyleBackColor = true;
             hkButtonDefault.Click += HkButtonDefault_Click;
             // 
@@ -2311,5 +2337,7 @@
         private Button hkButtonDefault;
         private Label hkLabelWarning;
         private Label hkLabelDescription;
+        private CheckBox rtCheckBoxPerSessionSubfolderCompress;
+        private Label rtCheckBoxPerSessionSubfolderArrow;
     }
 }

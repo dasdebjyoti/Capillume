@@ -317,8 +317,10 @@ Choose one cleanup action:
 - Back up to another folder before deleting.
 
 When using backup, you can create a separate subfolder for each cleanup
-session. Use Cleanup Now to preview or execute cleanup immediately. Enable Dry
-run mode to preview the files and estimated space without changing them.
+session. You can also compress each completed session subfolder to a ZIP archive;
+the uncompressed session folder is removed after the archive is created. Use
+Cleanup Now to preview or execute cleanup immediately. Enable Dry run mode to
+preview the files and estimated space without changing them.
 
 SYSTEM TRAY
 -----------

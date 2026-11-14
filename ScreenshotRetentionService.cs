@@ -1,4 +1,5 @@
 using Microsoft.VisualBasic.FileIO;
+using System.IO.Compression;
 
 namespace Capillume
 {
@@ -27,6 +28,7 @@ namespace Capillume
         public int BackedUpFiles { get; init; }
         public int FailedFiles { get; init; }
         public string? BackupFolderUsed { get; init; }
+        public string? BackupArchiveUsed { get; init; }
         public IReadOnlyList<string> Errors { get; init; } = Array.Empty<string>();
     }
 
@@ -55,7 +57,8 @@ namespace Capillume
 
         public Task<ScreenshotCleanupPreview> PreviewCleanupAsync(string saveFolder, RetentionSettings settings, CancellationToken cancellationToken = default)
         {
-            return Task.Run(() => BuildPreview(saveFolder, Clone(settings), cancellationToken), cancellationToken);
+            //return Task.Run(() => BuildPreview(saveFolder, Clone(settings), cancellationToken), cancellationToken);
+            return Task.Run(() => BuildPreview(saveFolder, settings.Clone(), cancellationToken), cancellationToken);
         }
 
         public async Task<ScreenshotCleanupResult> ExecuteCleanupAsync(
@@ -66,7 +69,8 @@ namespace Capillume
         {
             using var linkedCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _disposeCancellation.Token);
             return await Task.Run(
-                () => ExecuteCleanupCoreAsync(saveFolder, Clone(settings), dryRunOverride, linkedCancellation.Token),
+                //() => ExecuteCleanupCoreAsync(saveFolder, Clone(settings), dryRunOverride, linkedCancellation.Token),
+                () => ExecuteCleanupCoreAsync(saveFolder, settings.Clone(), dryRunOverride, linkedCancellation.Token),
                 linkedCancellation.Token);
         }
 
@@ -79,7 +83,7 @@ namespace Capillume
                 return;
             }
 
-            var settingsSnapshot = Clone(settings);
+            var settingsSnapshot = settings.Clone(); // Clone(settings);
             Interlocked.Exchange(ref _pendingAutoCleanup, 1);
 
             if (Interlocked.CompareExchange(ref _autoCleanupWorkerActive, 1, 0) == 1)
@@ -149,6 +153,7 @@ namespace Capillume
                 }
 
                 string? backupFolderUsed = null;
+                string? backupArchiveUsed = null;
                 if (settings.Action == RetentionAction.BackupThenDelete)
                 {
                     if (string.IsNullOrWhiteSpace(settings.BackupFolder))
@@ -205,6 +210,26 @@ namespace Capillume
                     }
                 }
 
+                if (settings.Action == RetentionAction.BackupThenDelete
+                    && settings.PerSessionSubfolder
+                    && settings.PerSessionSubfolderCompress
+                    && failedFiles == 0
+                    && !string.IsNullOrWhiteSpace(backupFolderUsed)
+                    && Directory.Exists(backupFolderUsed))
+                {
+                    try
+                    {
+                        string archivePath = CreateUniqueBackupArchivePath(backupFolderUsed);
+                        ZipFile.CreateFromDirectory(backupFolderUsed, archivePath, CompressionLevel.Optimal, includeBaseDirectory: false);
+                        Directory.Delete(backupFolderUsed, recursive: true);
+                        backupArchiveUsed = archivePath;
+                    }
+                    catch (Exception ex)
+                    {
+                        errors.Add($"Unable to compress backup folder '{backupFolderUsed}': {ex.Message}");
+                    }
+                }
+
                 return new ScreenshotCleanupResult
                 {
                     Preview = preview,
@@ -214,6 +239,7 @@ namespace Capillume
                     BackedUpFiles = backedUpFiles,
                     FailedFiles = failedFiles,
                     BackupFolderUsed = backupFolderUsed,
+                    BackupArchiveUsed = backupArchiveUsed,
                     Errors = errors.ToArray()
                 };
             }
@@ -262,7 +288,7 @@ namespace Capillume
 
             // Sequential retention rules:
             // 1. Delete every file older than X days.
-            // 2.From the files that remain, keep only the newest Y files.
+            // 2. From the files that remain, keep only the newest Y files.
             //
             // The second rule can retain files older than X days if they are among the newest Y files.
             //
@@ -360,9 +386,33 @@ namespace Capillume
 
         private static string CreateBackupSessionFolder(string backupFolder)
         {
-            string sessionFolder = Path.Combine(backupFolder, $"Capillume Cleanup {DateTime.Now:yyyyMMdd_HHmmss}");
+            string sessionFolder = Path.Combine(backupFolder, $"Cleanup {DateTime.Now:yyyyMMdd_HHmmss}");
             Directory.CreateDirectory(sessionFolder);
             return sessionFolder;
+        }
+
+        private static string CreateUniqueBackupArchivePath(string sessionFolder)
+        {
+            string parentFolder = Path.GetDirectoryName(sessionFolder)
+                ?? throw new InvalidOperationException("The backup session folder has no parent folder.");
+            string sessionName = Path.GetFileName(sessionFolder);
+            string archivePath = Path.Combine(parentFolder, $"{sessionName}.zip");
+
+            if (!File.Exists(archivePath))
+            {
+                return archivePath;
+            }
+
+            for (int index = 1; index < 10000; index++)
+            {
+                archivePath = Path.Combine(parentFolder, $"{sessionName}_{index}.zip");
+                if (!File.Exists(archivePath))
+                {
+                    return archivePath;
+                }
+            }
+
+            throw new IOException($"Unable to create a unique archive name for '{sessionFolder}'.");
         }
 
         private static string GetBackupDestinationPath(string saveFolder, string backupSessionFolder, string sourceFilePath)
@@ -417,21 +467,22 @@ namespace Capillume
             return $"{size:0.##} {units[unitIndex]}";
         }
 
-        private static RetentionSettings Clone(RetentionSettings settings)
-        {
-            return new RetentionSettings
-            {
-                AutoCleanupEnabled = settings.AutoCleanupEnabled,
-                MaxDaysEnabled = settings.MaxDaysEnabled,
-                MaxDaysToRetain = settings.MaxDaysToRetain,
-                MaxFilesEnabled = settings.MaxFilesEnabled,
-                MaxFilesToRetain = settings.MaxFilesToRetain,
-                Action = settings.Action,
-                BackupFolder = settings.BackupFolder,
-                DryRunMode = settings.DryRunMode,
-                IncludeSubfolders = settings.IncludeSubfolders
-            };
-        }
+        //private static RetentionSettings Clone(RetentionSettings settings)
+        //{
+        //    return new RetentionSettings
+        //    {
+        //        AutoCleanupEnabled = settings.AutoCleanupEnabled,
+        //        MaxDaysEnabled = settings.MaxDaysEnabled,
+        //        MaxDaysToRetain = settings.MaxDaysToRetain,
+        //        MaxFilesEnabled = settings.MaxFilesEnabled,
+        //        MaxFilesToRetain = settings.MaxFilesToRetain,
+        //        Action = settings.Action,
+        //        BackupFolder = settings.BackupFolder,
+        //        PerSessionSubfolder = settings.PerSessionSubfolder,
+        //        DryRunMode = settings.DryRunMode,
+        //        IncludeSubfolders = settings.IncludeSubfolders
+        //    };
+        //}
 
         public void Dispose()
         {
