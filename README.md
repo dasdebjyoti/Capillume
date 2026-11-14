@@ -30,7 +30,7 @@ format, and keep the application available from the system tray.
   and process information.
 - Automatically clean up screenshots by age and/or file count.
 - Move retained screenshots to the Recycle Bin, delete them permanently, or back
-  them up before deletion.
+  them up before deletion, optionally in compressed cleanup-session archives.
 - Skip screenshots that are identical or nearly identical to the last saved capture.
 - Show desktop notifications after screenshots are saved.
 - Start automatically with Windows.
@@ -275,7 +275,8 @@ available but disabled by default. Cleanup can:
 - Move files to the Windows Recycle Bin.
 - Delete files permanently.
 - Back up files to another folder before deleting them, optionally creating a
-  separate subfolder for each cleanup session.
+  separate timestamped subfolder for each cleanup session. A session subfolder
+  can be compressed to a ZIP archive after the backup completes.
 
 Use **Cleanup Now** to preview or execute cleanup immediately. Enable
 **Dry run mode** to preview candidates and the estimated space to be freed

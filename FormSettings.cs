@@ -185,20 +185,20 @@ namespace Capillume
             tabControlSettings.DrawItem += TabControlSettings_DrawItem;
 
             _saveFolder = saveFolder;
-            _originalWatermarkSettings = Clone(watermarkSettings);
-            _originalAnnotationSettings = Clone(annotationSettings);
-            _originalDownscaleSettings = Clone(downscaleSettings);
-            _originalImageProcessingSettings = Clone(imageProcessingSettings);
-            _originalRetentionSettings = Clone(retentionSettings);
-            _originalHotkeySettings = Clone(hotkeySettings);
-            _originalDedupeSettings = Clone(dedupeSettings);
-            _watermarkSettings = Clone(watermarkSettings);
-            _annotationSettings = Clone(annotationSettings);
-            _downscaleSettings = Clone(downscaleSettings);
-            _imageProcessingSettings = Clone(imageProcessingSettings);
-            _retentionSettings = Clone(retentionSettings);
-            _hotkeySettings = Clone(hotkeySettings);
-            _dedupeSettings = Clone(dedupeSettings);
+            _originalWatermarkSettings = watermarkSettings.Clone(); // Clone(watermarkSettings);
+            _originalAnnotationSettings = annotationSettings.Clone(); // Clone(annotationSettings);
+            _originalDownscaleSettings = downscaleSettings.Clone(); // Clone(downscaleSettings);
+            _originalImageProcessingSettings = imageProcessingSettings.Clone(); // Clone(imageProcessingSettings);
+            _originalRetentionSettings = retentionSettings.Clone(); // Clone(retentionSettings);
+            _originalHotkeySettings = hotkeySettings.Clone(); // Clone(hotkeySettings);
+            _originalDedupeSettings = dedupeSettings.Clone(); // Clone(dedupeSettings);
+            _watermarkSettings = watermarkSettings.Clone(); // Clone(watermarkSettings);
+            _annotationSettings = annotationSettings.Clone(); // Clone(annotationSettings);
+            _downscaleSettings = downscaleSettings.Clone(); // Clone(downscaleSettings);
+            _imageProcessingSettings = imageProcessingSettings.Clone(); // Clone(imageProcessingSettings);
+            _retentionSettings = retentionSettings.Clone(); // Clone(retentionSettings);
+            _hotkeySettings = hotkeySettings.Clone(); // Clone(hotkeySettings);
+            _dedupeSettings = dedupeSettings.Clone(); // Clone(dedupeSettings);
             _globalHotkeyManager = globalHotkeyManager
                 ?? throw new ArgumentNullException(nameof(globalHotkeyManager));
 
@@ -350,7 +350,8 @@ namespace Capillume
             toolTip.SetToolTip(rtToggleSwitchAutoCleanup, "Runs screenshot file cleanup after each screenshot is saved.");
             toolTip.SetToolTip(rtCheckBoxDryRun, "Preview what would be removed without actually deleting any files.");
             toolTip.SetToolTip(rtCheckBoxIncludeSubfolders, "Also evaluate screenshots inside subfolders of the save location.");
-            toolTip.SetToolTip(rtCheckBoxPerSessionSubfolder, "Organize each cleanup backup in a separate timestamped folder.");
+            toolTip.SetToolTip(rtCheckBoxPerSessionSubfolder, "Organize each cleanup backup in a separate timestamped subfolder.");
+            toolTip.SetToolTip(rtCheckBoxPerSessionSubfolderCompress, "Compress subfolder into a .zip file and delete subfolder.");
 
             // Tooltips for Hotkeys tab
             toolTip.SetToolTip(hkButtonDefault, "Reset hotkey settings to their default values.");
@@ -713,6 +714,7 @@ namespace Capillume
                     _retentionSettings.Action = Constants.RetentionActionDefault;
                     //_retentionSettings.BackupFolder = Constants.RetentionBackupFolderDefault;
                     _retentionSettings.PerSessionSubfolder = Constants.RetentionPerSessionSubfolderDefault;
+                    _retentionSettings.PerSessionSubfolderCompress = Constants.RetentionPerSessionSubfolderCompressDefault;
                     // DryRunMode is not part of the Action tab group, so don't reset.
                     // It is not part of any GroupBox.
                     //_retentionSettings.DryRunMode = Constants.RetentionDryRunModeDefault;
@@ -739,6 +741,7 @@ namespace Capillume
                 rtComboBoxAction.SelectedIndex = Array.FindIndex(RetentionActionHelper.Items, item => item.Mode == _retentionSettings.Action);
                 rtTextBoxBackupFolder.Text = _retentionSettings.BackupFolder;
                 rtCheckBoxPerSessionSubfolder.Checked = _retentionSettings.PerSessionSubfolder;
+                rtCheckBoxPerSessionSubfolderCompress.Checked = _retentionSettings.PerSessionSubfolderCompress;
             }
 
             UpdateRetentionControlState();
@@ -1267,6 +1270,7 @@ namespace Capillume
             _retentionSettings.Action = GetSelectedRetentionAction(); // RetentionActionHelper.ToModeCode(rtComboBoxAction.Text);
             _retentionSettings.BackupFolder = rtTextBoxBackupFolder.Text.Trim();
             _retentionSettings.PerSessionSubfolder = rtCheckBoxPerSessionSubfolder.Checked;
+            _retentionSettings.PerSessionSubfolderCompress = rtCheckBoxPerSessionSubfolderCompress.Checked;
             _retentionSettings.DryRunMode = rtCheckBoxDryRun.Checked;
             _retentionSettings.IncludeSubfolders = rtCheckBoxIncludeSubfolders.Checked;
             return true;
@@ -1624,6 +1628,8 @@ namespace Capillume
             rtTextBoxBackupFolder.Enabled = controlsEnabled && backupSelected;
             rtButtonBrowseBackupFolder.Enabled = controlsEnabled && backupSelected;
             rtCheckBoxPerSessionSubfolder.Enabled = controlsEnabled && backupSelected;
+            rtCheckBoxPerSessionSubfolderCompress.Enabled = controlsEnabled && backupSelected && rtCheckBoxPerSessionSubfolder.Checked;
+            rtCheckBoxPerSessionSubfolderArrow.Enabled = rtCheckBoxPerSessionSubfolderCompress.Enabled;
             rtCheckBoxDryRun.Enabled = controlsEnabled;
             rtButtonCleanupNow.Enabled = controlsEnabled && hasSaveFolder;
 
@@ -1661,7 +1667,7 @@ namespace Capillume
             try
             {
                 using var retentionService = new ScreenshotRetentionService();
-                var retentionSettings = Clone(_retentionSettings);
+                var retentionSettings = _retentionSettings.Clone(); // Clone(_retentionSettings);
                 var preview = await retentionService.PreviewCleanupAsync(_saveFolder, retentionSettings);
                 rtLabelPreviewSummary.Text = FormatPreviewSummary(preview, retentionSettings);
 
@@ -1754,7 +1760,12 @@ namespace Capillume
             builder.AppendLine($"Failed: {result.FailedFiles:N0}");
             builder.Append($"Estimated space affected: {ScreenshotRetentionService.FormatSize(result.Preview.TotalBytesToFree)}");
 
-            if (!string.IsNullOrWhiteSpace(result.BackupFolderUsed))
+            if (!string.IsNullOrWhiteSpace(result.BackupArchiveUsed))
+            {
+                builder.AppendLine();
+                builder.Append($"Backup archive: {result.BackupArchiveUsed}");
+            }
+            else if (!string.IsNullOrWhiteSpace(result.BackupFolderUsed))
             {
                 builder.AppendLine();
                 builder.Append($"Backup folder: {result.BackupFolderUsed}");
@@ -2385,115 +2396,115 @@ namespace Capillume
             wmPictureBoxWatermarkImage.Image = invalidImage;
         }
 
-        private static WatermarkSettings Clone(WatermarkSettings settings)
-        {
-            return new WatermarkSettings
-            {
-                UseText = settings.UseText,
-                UseImage = settings.UseImage,
-                WatermarkText = settings.WatermarkText,
-                WatermarkTextFontFamily = settings.WatermarkTextFontFamily,
-                WatermarkTextFontSize = settings.WatermarkTextFontSize,
-                WatermarkTextFontStyle = settings.WatermarkTextFontStyle,
-                WatermarkImagePath = settings.WatermarkImagePath,
-                WatermarkImageScale = settings.WatermarkImageScale,
-                WatermarkOpacity = settings.WatermarkOpacity,
-                WatermarkPosition = settings.WatermarkPosition,
-                WatermarkRotation = settings.WatermarkRotation
-            };
-        }
+        //private static WatermarkSettings Clone(WatermarkSettings settings)
+        //{
+        //    return new WatermarkSettings
+        //    {
+        //        UseText = settings.UseText,
+        //        UseImage = settings.UseImage,
+        //        WatermarkText = settings.WatermarkText,
+        //        WatermarkTextFontFamily = settings.WatermarkTextFontFamily,
+        //        WatermarkTextFontSize = settings.WatermarkTextFontSize,
+        //        WatermarkTextFontStyle = settings.WatermarkTextFontStyle,
+        //        WatermarkImagePath = settings.WatermarkImagePath,
+        //        WatermarkImageScale = settings.WatermarkImageScale,
+        //        WatermarkOpacity = settings.WatermarkOpacity,
+        //        WatermarkPosition = settings.WatermarkPosition,
+        //        WatermarkRotation = settings.WatermarkRotation
+        //    };
+        //}
 
-        private static AnnotationSettings Clone(AnnotationSettings settings)
-        {
-            return new AnnotationSettings
-            {
-                UseAnnotation = settings.UseAnnotation,
-                AnnotationFormat = settings.AnnotationFormat,
-                AnnotationFontFamily = settings.AnnotationFontFamily,
-                AnnotationFontSize = settings.AnnotationFontSize,
-                AnnotationFontStyle = settings.AnnotationFontStyle,
-                AnnotationFontColorArgb = settings.AnnotationFontColorArgb,
-                AnnotationBackgroundColorArgb = settings.AnnotationBackgroundColorArgb,
-                AnnotationOpacity = settings.AnnotationOpacity
-            };
-        }
+        //private static AnnotationSettings Clone(AnnotationSettings settings)
+        //{
+        //    return new AnnotationSettings
+        //    {
+        //        UseAnnotation = settings.UseAnnotation,
+        //        AnnotationFormat = settings.AnnotationFormat,
+        //        AnnotationFontFamily = settings.AnnotationFontFamily,
+        //        AnnotationFontSize = settings.AnnotationFontSize,
+        //        AnnotationFontStyle = settings.AnnotationFontStyle,
+        //        AnnotationFontColorArgb = settings.AnnotationFontColorArgb,
+        //        AnnotationBackgroundColorArgb = settings.AnnotationBackgroundColorArgb,
+        //        AnnotationOpacity = settings.AnnotationOpacity
+        //    };
+        //}
 
-        private static DownscaleSettings Clone(DownscaleSettings settings)
-        {
-            return new DownscaleSettings
-            {
-                Enabled = settings.Enabled,
-                ResizeMode = settings.ResizeMode,
-                ResizeTargetHeight = settings.ResizeTargetHeight,
-                ResizePercentage = settings.ResizePercentage,
-                ResizeMaxWidth = settings.ResizeMaxWidth,
-                ResizeBoundingBoxWidth = settings.ResizeBoundingBoxWidth,
-                ResizeBoundingBoxHeight = settings.ResizeBoundingBoxHeight,
-                Quality = settings.Quality,
-                SharpenAfterResize = settings.SharpenAfterResize,
-                SkipSmallerImages = settings.SkipSmallerImages,
-                FullScreenOnly = settings.FullScreenOnly,
-                LossyFormatsOnly = settings.LossyFormatsOnly
-            };
-        }
+        //private static DownscaleSettings Clone(DownscaleSettings settings)
+        //{
+        //    return new DownscaleSettings
+        //    {
+        //        Enabled = settings.Enabled,
+        //        ResizeMode = settings.ResizeMode,
+        //        ResizeTargetHeight = settings.ResizeTargetHeight,
+        //        ResizePercentage = settings.ResizePercentage,
+        //        ResizeMaxWidth = settings.ResizeMaxWidth,
+        //        ResizeBoundingBoxWidth = settings.ResizeBoundingBoxWidth,
+        //        ResizeBoundingBoxHeight = settings.ResizeBoundingBoxHeight,
+        //        Quality = settings.Quality,
+        //        SharpenAfterResize = settings.SharpenAfterResize,
+        //        SkipSmallerImages = settings.SkipSmallerImages,
+        //        FullScreenOnly = settings.FullScreenOnly,
+        //        LossyFormatsOnly = settings.LossyFormatsOnly
+        //    };
+        //}
 
-        private static ImageProcessingSettings Clone(ImageProcessingSettings settings)
-        {
-            return new ImageProcessingSettings
-            {
-                ColorMode = settings.ColorMode,
-                HighContrast = settings.HighContrast,
-                NoiseReduction = settings.NoiseReduction,
-                ColorTemperature = settings.ColorTemperature
-            };
-        }
+        //private static ImageProcessingSettings Clone(ImageProcessingSettings settings)
+        //{
+        //    return new ImageProcessingSettings
+        //    {
+        //        ColorMode = settings.ColorMode,
+        //        HighContrast = settings.HighContrast,
+        //        NoiseReduction = settings.NoiseReduction,
+        //        ColorTemperature = settings.ColorTemperature
+        //    };
+        //}
 
-        private static RetentionSettings Clone(RetentionSettings settings)
-        {
-            return new RetentionSettings
-            {
-                AutoCleanupEnabled = settings.AutoCleanupEnabled,
-                MaxDaysEnabled = settings.MaxDaysEnabled,
-                MaxDaysToRetain = settings.MaxDaysToRetain,
-                MaxFilesEnabled = settings.MaxFilesEnabled,
-                MaxFilesToRetain = settings.MaxFilesToRetain,
-                Action = settings.Action,
-                BackupFolder = settings.BackupFolder,
-                PerSessionSubfolder = settings.PerSessionSubfolder,
-                DryRunMode = settings.DryRunMode,
-                IncludeSubfolders = settings.IncludeSubfolders
-            };
-        }
+        //private static RetentionSettings Clone(RetentionSettings settings)
+        //{
+        //    return new RetentionSettings
+        //    {
+        //        AutoCleanupEnabled = settings.AutoCleanupEnabled,
+        //        MaxDaysEnabled = settings.MaxDaysEnabled,
+        //        MaxDaysToRetain = settings.MaxDaysToRetain,
+        //        MaxFilesEnabled = settings.MaxFilesEnabled,
+        //        MaxFilesToRetain = settings.MaxFilesToRetain,
+        //        Action = settings.Action,
+        //        BackupFolder = settings.BackupFolder,
+        //        PerSessionSubfolder = settings.PerSessionSubfolder,
+        //        DryRunMode = settings.DryRunMode,
+        //        IncludeSubfolders = settings.IncludeSubfolders
+        //    };
+        //}
 
-        private static HotkeySettings Clone(HotkeySettings settings)
-        {
-            return new HotkeySettings
-            {
-                Enabled = settings.Enabled,
-                Modifiers = settings.Modifiers,
-                Key = settings.Key,
-                HasConflict = settings.HasConflict
-            };
-        }
+        //private static HotkeySettings Clone(HotkeySettings settings)
+        //{
+        //    return new HotkeySettings
+        //    {
+        //        Enabled = settings.Enabled,
+        //        Modifiers = settings.Modifiers,
+        //        Key = settings.Key,
+        //        HasConflict = settings.HasConflict
+        //    };
+        //}
 
-        private static DedupeSettings Clone(DedupeSettings settings)
-        {
-            return new DedupeSettings
-            {
-                Enabled = settings.Enabled,
-                CompareMode = settings.CompareMode,
-                Sensitivity = settings.Sensitivity,
-                TimeoutMilliseconds = settings.TimeoutMilliseconds,
-                DynamicRegionMode = settings.DynamicRegionMode,
-                ExcludeRegions = [.. settings.ExcludeRegions],
-                ComparePerActiveWindow = settings.ComparePerActiveWindow,
-                UpdateReferenceOnlyOnSave = settings.UpdateReferenceOnlyOnSave,
-                MinimumMinutesBetweenSaves = settings.MinimumMinutesBetweenSaves,
-                DryRun = settings.DryRun,
-                ShowSkippedNotifications = settings.ShowSkippedNotifications,
-                EnableDiagnostics = settings.EnableDiagnostics
-            };
-        }
+        //private static DedupeSettings Clone(DedupeSettings settings)
+        //{
+        //    return new DedupeSettings
+        //    {
+        //        Enabled = settings.Enabled,
+        //        CompareMode = settings.CompareMode,
+        //        Sensitivity = settings.Sensitivity,
+        //        TimeoutMilliseconds = settings.TimeoutMilliseconds,
+        //        DynamicRegionMode = settings.DynamicRegionMode,
+        //        ExcludeRegions = [.. settings.ExcludeRegions],
+        //        ComparePerActiveWindow = settings.ComparePerActiveWindow,
+        //        UpdateReferenceOnlyOnSave = settings.UpdateReferenceOnlyOnSave,
+        //        MinimumMinutesBetweenSaves = settings.MinimumMinutesBetweenSaves,
+        //        DryRun = settings.DryRun,
+        //        ShowSkippedNotifications = settings.ShowSkippedNotifications,
+        //        EnableDiagnostics = settings.EnableDiagnostics
+        //    };
+        //}
 
         private static bool AreEqual(WatermarkSettings left, WatermarkSettings right)
         {
@@ -2555,6 +2566,8 @@ namespace Capillume
                 && left.MaxFilesToRetain == right.MaxFilesToRetain
                 && left.Action == right.Action
                 && string.Equals(left.BackupFolder, right.BackupFolder, StringComparison.Ordinal)
+                && left.PerSessionSubfolder == right.PerSessionSubfolder
+                && left.PerSessionSubfolderCompress == right.PerSessionSubfolderCompress
                 && left.DryRunMode == right.DryRunMode
                 && left.IncludeSubfolders == right.IncludeSubfolders;
         }

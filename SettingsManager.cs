@@ -1,4 +1,7 @@
 using Microsoft.VisualBasic;
+using SkiaSharp;
+using System.Drawing.Imaging;
+using System.Runtime;
 using System.Text.Json;
 
 // TODO
@@ -274,6 +277,7 @@ namespace Capillume
         public const RetentionAction RetentionActionDefault = RetentionAction.MoveToRecycleBin;
         public static readonly string RetentionBackupFolderDefault = string.Empty;
         public const bool RetentionPerSessionSubfolderDefault = false;
+        public const bool RetentionPerSessionSubfolderCompressDefault = false;
         public const bool RetentionDryRunModeDefault = true;
 
         // Hotkey constants and defaults
@@ -324,6 +328,24 @@ namespace Capillume
         public int WatermarkOpacity { get; set; } = Constants.WatermarkOpacityDefault; // 50
         public string WatermarkPosition { get; set; } = Constants.WatermarkPositionDefault;
         public int WatermarkRotation { get; set; } = Constants.WatermarkRotationDefault; // 0, 90, 180, 270
+
+        public WatermarkSettings Clone()
+        {
+            return new WatermarkSettings
+            {
+                UseText = UseText,
+                UseImage = UseImage,
+                WatermarkText = WatermarkText,
+                WatermarkTextFontFamily = WatermarkTextFontFamily,
+                WatermarkTextFontSize = WatermarkTextFontSize,
+                WatermarkTextFontStyle = WatermarkTextFontStyle,
+                WatermarkImagePath = WatermarkImagePath,
+                WatermarkImageScale = WatermarkImageScale,
+                WatermarkOpacity = WatermarkOpacity,
+                WatermarkPosition = WatermarkPosition,
+                WatermarkRotation = WatermarkRotation
+            };
+        }
     }
 
     public class AnnotationSettings
@@ -336,6 +358,21 @@ namespace Capillume
         public int AnnotationFontColorArgb { get; set; } = Constants.AnnotationFontColorArgbDefault;
         public int? AnnotationBackgroundColorArgb { get; set; } = Constants.AnnotationBackgroundColorArgbDefault;
         public int AnnotationOpacity { get; set; } = Constants.AnnotationOpacityDefault;
+
+        public AnnotationSettings Clone()
+        {
+            return new AnnotationSettings
+            {
+                UseAnnotation = UseAnnotation,
+                AnnotationFormat = AnnotationFormat,
+                AnnotationFontFamily = AnnotationFontFamily,
+                AnnotationFontSize = AnnotationFontSize,
+                AnnotationFontStyle = AnnotationFontStyle,
+                AnnotationFontColorArgb = AnnotationFontColorArgb,
+                AnnotationBackgroundColorArgb = AnnotationBackgroundColorArgb,
+                AnnotationOpacity = AnnotationOpacity
+            };
+        }
     }
 
     public class DownscaleSettings
@@ -352,6 +389,25 @@ namespace Capillume
         public bool SkipSmallerImages { get; set; } = Constants.DownscaleSkipSmallerImagesDefault;
         public bool FullScreenOnly { get; set; } = Constants.DownscaleFullScreenOnlyDefault;
         public bool LossyFormatsOnly { get; set; } = Constants.DownscaleLossyFormatsOnlyDefault;
+
+        public DownscaleSettings Clone()
+        {
+            return new DownscaleSettings
+            {
+                Enabled = Enabled,
+                ResizeMode = ResizeMode,
+                ResizeTargetHeight = ResizeTargetHeight,
+                ResizePercentage = ResizePercentage,
+                ResizeMaxWidth = ResizeMaxWidth,
+                ResizeBoundingBoxWidth = ResizeBoundingBoxWidth,
+                ResizeBoundingBoxHeight = ResizeBoundingBoxHeight,
+                Quality = Quality,
+                SharpenAfterResize = SharpenAfterResize,
+                SkipSmallerImages = SkipSmallerImages,
+                FullScreenOnly = FullScreenOnly,
+                LossyFormatsOnly = LossyFormatsOnly
+            };
+        }
     }
 
     public class ImageProcessingSettings
@@ -360,6 +416,17 @@ namespace Capillume
         public bool HighContrast { get; set; } = Constants.ImageProcHighContrastDefault;
         public bool NoiseReduction { get; set; } = Constants.ImageProcNoiseReductionDefault;
         public ImageProcessColorTempMode ColorTemperature { get; set; } = Constants.ImageProcColorTemperatureDefault;
+
+        public ImageProcessingSettings Clone()
+        {
+            return new ImageProcessingSettings
+            {
+                ColorMode = ColorMode,
+                HighContrast = HighContrast,
+                NoiseReduction = NoiseReduction,
+                ColorTemperature = ColorTemperature
+            };
+        }
     }
 
     public class DedupeSettings
@@ -376,6 +443,25 @@ namespace Capillume
         public bool DryRun { get; set; } = Constants.DedupeDryRunDefault;
         public bool ShowSkippedNotifications { get; set; } = Constants.DedupeShowSkippedNotificationsDefault;
         public bool EnableDiagnostics { get; set; } = Constants.DedupeEnableDiagnosticsDefault;
+
+        public DedupeSettings Clone()
+        {
+            return new DedupeSettings
+            {
+                Enabled = Enabled,
+                CompareMode = CompareMode,
+                Sensitivity = Sensitivity,
+                TimeoutMilliseconds = TimeoutMilliseconds,
+                DynamicRegionMode = DynamicRegionMode,
+                ExcludeRegions = [.. ExcludeRegions],
+                ComparePerActiveWindow = ComparePerActiveWindow,
+                UpdateReferenceOnlyOnSave = UpdateReferenceOnlyOnSave,
+                MinimumMinutesBetweenSaves = MinimumMinutesBetweenSaves,
+                DryRun = DryRun,
+                ShowSkippedNotifications = ShowSkippedNotifications,
+                EnableDiagnostics = EnableDiagnostics
+            };
+        }
     }
 
     public class RetentionSettings
@@ -389,7 +475,26 @@ namespace Capillume
         public RetentionAction Action { get; set; } = Constants.RetentionActionDefault;
         public string BackupFolder { get; set; } = Constants.RetentionBackupFolderDefault;
         public bool PerSessionSubfolder { get; set; } = Constants.RetentionPerSessionSubfolderDefault;
+        public bool PerSessionSubfolderCompress { get; set; } = Constants.RetentionPerSessionSubfolderCompressDefault;
         public bool DryRunMode { get; set; } = Constants.RetentionDryRunModeDefault;
+
+        public RetentionSettings Clone()
+        {
+            return new RetentionSettings
+            {
+                AutoCleanupEnabled = AutoCleanupEnabled,
+                MaxDaysEnabled = MaxDaysEnabled,
+                MaxDaysToRetain = MaxDaysToRetain,
+                MaxFilesEnabled = MaxFilesEnabled,
+                MaxFilesToRetain = MaxFilesToRetain,
+                IncludeSubfolders = IncludeSubfolders,
+                Action = Action,
+                BackupFolder = BackupFolder,
+                PerSessionSubfolder = PerSessionSubfolder,
+                PerSessionSubfolderCompress = PerSessionSubfolderCompress,
+                DryRunMode = DryRunMode
+            };
+        }
     }
 
     public class HotkeySettings
@@ -398,6 +503,17 @@ namespace Capillume
         public Keys Modifiers { get; set; } = Constants.HotkeyModifiersDefault;
         public Keys Key { get; set; } = Constants.HotkeyKeyDefault;
         public bool HasConflict { get; set; } = false;
+
+        public HotkeySettings Clone()
+        {
+            return new HotkeySettings
+            {
+                Enabled = Enabled,
+                Modifiers = Modifiers,
+                Key = Key,
+                HasConflict = HasConflict
+            };
+        }
     }
 
     public static class SettingsManager
